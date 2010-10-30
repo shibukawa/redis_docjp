@@ -254,3 +254,6 @@ epub_copyright = u'2010, antirez'
 
 # Allow duplicate toc entries.
 #epub_tocdup = True
+
+def setup(app):
+    app.add_object_type('command', 'com', 'pair: %s; コマンド')

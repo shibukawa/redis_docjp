@@ -7,7 +7,7 @@ redisドキュメント日本語訳
 
    features
    quickstart
-   commandreference
+   commandreference/index.rst
 
 索引など
 ========
