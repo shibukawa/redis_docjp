@@ -46,43 +46,43 @@
      - **内容**
    * - EXISTS
      - key
-     - キーが存在するか確認します
+     - キー ``key`` が存在するか確認します
    * - DEL
      - key
-     - キーを削除します
+     - キー ``key`` を削除します
    * - TYPE
      - key
-     - あるキーで格納されている値の型を返す
+     - あるキー ``key`` で格納されている値の型を返す
    * - KEYS
      - pattern
-     - 与えられたパターンにマッチするすべてのキーを返す
+     - 与えられたパターン ``pattern`` にマッチするすべてのキーを返す
    * - RANDOMKEY
      - --
      - return a random key from the key space
    * - RENAME
      - oldname newname
-     - 古いキーを新しいキーにリネームする。もし新しいキーがすでに存在する場合、上書きする。
+     - 古いキー ``oldname`` を新しいキー ``newname`` にリネームする。もし新しいキーがすでに存在する場合、上書きする。
    * - RENAMENX
      - oldname newname
-     - 古いキーを新しいキーにリネームする。新しいキーが存在しない場合のみ有効。
+     - 古いキー ``oldname`` を新しいキー ``newname`` にリネームする。新しいキーが存在しない場合のみ有効。
    * - DBSIZE
      - --
      - その時点でのデータベース内におけるキーの数を返す
    * - EXPIRE
      - key seconds
-     - キーの有効期限を秒で設定する
+     - キー ``key`` の有効期限を ``seconds`` 秒に設定する
    * - PERSIST
-     - --
-     - キーの有効期限を破棄する
+     - key
+     - キー ``key`` の有効期限を破棄する
    * - TTL
-     - --
-     - キーの存命時間を取得する
+     - key
+     - キー ``key`` の存命時間を取得する
    * - SELECT
      - index
-     - 与えられたインデックスのデータベースを選択する
+     - 与えられたインデックス ``index`` のデータベースを選択する
    * - MOVE
      - key dbindex
-     - あるキーを現在のデータベースから ``dbindex`` のDBへ移す
+     - あるキー ``key`` を現在のデータベースから ``dbindex`` のDBへ移す
    * - FLUSHDB
      - --
      - 現在選択されているデータベースのすべてのキーを削除する
@@ -103,46 +103,46 @@
      - **内容**
    * - SET	
      - key value
-     - Set a key to a string value
+     - 文字列 ``value`` にキー ``key`` をセットする
    * - GET
      - key
-     - Return the string value of the key
+     - あるキー ``key`` に対応する文字列を返す
    * - GETSET
      - key value
-     - Set a key to a string returning the old value of the key
+     - あるキー ``key`` に文字列 ``value`` をセットして、そのキーに紐づいていた古い文字列を返す
    * - MGET
      - key1 key2 ... keyN
-     - Multi-get, return the strings values of the keys
+     - Multi-get, 与えた複数のキー ``keyN`` に対応する文字列を返す
    * - SETNX
      - key value
-     - Set a key to a string value if the key does not exist
+     - そのキー ``key`` が存在しない場合、文字列 ``value`` にキーをセットする
    * - SETEX
      - key time value
-     - Set+Expire combo command
+     - Set+Expireの合わせ技
    * - MSET
      - key1 value1 key2 value2 ... keyN valueN
-     - Set multiple keys to multiple values in a single atomic operation
+     - 単一アトミック操作で複数のキー ``keyN`` と文字列 ``valueN`` のペアをセットする
    * - MSETNX
      - key1 value1 key2 value2 ... keyN valueN
-     - Set multiple keys to multiple values in a single atomic operation if none of the keys already exist
+     - 単一アトミック操作で複数のキー ``keyN`` と文字烈 ``valueN`` のペアをセットする。ただし与えられたキーのすべてが存在しない場合のみ有効。
    * - INCR
      - key
-     - Increment the integer value of key
+     - キー ``key`` に対応する整数値をインクリメントする
    * - INCRBY
      - key integer
-     - Increment the integer value of key by integer
+     - キー ``key`` に対応する整数値を ``integer`` だけインクリメントする
    * - DECR
      - key
-     - Decrement the integer value of key
+     - キー ``key`` に対応する整数値ををデクリメントする
    * - DECRBY
      - key integer
-     - Decrement the integer value of key by integer
+     - キー ``key`` に対応する整数値を ``integer`` だけデクリメントする
    * - APPEND
      - key value
-     - Append the specified string to the string stored at key
+     - キー ``key`` に対応する文字列に ``value`` の文字列を追加する
    * - SUBSTR
      - key start end
-     - Return a substring of a larger string
+     - キー ``key`` に対応する文字列の ``start`` から ``end`` の部分文字列を返す
    
 .. Commands operating on lists
 
@@ -157,43 +157,43 @@
      - **内容**
    * - RPUSH
      - key value
-     - Append an element to the tail of the List value at key
+     - キー ``key`` に対応するリストの末尾に要素 ``value`` を追加する
    * - LPUSH
      - key value
-     - Append an element to the head of the List value at key
+     - キー ``key`` に対応するリストの先頭に要素 ``value`` を追加する
    * - LLEN
      - key
-     - Return the length of the List value at key
+     - キー ``key`` に対応するリストの長さを返す
    * - LRANGE
      - key start end
-     - Return a range of elements from the List at key
+     - キー ``key`` に対応するリストから ``start`` 番目から ``end`` 番目までの部分リストを返す
    * - LTRIM
      - key start end
-     - Trim the list at key to the specified range of elements
+     - キー ``key`` に対応するリストを ``start`` 番目から ``end`` 番目の部分リストに変更する
    * - LINDEX
      - key index
-     - Return the element at index position from the List at key
+     - キー ``key`` に対応するリストの ``index`` 番目の要素を返す
    * - LSET
      - key index value
-     - Set a new value as the element at index position of the List at key
+     - キー ``key`` に対応するリストの ``index`` 番目の要素を新しい値 ``value`` に変更する
    * - LREM
      - key count value
-     - Remove the first-N, last-N, or all the elements matching value from the List at key
+     - 最初の ``count`` 個だけ ``value`` にマッチする要素を ``key`` に対応するリストから削除する。 ``count`` が負数の場合は最後から ``count`` 個だけ削除する。
    * - LPOP
      - key
-     - Return and remove (atomically) the first element of the List at key
+     - キー ``key`` に対応するリストの先頭の要素を返してリストから削除する
    * - RPOP
      - key
-     - Return and remove (atomically) the last element of the List at key
+     - キー ``key`` に対応するリストの末尾の要素を返してリストから削除する
    * - BLPOP
      - key1 key2 ... keyN timeout
-     - Blocking LPOP
+     - 複数のキー ``keyN`` に対応するリストを　``LPOP`` から ``timeout`` 秒ブロックする
    * - BRPOP
      - key1 key2 ... keyN timeout
-     - Blocking RPOP
+     - 複数のキー ``keyN`` に対応するリストを　``POP`` から ``timeout`` 秒ブロックする
    * - RPOPLPUSH
      - srckey dstkey
-     - Return and remove (atomically) the last element of the source List stored at srckey and push the same element to the destination List stored at dstkey
+     - キー ``srckey`` のリストの末尾の要素を返してそのリストから削除し、キー ``dstkey`` に対応するリストの先頭にその値を追加する。
    
 
 .. Commands operating on sets
@@ -209,25 +209,25 @@
      - **内容**
    * - SADD
      - key member
-     - Add the specified member to the Set value at key
+     - キー ``key`` に対応するセットにメンバ ``member`` を追加する
    * - SREM
      - key member
-     - Remove the specified member from the Set value at key
+     - キー ``key`` に対応するセットからメンバ ``member`` を削除する
    * - SPOP
      - key
-     - Remove and return (pop) a random element from the Set value at key
+     - キー ``key`` に対応するセットからランダムに一つ選んだ要素を返し、セットから削除する
    * - SMOVE
      - srckey dstkey member
-     - Move the specified member from one Set to another atomically
+     - キー ``srckey`` に対応するセットからキー ``dstkey`` に対応するセットにメンバ ``member`` を移動する
    * - SCARD
      - key
-     - Return the number of elements (the cardinality) of the Set at key
+     - キー ``key`` に対応するセットの要素数（濃度）を返します
    * - SISMEMBER
      - key member
-     - Test if the specified value is a member of the Set at key
+     - キー ``key`` に対応するセットの中にメンバ ``member`` があるか確認します
    * - SINTER
      - key1 key2 ... keyN
-     - Return the intersection between the Sets stored at key1, key2, ..., keyN
+     - 複数のキー ``keyN`` に対応するセットの共通セットを返します
    * - SINTERSTORE
      - dstkey key1 key2 ... keyN
      - Compute the intersection between the Sets stored at key1, key2, ..., keyN, and store the resulting Set at dstkey
