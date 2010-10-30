@@ -24,6 +24,8 @@ redisドキュメント日本語訳
 
    commandreference/connection
    commandreference/strings
+   commandreference/lists
+   commandreference/sets
 
 索引など
 ========
