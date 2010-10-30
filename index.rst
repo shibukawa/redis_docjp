@@ -7,7 +7,15 @@ redisドキュメント日本語訳
 
    features
    quickstart
-   commandreference/index.rst
+   readme
+   howto/index
+   commandreference/index
+
+.. toctree::
+   :hidden:
+
+   commandreference/connection
+   commandreference/strings
 
 索引など
 ========

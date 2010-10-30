@@ -12,11 +12,6 @@ Redisコマンドリファレンス
 
 すべてのコマンド名にあるリンクは各コマンドごとの紹介ページとなっています。
 
-.. toctree::
-   :hidden:
-
-   connection
-
 .. Categorized Command List
 
 .. カテゴリ別コマンドリスト
