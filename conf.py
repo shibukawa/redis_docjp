@@ -70,7 +70,7 @@ exclude_patterns = ['_build']
 #default_role = None
 
 # If true, '()' will be appended to :func: etc. cross-reference text.
-#add_function_parentheses = True
+add_function_parentheses = False 
 
 # If true, the current module name will be prepended to all description
 # unit titles (such as .. function::).
@@ -255,5 +255,20 @@ epub_copyright = u'2010, antirez'
 # Allow duplicate toc entries.
 #epub_tocdup = True
 
+from sphinx import addnodes
+
+def parse_command(env, sig, signode):
+    names = sig.split(" ")
+    signode += addnodes.desc_name(names[0], names[0])
+    plist = addnodes.desc_parameterlist()
+    for arg in names[1:]:
+        if not arg:
+            continue
+        plist += addnodes.desc_parameter(arg, arg)
+    signode += plist
+    return names[0]
+
+
 def setup(app):
-    app.add_object_type('command', 'com', 'pair: %s; コマンド')
+    app.add_object_type('command', 'com', u'pair: %s; コマンド', parse_command)
+    app.add_object_type('confval', 'conf', u'pair: %s; 設定')
