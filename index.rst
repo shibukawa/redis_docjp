@@ -3,11 +3,27 @@ redisドキュメント日本語訳
 =========================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    features
    quickstart
-   commandreference/index.rst
+   readme
+
+.. toctree::
+   :maxdepth: 2
+
+   howto/index
+
+.. toctree::
+   :maxdepth: 1
+
+   commandreference/index
+
+.. toctree::
+   :hidden:
+
+   commandreference/connection
+   commandreference/strings
 
 索引など
 ========
@@ -23,6 +39,6 @@ redisドキュメント日本語訳
 
    日本語の間違いなどについては、redisの開発者ではなく、 `翻訳リポジトリのissueトラッカー <https://bitbucket.org/shibu/redis_docjp/issues>`_ に登録をお願いします。
 
-* 渋川よしき <yoshiki at shibu.jp>
+* 渋川よしき (@shibukawa)
 * 山口能迪 (@ymotongpoo)
 
