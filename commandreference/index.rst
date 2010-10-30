@@ -194,10 +194,10 @@ Redisコマンドリファレンス
      - キー ``key`` に対応するリストの末尾の要素を返してリストから削除する
    * - :com:`BLPOP`
      - key1 key2 ... keyN timeout
-     - 複数のキー ``keyN`` に対応するリストを　``LPOP`` から ``timeout`` 秒ブロックする
+     - 複数のキー ``keyN`` に対応するリストを ``LPOP`` から ``timeout`` 秒ブロックする
    * - :com:`BRPOP`
      - key1 key2 ... keyN timeout
-     - 複数のキー ``keyN`` に対応するリストを　``POP`` から ``timeout`` 秒ブロックする
+     - 複数のキー ``keyN`` に対応するリストを ``POP`` から ``timeout`` 秒ブロックする
    * - :com:`RPOPLPUSH`
      - srckey dstkey
      - キー ``srckey`` のリストの末尾の要素を返してそのリストから削除し、キー ``dstkey`` に対応するリストの先頭にその値を追加する。
