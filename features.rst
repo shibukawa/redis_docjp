@@ -56,14 +56,14 @@ RedisはANSI Cで書かれていて、すべてのデータセットをメモリ
    and so forth depending on the types. Redis supports different kind of 
    sorting abilities for Sets and Lists.
 
-Redisの値としては、伝統的なキー・バリュー・ストアと同様、 :ref:`strings` をサポートしていますが、これ以外にも、 :ref:`lists` 、 :ref:`sets` 、 :ref:`sortedsets` 、 :ref:`hashs` も使えます。このデータ型に対しては、要素のpush/pop、add/remove、またはサーバサイドでのセット間の和、積、差など、型によって様々な操作をサポートしています。Redisは :ref:`sets` と :ref:`lists` に対して、異なる種類のソート機能をサポートしています。
+Redisの値としては、伝統的なキー・バリュー・ストアと同様、 :ref:`strings` をサポートしていますが、これ以外にも、 :ref:`lists` 、 :ref:`sets` 、 :ref:`sortedsets` 、 :ref:`hashes` も使えます。このデータ型に対しては、要素のpush/pop、add/remove、またはサーバサイドでのセット間の和、積、差など、型によって様々な操作をサポートしています。Redisは :ref:`sets` と :ref:`lists` に対して、異なる種類のソート機能をサポートしています。
 
 .. You can think in Redis as a Data Structures Server, that allows you to 
    model non trivial problems. Read Data Types to learn more about the way 
    Redis handle Strings, and the Commands supported by Lists, Sets and 
    SortedSets
 
-Redisを、 **データ構造サーバ** と考えると、重要ではない問題のモデル化を行うことができます。Redisにおける :ref:`strings` の取り扱い方、 :ref:`lists` 、 :ref:sets` 、 :ref:`sortedsets` をサポートするコマンドについて詳しく知るためには、 :ref:`datatypes` の説明を参照してください。
+Redisを、 **データ構造サーバ** と考えると、重要ではない問題のモデル化を行うことができます。Redisにおける :ref:`strings` の取り扱い方、 :ref:`lists` 、 :ref:`sets` 、 :ref:`sortedsets` をサポートするコマンドについて詳しく知るためには、 :ref:`datatypes` の説明を参照してください。
 
 .. Atomic Operations
 
