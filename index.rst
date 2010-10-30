@@ -26,6 +26,8 @@ redisドキュメント日本語訳
    commandreference/strings
    commandreference/lists
    commandreference/sets
+   commandreference/sortedsets
+   commandreference/hashes
 
 索引など
 ========
