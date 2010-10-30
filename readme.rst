@@ -137,12 +137,14 @@ Redisは、決まった回数の変更が行われたらデータセットを保
    This commands are replayed when the server is restarted in order to 
    rebuild the dataset in memory.
 
-
+データが非同期に書かれているため、システムのクラッシュが発生すると、最後のいくつかのクエリーが失われる可能性があります。(多くのアプリケーションではこれでも問題はありませんが、すべてではありません。) この問題を解決する方法として、Redisは通常とは異なる、 :ref:`append_only_file` という安全な永続化モードをサポートしています。データセットに変更を加えるコマンド(読み込み用コマンドではなく、書き込みコマンド)を受信すると、即座に追記専用のファイルに書き込みます。このコマンドは、サーバが再起動されたときに、再度再生されて、メモリ上のデータセットを再構築します。
 
 .. Redis Append Only File supports a very handy feature: the server is 
    able to safely rebuild the append only file in background in a 
    non-blocking fashion when it gets too long. You can find more details 
    in the Append Only File HOWTO.
+
+Redisの追記専用ファイルのサポートはとても使いやすい機能です。サーバは安全にバックグラウンドで追記専用ファイルの再構築を行うことができますし、長い時間がかかったとしてもブロックしません。これについては、 :ref:`append_only_file` のHow Toを参照してください。
 
 .. Master-Slave replication made trivial
 
@@ -153,21 +155,40 @@ Redisは、決まった回数の変更が行われたらデータセットを保
    master-slave replications if you want to stay really safe or if you 
    need to scale to huge amounts of reads.
 
-Redis Replication is trivial to setup. So trivial that all you need to do in order to configure a Redis server to be a slave of another one, with automatic synchronization if the link will go down and so forth, is the following config line: slaveof 192.168.1.100 6379. We provide a Replication Howto if you want to know more about this feature.
+どのような永続化モードを使用していたとしても、Redisのサポートする、マスター/スレーブのレプリケーション機能を利用することができます。安全性を高めたり、大量の読み込みリクエストに対応してスケールさせる必要がある場合に使えます。
+
+.. Redis Replication is trivial to setup. So trivial that all you need to 
+   do in order to configure a Redis server to be a slave of another one, 
+   with automatic synchronization if the link will go down and so forth, 
+   is the following config line: slaveof 192.168.1.100 6379. We provide a 
+   Replication Howto if you want to know more about this feature.
+
+Redisのレプリケーションのセットアップは簡単です。設定するのにやらなければならないことは、他のサーバのスレーブになるRedisサーバの設定ファイルに、 :conf:`slaveof` ``192.168.1.100 6379`` という1行を追加するだけです。この機能についてもっと知りたい場合は、 :ref:`replication` の説明をご覧ください。
 
 .. It's persistent but supports expires
 
 「それは永続化されているけど、期限切れです」 
 ============================================
 
-Redis can be used as a memcached on steroids because is as fast as memcached but with a number of features more. Like memcached, Redis also supports setting timeouts to keys so that this key will be automatically removed when a given amount of time passes.
+.. Redis can be used as a memcached on steroids because is as fast as 
+   memcached but with a number of features more. Like memcached, Redis 
+   also supports setting timeouts to keys so that this key will be 
+   automatically removed when a given amount of time passes.
+
+Redisはmemcachedと同じぐらい高速なため、筋力増強剤としてmemcachedと同じように使用することができますが、さらに多くの機能を持っています。memcachedと同じく、キーに対するタイムアウト時間を設定し、与えられた時間が過ぎたら自動で削除する、といったことができます。
 
 .. Beyond key-value databases
 
 キー・バリュー型データベースを超えて
 ====================================
 
-All these features allow to use Redis as the sole DB for your scalable application without the need of any relational database. We wrote a simple Twitter clone in PHP + Redis to show a real world example, the link points to an article explaining the design and internals in very simple words.
+.. All these features allow to use Redis as the sole DB for your scalable 
+   application without the need of any relational database. We wrote a 
+   simple Twitter clone in PHP + Redis to show a real world example, 
+   the link points to an article explaining the design and internals 
+   in very simple words.
+
+これらの機能により、リレーショナルデータベースを必要としない、スケーラブルなアプリケーションのためのメインのDBとして、Redisを使うことができます。私たちは現実世界のサンプルとして、 `PHP+Redisを使ったシンプルなTwitterクローン <http://code.google.com/p/redis/wiki/TwitterAlikeExample>`_ を作りました。リンク先のドキュメントには、シンプルな言葉で設計と、内部の話が説明されています。
 
 .. Multiple databases support
 
