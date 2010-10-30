@@ -49,49 +49,49 @@
    * - **コマンド**
      - **パラメータ**
      - **内容**
-   * - EXISTS
+   * - :com:`EXISTS`
      - key
      - キー ``key`` が存在するか確認します
-   * - DEL
+   * - :com:`DEL`
      - key
      - キー ``key`` を削除します
-   * - TYPE
+   * - :com:`TYPE`
      - key
      - あるキー ``key`` で格納されている値の型を返す
-   * - KEYS
+   * - :com:`KEYS`
      - pattern
      - 与えられたパターン ``pattern`` にマッチするすべてのキーを返す
-   * - RANDOMKEY
+   * - :com:`RANDOMKEY`
      - --
      - return a random key from the key space
-   * - RENAME
+   * - :com:`RENAME`
      - oldname newname
      - 古いキー ``oldname`` を新しいキー ``newname`` にリネームする。もし新しいキーがすでに存在する場合、上書きする。
-   * - RENAMENX
+   * - :com:`RENAMENX`
      - oldname newname
      - 古いキー ``oldname`` を新しいキー ``newname`` にリネームする。新しいキーが存在しない場合のみ有効。
-   * - DBSIZE
+   * - :com:`DBSIZE`
      - --
      - その時点でのデータベース内におけるキーの数を返す
-   * - EXPIRE
+   * - :com:`EXPIRE`
      - key seconds
      - キー ``key`` の有効期限を ``seconds`` 秒に設定する
-   * - PERSIST
+   * - :com:`PERSIST`
      - key
      - キー ``key`` の有効期限を破棄する
-   * - TTL
+   * - :com:`TTL`
      - key
      - キー ``key`` の存命時間を取得する
-   * - SELECT
+   * - :com:`SELECT`
      - index
      - 与えられたインデックス ``index`` のデータベースを選択する
-   * - MOVE
+   * - :com:`MOVE`
      - key dbindex
      - あるキー ``key`` を現在のデータベースから ``dbindex`` のDBへ移す
-   * - FLUSHDB
+   * - :com:`FLUSHDB`
      - --
      - 現在選択されているデータベースのすべてのキーを削除する
-   * - FLUSHALL
+   * - :com:`FLUSHALL`
      - --
      - すべてのデータベースからすべてのキーを削除する
 
@@ -106,46 +106,46 @@
    * - **コマンド**
      - **パラメータ**
      - **内容**
-   * - SET	
+   * - :com:`SET`
      - key value
      - 文字列 ``value`` にキー ``key`` をセットする
-   * - GET
+   * - :com:`GET`
      - key
      - あるキー ``key`` に対応する文字列を返す
-   * - GETSET
+   * - :com:`GETSET`
      - key value
      - あるキー ``key`` に文字列 ``value`` をセットして、そのキーに紐づいていた古い文字列を返す
-   * - MGET
+   * - :com:`MGET`
      - key1 key2 ... keyN
      - Multi-get, 与えた複数のキー ``keyN`` に対応する文字列を返す
-   * - SETNX
+   * - :com:`SETNX`
      - key value
      - そのキー ``key`` が存在しない場合、文字列 ``value`` にキーをセットする
-   * - SETEX
+   * - :com:`SETEX`
      - key time value
      - Set+Expireの合わせ技
-   * - MSET
+   * - :com:`MSET`
      - key1 value1 key2 value2 ... keyN valueN
      - 単一アトミック操作で複数のキー ``keyN`` と文字列 ``valueN`` のペアをセットする
-   * - MSETNX
+   * - :com:`MSETNX`
      - key1 value1 key2 value2 ... keyN valueN
      - 単一アトミック操作で複数のキー ``keyN`` と文字烈 ``valueN`` のペアをセットする。ただし与えられたキーのすべてが存在しない場合のみ有効。
-   * - INCR
+   * - :com:`INCR`
      - key
      - キー ``key`` に対応する整数値をインクリメントする
-   * - INCRBY
+   * - :com:`INCRBY`
      - key integer
      - キー ``key`` に対応する整数値を ``integer`` だけインクリメントする
-   * - DECR
+   * - :com:`DECR`
      - key
      - キー ``key`` に対応する整数値ををデクリメントする
-   * - DECRBY
+   * - :com:`DECRBY`
      - key integer
      - キー ``key`` に対応する整数値を ``integer`` だけデクリメントする
-   * - APPEND
+   * - :com:`APPEND`
      - key value
      - キー ``key`` に対応する文字列に ``value`` の文字列を追加する
-   * - SUBSTR
+   * - :com:`SUBSTR`
      - key start end
      - キー ``key`` に対応する文字列の ``start`` から ``end`` の部分文字列を返す
    
@@ -160,43 +160,43 @@
    * - **コマンド**
      - **パラメータ**
      - **内容**
-   * - RPUSH
+   * - :com:`RPUSH`
      - key value
      - キー ``key`` に対応するリストの末尾に要素 ``value`` を追加する
-   * - LPUSH
+   * - :com:`LPUSH`
      - key value
      - キー ``key`` に対応するリストの先頭に要素 ``value`` を追加する
-   * - LLEN
+   * - :com:`LLEN`
      - key
      - キー ``key`` に対応するリストの長さを返す
-   * - LRANGE
+   * - :com:`LRANGE`
      - key start end
      - キー ``key`` に対応するリストから ``start`` 番目から ``end`` 番目までの部分リストを返す
-   * - LTRIM
+   * - :com:`LTRIM`
      - key start end
      - キー ``key`` に対応するリストを ``start`` 番目から ``end`` 番目の部分リストに変更する
-   * - LINDEX
+   * - :com:`LINDEX`
      - key index
      - キー ``key`` に対応するリストの ``index`` 番目の要素を返す
-   * - LSET
+   * - :com:`LSET`
      - key index value
      - キー ``key`` に対応するリストの ``index`` 番目の要素を新しい値 ``value`` に変更する
-   * - LREM
+   * - :com:`LREM`
      - key count value
      - 最初の ``count`` 個だけ ``value`` にマッチする要素を ``key`` に対応するリストから削除する。 ``count`` が負数の場合は最後から ``count`` 個だけ削除する。
-   * - LPOP
+   * - :com:`LPOP`
      - key
      - キー ``key`` に対応するリストの先頭の要素を返してリストから削除する
-   * - RPOP
+   * - :com:`RPOP`
      - key
      - キー ``key`` に対応するリストの末尾の要素を返してリストから削除する
-   * - BLPOP
+   * - :com:`BLPOP`
      - key1 key2 ... keyN timeout
      - 複数のキー ``keyN`` に対応するリストを　``LPOP`` から ``timeout`` 秒ブロックする
-   * - BRPOP
+   * - :com:`BRPOP`
      - key1 key2 ... keyN timeout
      - 複数のキー ``keyN`` に対応するリストを　``POP`` から ``timeout`` 秒ブロックする
-   * - RPOPLPUSH
+   * - :com:`RPOPLPUSH`
      - srckey dstkey
      - キー ``srckey`` のリストの末尾の要素を返してそのリストから削除し、キー ``dstkey`` に対応するリストの先頭にその値を追加する。
    
@@ -212,48 +212,48 @@
    * - **コマンド**
      - **パラメータ**
      - **内容**
-   * - SADD
+   * - :com:`SADD`
      - key member
      - キー ``key`` に対応するセットにメンバ ``member`` を追加する
-   * - SREM
+   * - :com:`SREM`
      - key member
      - キー ``key`` に対応するセットからメンバ ``member`` を削除する
-   * - SPOP
+   * - :com:`SPOP`
      - key
      - キー ``key`` に対応するセットからランダムに一つ選んだ要素を返し、セットから削除する
-   * - SMOVE
+   * - :com:`SMOVE`
      - srckey dstkey member
      - キー ``srckey`` に対応するセットからキー ``dstkey`` に対応するセットにメンバ ``member`` を移動する
-   * - SCARD
+   * - :com:`SCARD`
      - key
      - キー ``key`` に対応するセットの要素数（濃度）を返します
-   * - SISMEMBER
+   * - :com:`SISMEMBER`
      - key member
      - キー ``key`` に対応するセットの中にメンバ ``member`` があるか確認します
-   * - SINTER
+   * - :com:`SINTER`
      - key1 key2 ... keyN
-     - 複数のキー ``keyN`` に対応するセットの共通セットを返します
-   * - SINTERSTORE
+     - 複数のキー ``keyN`` に対応する複数のセットの共通セットを返します
+   * - :com:`SINTERSTORE`
      - dstkey key1 key2 ... keyN
-     - Compute the intersection between the Sets stored at key1, key2, ..., keyN, and store the resulting Set at dstkey
-   * - SUNION
+     - 複数のキー ``keyN`` に対応する複数のセットの共通セットを作成し、その結果をキー ``dstkey`` に紐付ける
+   * - :com:`SUNION`
      - key1 key2 ... keyN
-     - Return the union between the Sets stored at key1, key2, ..., keyN
-   * - SUNIONSTORE
+     - 複数のキー ``keyN`` に対応する複数のセットの結合を返す
+   * - :com:`SUNIONSTORE`
      - dstkey key1 key2 ... keyN
-     - Compute the union between the Sets stored at key1, key2, ..., keyN, and store the resulting Set at dstkey
-   * - SDIFF
+     - 複数のキー ``keyN`` に対応する複数のセットの結合を作成し、その結果をキー ``dstkey`` に紐付ける
+   * - :com:`SDIFF`
      - key1 key2 ... keyN
-     - Return the difference between the Set stored at key1 and all the Sets key2, ..., keyN
-   * - SDIFFSTORE
+     - 複数のキー ``keyN`` に対応する複数のセットの差分を返す
+   * - :com:`SDIFFSTORE`
      - dstkey key1 key2 ... keyN
-     - Compute the difference between the Set key1 and all the Sets key2, ..., keyN, and store the resulting Set at dstkey
-   * - SMEMBERS
+     - 複数のキー ``kenN`` に対応する複数のセットの差分を作成し、その結果をキー ``dstkey`` に紐付ける
+   * - :com:`SMEMBERS`
      - key
-     - Return all the members of the Set value at key
-   * - SRANDMEMBER
+     - キー ``key`` に対応するセットのすべてのメンバを返す
+   * - :com:`SRANDMEMBER`
      - key
-     - Return a random member of the Set value at key
+     - キー ``key`` に対応するセットの中からランダムに一つのメンバを選んで返す
    
 
 .. Commands operating on sorted zsets (sorted sets)
@@ -267,53 +267,53 @@
    * - **コマンド**
      - **パラメータ**
      - **内容**
-   * - ZADD
+   * - :com:`ZADD`
      - key score member
-     - Add the specified member to the Sorted Set value at key or update the score if it already exist
-   * - ZREM
+     - キー ``key`` に対応するソート済みセットにメンバ ``member`` を追加する。 ``member`` が存在する場合はそのスコアを ``score`` に上書きする。
+   * - :com:`ZREM`
      - key member
-     - Remove the specified member from the Sorted Set value at key
-   * - ZINCRBY
+     - キー ``key`` に対応するソート済みセットからメンバ ``member`` を削除する
+   * - :com:`ZINCRBY`
      - key increment member
-     - If the member already exists increment its score by increment, otherwise add the member setting increment as score
-   * - ZRANK
+     - もしキー ``key`` に対応するソート済みセットにメンバ ``member`` が存在する場合はスコアを値 ``increment`` だけインクリメントする。無ければ ``increment`` のスコアを持つメンバを追加する。
+   * - :com:`ZRANK`
      - key member
-     - Return the rank (or index) or member in the sorted set at key, with scores being ordered from low to high
-   * - ZREVRANK
+     - キー ``key`` に対応するソート済みセット内にメンバ ``member`` が存在する場合はその順位（インデックス）を、存在しない場合は ``member`` を返す。メンバはスコアの昇順に並べるものとする。
+   * - :com:`ZREVRANK`
      - key member
-     - Return the rank (or index) or member in the sorted set at key, with scores being ordered from high to low
-   * - ZRANGE
+     - キー ``key`` に対応するソート済みセット内のメンバ ``member`` の順位（インデックス）を返す。メンバはスコアの降順に並べるものとする。
+   * - :com:`ZRANGE`
      - key start end
-     - Return a range of elements from the sorted set at key
-   * - ZREVRANGE
+     - キー ``key`` に対応するセットをメンバのスコアの昇順でソートした場合の、 ``start`` 番目から ``end`` 番目のメンバで作られたソート済みセットを返す。
+   * - :com:`ZREVRANGE`
      - key start end
-     - Return a range of elements from the sorted set at key, exactly like ZRANGE, but the sorted set is ordered in traversed in reverse order, from the greatest to the smallest score
-   * - ZRANGEBYSCORE
+     - キー ``key`` に対応するセットをメンバのスコアの降順でソートした場合の、 ``start`` 番目から ``end`` 番目のメンバで作られたソート済みセットを返す。
+   * - :com:`ZRANGEBYSCORE`
      - key min max
-     - Return all the elements with score >= min and score <= max (a range query) from the sorted set
-   * - ZCOUNT
+     - キー ``key`` に対応するソート済みセットの中からスコアが ``min`` 以上 ``max`` 以下の要素で作られたソート済みセットを返す
+   * - :com:`ZCOUNT`
      - key min max
-     - Return the number of elements with score >= min and score <= max in the sorted set
-   * - ZCARD
+     - キー ``key`` に対応するソート済みセットの中でスコアが ``min`` 以上 ``max`` 以下の要素の数を返す
+   * - :com:`ZCARD`
      - key
-     - Return the cardinality (number of elements) of the sorted set at key
-   * - ZSCORE
+     - キー ``key`` に対応するソート済みセットのメンバ数（濃度）を返す
+   * - :com:`ZSCORE`
      - key element
-     - Return the score associated with the specified element of the sorted set at key
-   * - ZREMRANGEBYRANK
+     - キー ``key`` に対応するソート済みセットの特定の要素のスコアを返す
+   * - :com:`ZREMRANGEBYRANK`
      - key min max
-     - Remove all the elements with rank >= min and rank <= max from the sorted set
-   * - ZREMRANGEBYSCORE
+     - キー ``key`` に対応するソート済みセットから ``min`` 以上 ``max`` 以下の順位のメンバをすべて削除する
+   * - :com:`ZREMRANGEBYSCORE`
      - key min max
-     - Remove all the elements with score >= min and score <= max from the sorted set
-   * - ZUNIONSTORE / ZINTERSTORE
+     - キー ``key`` に対応するソート済みセットから ``min`` 以上 ``max`` 以下のスコアを持つメンバをすべて削除する
+   * - :com:`ZUNIONSTORE` / :com:`ZINTERSTORE`
      - dstkey N key1 ... keyN WEIGHTS w1 ... wN AGGREGATE SUM|MIN|MAX
-     - Perform a union or intersection over a number of sorted sets with optional weight and aggregate
+     - 複数のキー ``keyN`` に対応する複数のソート済みセットの結合または共通セットを、重みとアグリゲーションに関するオプションを元に作成し、結果をキー ``dstkey`` に紐付ける
    
 
 .. Commands operating on hashes
 
-ハッシュの操作
+ハッシュ表の操作
 --------------
 
 .. list-table::
@@ -322,39 +322,39 @@
    * - **コマンド**
      - **パラメータ**
      - **内容**
-   * - HSET
+   * - :com:`HSET`
      - key field value
-     - Set the hash field to the specified value. Creates the hash if needed.
-   * - HGET
+     - キー ``key`` に対応するハッシュ表にフィールド ``field`` に値 ``value`` のセットする。必要であれば作成する。
+   * - :com:`HGET`
      - key field
-     - Retrieve the value of the specified hash field.
-   * - HMGET
+     - キー ``key`` に対応するハッシュ表でフィールド ``field`` に紐づいている値を取得する
+   * - :com:`HMGET`
      - key field1 ... fieldN
-     - Get the hash values associated to the specified fields.
-   * - HMSET
+     - キー ``key`` に対応するハッシュ表から複数のフィールド ``fieldN`` に紐づいている複数のハッシュ値を取得する
+   * - :com:`HMSET`
      - key field1 value1 ... fieldN valueN
-     - Set the hash fields to their respective values.
-   * - HINCRBY
+     - キー ``key`` に対応するハッシュ表に複数のフィールド ``fieldN`` と値 ``valueN`` のペアをセットする
+   * - :com:`HINCRBY`
      - key field integer
-     - Increment the integer value of the hash at key on field with integer.
-   * - HEXISTS
+     - キー ``key`` に対応するハッシュ表のフィールド ``field`` に対応する値を ``integer`` だけインクリメントする
+   * - :com:`HEXISTS`
      - key field
-     - Test for existence of a specified field in a hash
-   * - HDEL
+     - キー ``key`` に対応するハッシュ表にフィールド ``field`` が存在するか確認する
+   * - :com:`HDEL`
      - key field
-     - Remove the specified field from a hash
-   * - HLEN
+     - キー ``key`` に対応するハッシュ表からフィールド ``field`` を削除する
+   * - :com:`HLEN`
      - key
-     - Return the number of items in a hash.
-   * - HKEYS
+     - キー ``key`` に対応するハッシュ表の要素数を返す
+   * - :com:`HKEYS`
      - key
-     - Return all the fields in a hash.
-   * - HVALS
+     - キー ``key`` に対応するハッシュ表のすべてのフィールドを返す
+   * - :com:`HVALS`
      - key
-     - Return all the values in a hash.
-   * - HGETALL
+     - キー ``key`` に対応するハッシュ表のすべての値を返す
+   * - :com:`HGETALL`
      - key
-     - Return all the fields and associated values in a hash.
+     - キー ``key`` に対応するハッシュ表のすべてのフィールドと値のペアを返す
    
 
 .. Sorting
@@ -368,9 +368,9 @@
    * - **コマンド**
      - **パラメータ**
      - **内容**
-   * - SORT
+   * - :com:`SORT`
      - key BY pattern LIMIT start end GET pattern ASC|DESC ALPHA
-     - Sort a Set or a List accordingly to the specified parameters
+     - セットまたはリストを与えられたパラメータに基づきソートする
    
 
 .. Transactions
@@ -384,9 +384,9 @@
    * - **コマンド**
      - **パラメータ**
      - **内容**
-   * - MULTI/EXEC/DISCARD/WATCH/UNWATCH
+   * - :com:`MULTI`/:com:`EXEC`/:com:`DISCARD`/:com:`WATCH`/:com:`UNWATCH`
      - --
-     - Redis atomic transactions
+     - Redisアトミックトランザクション
    
 
 .. Publish/Subscribe
@@ -400,9 +400,9 @@
    * - **コマンド**
      - **パラメータ**
      - **内容**
-   * - SUBSCRIBE/UNSUBSCRIBE/PUBLISH
+   * - :com:`SUBSCRIBE`/:com:`UNSUBSCRIBE`/:com:`PUBLISH`
      - --
-     - Redis Public/Subscribe messaging paradigm implementation
+     - Redisパブリッシュ／サブスクライブ メッセージング・パラダイムの実装
    
 .. Persistence control commands
 
@@ -415,21 +415,21 @@
    * - **コマンド**
      - **パラメータ**
      - **内容**
-   * - SAVE
+   * - :com:`SAVE`
      - --
-     - Synchronously save the DB on disk
-   * - BGSAVE
+     - 同期的にデータベースをディスクに保存する
+   * - :com:`BGSAVE`
      - --
-     - Asynchronously save the DB on disk
-   * - LASTSAVE
+     - 非同期的にデータベースをディスクに保存する
+   * - :com:`LASTSAVE`
      - --
-     - Return the UNIX time stamp of the last successfully saving of the dataset on disk
-   * - SHUTDOWN
+     - 最後にデータベースをディスク上に保存したUNIX時間を返す
+   * - :com:`SHUTDOWN`
      - --
-     - Synchronously save the DB on disk, then shutdown the server
-   * - BGREWRITEAOF
+     - 同期的にデータベースをディスク上に保存し、サーバを落とす
+   * - :com:`BGREWRITEAOF`
      - --
-     - Rewrite the append only file in background when it gets too big
+     - 追記専用ファイルが大きくなりすぎたときはバックグラウンドで再書き込みする
    
 
 .. Remote server control commands
@@ -443,15 +443,15 @@
    * - **コマンド**
      - **パラメータ**
      - **内容**
-   * - INFO
+   * - :com:`INFO`
      - --
-     - Provide information and statistics about the server
-   * - MONITOR
+     - サーバ情報やサーバの統計情報を提供する
+   * - :com:`MONITOR`
      - --
-     - Dump all the received requests in real time
-   * - SLAVEOF
+     - 受信したリクエストをリアルタイムですべてダンプする
+   * - :com:`SLAVEOF`
      - --
-     - Change the replication settings
-   * - CONFIG
+     - レプリケーションの設定を変更する
+   * - :com:`CONFIG`
      - --
-     - Configure a Redis server at runtime
+     - 起動中にRedisサーバの設定を行う
