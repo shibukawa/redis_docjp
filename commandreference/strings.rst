@@ -24,8 +24,7 @@ Redisリスト型、Redisセット型、Redisソート済みセット型、Redis
 
 .. Implementation details
 
-============
- 実装の詳細
+実装の詳細
 ============
 
 .. Strings are implemented using a dynamic strings library called sds.c (simple dynamic strings). This library caches the current length of the string, so to obtain the length of a Redis string is an O(1) operation (but currently there is no such STRLEN command. It will likely be added later).
