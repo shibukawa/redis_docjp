@@ -17,13 +17,13 @@
 
 .. Categorized Command List
 
-カテゴリ別コマンドリスト
-========================
+.. カテゴリ別コマンドリスト
+.. ========================
 
 .. Connection handling
 
 接続処理
---------
+========
 
 .. list-table::
    :header-rows: 1
@@ -41,7 +41,7 @@
 .. Commands operating on all value types
 
 全データ型対応の操作
---------------------
+====================
 
 .. list-table::
    :header-rows: 1
@@ -98,7 +98,7 @@
 .. Commands operating on string values
 
 文字列型の操作
---------------
+==============
 
 .. list-table::
    :header-rows: 1
@@ -152,7 +152,7 @@
 .. Commands operating on lists
 
 リストの操作
-------------
+============
 
 .. list-table::
    :header-rows: 1
@@ -204,7 +204,7 @@
 .. Commands operating on sets
 
 セットの操作
-------------
+============
 
 .. list-table::
    :header-rows: 1
@@ -259,7 +259,7 @@
 .. Commands operating on sorted zsets (sorted sets)
 
 ソート済みセットの操作
-----------------------
+======================
 
 .. list-table::
    :header-rows: 1
@@ -314,7 +314,7 @@
 .. Commands operating on hashes
 
 ハッシュ表の操作
---------------
+================
 
 .. list-table::
    :header-rows: 1
@@ -360,7 +360,7 @@
 .. Sorting
 
 ソート
-------
+======
 
 .. list-table::
    :header-rows: 1
@@ -376,7 +376,7 @@
 .. Transactions
 
 トランザクション
-----------------
+================
 
 .. list-table::
    :header-rows: 1
@@ -392,7 +392,7 @@
 .. Publish/Subscribe
 
 パブリッシュ／サブスクライブ
-----------------------------
+============================
 
 .. list-table::
    :header-rows: 1
@@ -407,7 +407,7 @@
 .. Persistence control commands
 
 永続化処理コマンド
-------------------
+==================
 
 .. list-table::
    :header-rows: 1
@@ -435,7 +435,7 @@
 .. Remote server control commands
 
 リモートサーバ制御コマンド
---------------------------
+==========================
 
 .. list-table::
    :header-rows: 1
