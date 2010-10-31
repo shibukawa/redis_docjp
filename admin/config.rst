@@ -537,8 +537,12 @@
       are swapped into a swap file, similarly to what operating systems do
       with memory pages.
 
+   仮想メモリ(VM)を使用すると、実際のメモリ量よりも多くのデータセットをメモリに保持できるようになります。このため、OSがメモリページを使って行っているのと同様に、使用頻度が高いキーをメモリ上に置き、それ以外のキーをスワップファイルにスワップします。
+
    .. To enable VM just set 'vm-enabled' to yes, and set the following three
       VM parameters accordingly to your needs.
+
+   VM機能を有効にするには、 :conf:`vm-enabled` を ``yes`` に設定し、この下で説明する3つのVMパラメータを要求に合うようにセットします。
 
    .. code-block:: nginx
 
