@@ -12,15 +12,15 @@ Redisソート済みセット型はRedisセット型とよく似ていて、Redi
 
 .. The ZADD command is used to add a new member to a Sorted Set, specifying the score of the element. Calling ZADD against a member already present in the sorted set but using a different score will update the score for the element, moving it to the right position in order to preserve ordering.
 
-Redisソート済みセットに新しいメンバを追加するには要素のスコアを指定して :cmd:`ZADD` コマンドを用います。すでにソート済みセット内に存在するメンバに対して異なるスコアを用いて :cmd:`ZADD` を呼ぶと、順番が正しくなるようにその要素を正しい場所に移動させます。
+Redisソート済みセットに新しいメンバを追加するには要素のスコアを指定して :com:`ZADD` コマンドを用います。すでにソート済みセット内に存在するメンバに対して異なるスコアを用いて :com:`ZADD` を呼ぶと、順番が正しくなるようにその要素を正しい場所に移動させます。
 
 .. It's possible to get ranges of elements from Sorted Sets in a very similar way to what happens with Lists and the LRANGE command using the Sorted Sets ZRANGE command.
 
-Redisソート済みセットからある範囲の要素を取得することが可能です。これはRedisリストの :cmd:`LRANGE` と同様に :cmd:`ZRANGE` コマンドを用います。
+Redisソート済みセットからある範囲の要素を取得することが可能です。これはRedisリストの :com:`LRANGE` と同様に :com:`ZRANGE` コマンドを用います。
 
 .. It's also possible to get or remove ranges of elements by score using the ZRANGEBYSCORE and ZREMRANGEBYSCORE commands.
 
-またあるスコアの範囲で要素を取得または削除することも可能で、それには :cmd:`ZRANGEBYSCORE` や :cmd:`ZREMRANGEBYSCORE` コマンドを使います。
+またあるスコアの範囲で要素を取得または削除することも可能で、それには :com:`ZRANGEBYSCORE` や :com:`ZREMRANGEBYSCORE` コマンドを使います。
 
 .. The max number of members in a sorted set is 2^32-1 (4294967295, more than 4 billion of members per set).
 
@@ -29,7 +29,7 @@ Redisソート済みセットの要素数の最大値は 2^32-1 （4294967295, 1
 
 .. Note that while Sorted Sets are already ordered, it is still possible to use the SORT command against sorted sets to get the elements in a different order.
 
-Redisソート済みセットはすでに順番に並んでいますが、異なる並び順を得るために :cmd:`SORT` コマンドが使えるということを覚えておいてください。
+Redisソート済みセットはすでに順番に並んでいますが、異なる並び順を得るために :com:`SORT` コマンドが使えるということを覚えておいてください。
 
 .. Implementation details
 
@@ -42,11 +42,11 @@ Redisセット型はスキップリストとハッシュ表の2つのデータ�
 
 .. Redis uses a special skip list implementation that is doubly linked so that it's possible to traverse the sorted set from tail to head if needed (Check the ZREVRANGE command).
 
-Redisは双方向リストを使っています。特別なスキップリストの実装をしています。理由は、逆順に捜査出来るようにするためです。（ :cmd:`ZREVRANGE` コマンドを確認してください）
+Redisは双方向リストを使っています。特別なスキップリストの実装をしています。理由は、逆順に捜査出来るようにするためです。（ :com:`ZREVRANGE` コマンドを確認してください）
 
 .. When ZADD is used in order to update the score of an element, Redis retrieve the score of the element using the hash table, so that it's fast to access the element inside the skip list (that's indexed by score) in order to update the position.
 
-要素のスコアを更新するために :cmd:`ZADD` が使われた場合、Redisは要素のスコアをハッシュ表を用いて取得します。これによって位置を更新するために、スコアによってインデックス付けされたスキップリスト内の要素に高速アクセスすることが可能になっています。
+要素のスコアを更新するために :com:`ZADD` が使われた場合、Redisは要素のスコアをハッシュ表を用いて取得します。これによって位置を更新するために、スコアによってインデックス付けされたスキップリスト内の要素に高速アクセスすることが可能になっています。
 
 .. Like it happens for Sets the hash table resizing is a blocking operation performed synchronously so working with huge sorted sets (consisting of many millions of elements) care should be taken when mass-inserting a very big amount of elements in a Set while other clients are querying Redis at high speed.
 

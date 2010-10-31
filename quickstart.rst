@@ -19,13 +19,13 @@
 
 .. The latest stable source distribution of Redis can be obtained at this location as a tarball.
 
-Redisの最新安定版のソースは下記のリンクでtarball形式で配布しています。::
+Redisの最新安定版のソースは下記のリンクでtarball形式で配布しています::
 
   $ wget http://redis.googlecode.com/files/redis-1.02.tar.gz
 
 .. The unstable source code, with more features but not ready for production, can be downloaded using git:
 
-開発版のソースはgithubにあります。開発版は機能は増えていますが、あくまで製品段階ではありません。::
+開発版のソースはgithubにあります。開発版は機能は増えていますが、あくまで製品段階ではありません::
 
   $ git clone git://github.com/antirez/redis.git
 
@@ -36,7 +36,7 @@ Redisの最新安定版のソースは下記のリンクでtarball形式で配�
 
 .. Redis can be compiled in most POSIX systems. To compile Redis just untar the tar.gz, enter the directly and type 'make'.
 
-RedisはほとんどのPOSIXシステムでコンパイルできます。Redisをコンパイルするには、tar.gzを展開してそのディレクトリに入り ``make`` と入力するだけでいいのです。::
+RedisはほとんどのPOSIXシステムでコンパイルできます。Redisをコンパイルするには、tar.gzを展開してそのディレクトリに入り ``make`` と入力するだけでいいのです::
 
   $ tar xvzf redis-1.02.tar.gz
   $ cd redis-1.02
@@ -53,7 +53,7 @@ Redisサーバがきちんと動作しているかを確認するには、 ``mak
 
 .. Redis can run just fine without a configuration file (when executed without a config file a standard configuration is used). To run Redis just type the following command:
 
-Redisは設定ファイルなしで起動してもよきに計らってくれます。（設定ファイルなしで起動した場合、標準の設定で動作します）Redisを起動は下記のコマンドを入力すればいいだけです。::
+Redisは設定ファイルなしで起動してもよきに計らってくれます。（設定ファイルなしで起動した場合、標準の設定で動作します）Redisを起動は下記のコマンドを入力すればいいだけです::
 
   $ ./redis-server
 
