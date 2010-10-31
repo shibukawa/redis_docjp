@@ -14,10 +14,28 @@ redisドキュメント日本語訳
 
    howto/index
 
+アドミニストレーションガイド
+============================
+
+.. toctree::
+
+   admin/cli
+   admin/server
+   admin/config
+
+デベロッパーズガイド
+====================
+
 .. toctree::
    :maxdepth: 1
 
    commandreference/index
+
+ハッカーズガイド
+================
+
+.. toctree::
+   :maxdepth: 1
 
 .. toctree::
    :hidden:
@@ -39,10 +57,12 @@ redisドキュメント日本語訳
 翻訳について
 ============
 
+このドキュメントは、RedisのWiki(http://code.google.com/p/redis/wiki/)の内容を三項にしながら、構成などはSphinxに合わせつつ翻訳しています。また、必要に応じて、配布物の中のファイルなども引用しながら訳しています。
+
 .. warning::
 
    日本語の間違いなどについては、redisの開発者ではなく、 `翻訳リポジトリのissueトラッカー <https://bitbucket.org/shibu/redis_docjp/issues>`_ に登録をお願いします。
 
 * 渋川よしき (@shibukawa)
 * 山口能迪 (@ymotongpoo)
-
+* a2c (@atusi)

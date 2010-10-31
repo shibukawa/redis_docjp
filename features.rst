@@ -63,7 +63,7 @@ Redisの値としては、伝統的なキー・バリュー・ストアと同様
    Redis handle Strings, and the Commands supported by Lists, Sets and 
    SortedSets
 
-Redisを、 **データ構造サーバ** と考えると、重要ではない問題のモデル化を行うことができます。Redisにおける :ref:`strings` の取り扱い方、 :ref:`lists` 、 :ref:`sets` 、 :ref:`sortedsets` をサポートするコマンドについて詳しく知るためには、 :ref:`datatypes` の説明を参照してください。
+Redisを、 **データ構造サーバ** と考えると、重要な問題のモデル化に使用することもできます。Redisにおける :ref:`strings` の取り扱い方、 :ref:`lists` 、 :ref:`sets` 、 :ref:`sortedsets` をサポートするコマンドについて詳しく知るためには、 :ref:`datatypes` の説明を参照してください。
 
 .. Atomic Operations
 

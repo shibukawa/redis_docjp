@@ -195,37 +195,73 @@ Redisはmemcachedと同じぐらい高速なため、筋力増強剤としてmem
 複数データベースのサポート
 ==========================
 
-Redis supports multiple databases with commands to atomically move keys from one database to the other. By default DB 0 is selected for every new connection, but using the SELECT command it is possible to select a different database. The MOVE operation can move an item from one DB to another atomically. This can be used as a base for locking free algorithms together with the 'RANDOMKEY' commands.
+.. Redis supports multiple databases with commands to atomically move 
+   keys from one database to the other. By default DB 0 is selected 
+   for every new connection, but using the SELECT command it is possible 
+   to select a different database. The MOVE operation can move an item 
+   from one DB to another atomically. This can be used as a base for 
+   locking free algorithms together with the 'RANDOMKEY' commands.
+
+Redisは、1つのデータベースから、他のデータベース自動的にキーを移動する、複数データベースをサポートしています。デフォルトでは、毎コネクションで必ず ``DB 0`` が選択されますが、 :com:`SELECT` コマンドを使うと、他のデータベースをselectすることができます。 :com:`MOVE` 操作を使うと、要素を1つのDBから他のDBに自動的に移動することができます。 :com:`RANDOMKEY` コマンドを使うことで、ロックフリーアルゴリズムの恩恵に授かりながら使用することができます。
 
 .. Know more about Redis!
 
 Redisについてももっと知りたい!
 ==============================
 
-To really get a feeling about what Redis is and how it works please try reading A fifteen minutes introduction to Redis data types.
+.. To really get a feeling about what Redis is and how it works please 
+   try reading A fifteen minutes introduction to Redis data types.
 
-To know a bit more about how Redis works internally continue reading.
+Redisの使い心地や、どのように動作するかを知りたい場合は、ぜひ、 :ref:`introduction_to_redis_data_types` に挑戦してみてください。
+
+.. To know a bit more about how Redis works internally continue reading.
+
+Redisの内部動作についてもう少し知りたい場合はこのまま読み進んでください。
 
 .. Redis Tutorial
 
 Redisチュートリアル
 ===================
 
-(note, you can skip this section if you are only interested in "formal" doc.)
+.. (note, you can skip this section if you are only interested in "formal" doc.)
 
-Later in this document you can find detailed information about Redis commands, the protocol specification, and so on. This kind of documentation is useful but... if you are new to Redis it is also BORING! The Redis protocol is designed so that is both pretty efficient to be parsed by computers, but simple enough to be used by humans just poking around with the 'telnet' command, so this section will show to the reader how to play a bit with Redis to get an initial feeling about it, and how it works.
+.. note::
 
-To start just compile redis with 'make' and start it with './redis-server'. The server will start and log stuff on the standard output, if you want it to log more edit redis.conf, set the loglevel to debug, and restart it.
+   "公式な"ドキュメントにのみ興味がある場合は、このセクションを読み飛ばすこともできます。
 
-You can specify a configuration file as unique parameter:
+.. Later in this document you can find detailed information about Redis 
+   commands, the protocol specification, and so on. This kind of 
+   documentation is useful but... if you are new to Redis it is also 
+   BORING! The Redis protocol is designed so that is both pretty efficient 
+   to be parsed by computers, but simple enough to be used by humans just 
+   poking around with the 'telnet' command, so this section will show to 
+   the reader how to play a bit with Redis to get an initial feeling about 
+   it, and how it works.
+
+このドキュメントにはRedisのコマンドや、プロトコルの詳細の情報などが書かれています。この手のドキュメントは有用ですが、もしRedisに触れるのが始めてて、概要がつかめていないのであれば、退屈でしかありません。Redisのプロトコルは、シンプルでコンピュータでパースしやすいようになっていますが、 :program:`telnet` コマンドからも送信しやすいようになっています。このセクションでは、Redisでの遊び方を紹介し、Redisに関する第一印象を持ってもらい、どのように動作するのかを知ってもらうような説明をしていきます。
+
+.. To start just compile redis with 'make' and start it with './redis-server'. 
+   The server will start and log stuff on the standard output, if you want 
+   it to log more edit redis.conf, set the loglevel to debug, and restart it.
+
+まず最初に、 :program:`make` を実行してコンパイルし、 :program:`./redis-server` を起動してください。サーバが起動して、標準出力にログを書き出します。より多くの情報を得たい場合には、 :file:`redis.conf` を編集して :conf:`loglevel` を ``debug`` にして再起動してください。
+
+.. You can specify a configuration file as unique parameter:
+
+自分で変更を加えた設定ファイルを使うには、次のように設定ファイルを指定します。
 
 .. code-block:: bash
 
-   ./redis-server /etc/redis.conf
+   $ ./redis-server /etc/redis.conf
 
-This is NOT required. The server will start even without a configuration file using a default built-in configuration.
+.. This is NOT required. The server will start even without a 
+   configuration file using a default built-in configuration.
 
-Now let's try to set a key to a given value:
+ただし、この設定ファイルの指定は必ずしも必要では **ありません** 。設定ファイルを指定しなければ、デフォルトの組み込みの設定を使って起動します。
+
+.. Now let's try to set a key to a given value:
+
+それでは、指定されたキーに値をセットしてみましょう。
 
 .. code-block:: bash
 
@@ -237,15 +273,38 @@ Now let's try to set a key to a given value:
    bar
    +OK
 
-The first line we sent to the server is "set foo 3". This means "set the key foo with the following three bytes I'll send you". The following line is the "bar" string, that is, the three bytes. So the effect is to set the key "foo" to the value "bar". Very simple!
+.. The first line we sent to the server is "set foo 3". This means 
+   "set the key foo with the following three bytes I'll send you". 
+   The following line is the "bar" string, that is, the three bytes. 
+   So the effect is to set the key "foo" to the value "bar". Very simple!
 
-(note that you can send commands in lowercase and it will work anyway, commands are not case sensitive)
+サーバに最初に送った行は、 ``"set foo 3"`` です。この行は、「 ``foo`` というキーに対して、これから送る3バイトのデータをセットします」という意味です。次の行は ``"bar"`` という文字列で、これが3バイトの文字列になります。この2行のコマンドにより、 ``"foo"`` というキーに、 ``"bar"`` という値がセットされます。とてもシンプルですよね！
 
-Note that after the first and the second line we sent to the server there is a newline at the end. The server expects commands terminated by "\r\n" and sequence of bytes terminated by "\r\n". This is a minimal overhead from the point of view of both the server and client but allows us to play with Redis with the telnet command easily.
+.. (note that you can send commands in lowercase and it will work 
+   anyway, commands are not case sensitive)
 
-The last line of the chat between server and client is "+OK". This means our key was added without problems. Actually SET can never fail but the "+OK" sent lets us know that the server received everything and the command was actually executed.
+.. note::
 
-Let's try to get the key content now:
+   コマンドは小文字で送ることもできます。コマンド名は、大文字、小文字の区別はしません。
+
+.. Note that after the first and the second line we sent to the server 
+   there is a newline at the end. The server expects commands terminated 
+   by "\r\n" and sequence of bytes terminated by "\r\n". This is a minimal 
+   overhead from the point of view of both the server and client but 
+   allows us to play with Redis with the telnet command easily.
+
+最初の行と、2番目の行を送信したあとに、末尾に改行コードがあることに注意してください。サーバは、コマンドの終わりや、バイト列の終端が ``"\n\r"`` であることを期待します。これはサーバとクライアントから見ると、小さなオーバーヘッドですが、これのおかげで、telnetを使ってコマンドを打って遊びやすくなっています。
+
+.. The last line of the chat between server and client is "+OK". This 
+   means our key was added without problems. Actually SET can never 
+   fail but the "+OK" sent lets us know that the server received 
+   everything and the command was actually executed.
+
+サーバとクライアント間のチャットの最後の行は ``"+OK"`` となっています。これは問題なくキーに値が格納できたことを表しています。実際、 :com:`SET` が失敗することはありませんが、 ``"+OK"`` がサーバから送られてくることで、サーバがすべての情報を受け取り、コマンドが実装に実行されたことを知ることができます。
+
+.. Let's try to get the key content now:
+
+それでは、キーの内容を取得してみましょう。
 
 .. code-block:: none
 
@@ -253,16 +312,31 @@ Let's try to get the key content now:
    $3
    bar
 
-Ok that's very similar to 'set', just the other way around. We sent "get foo", the server replied with a first line that is just the $ character follwed by the number of bytes the value stored at key contained, followed by the actual bytes. Again "\r\n" are appended both to the bytes count and the actual data. In Redis slang this is called a bulk reply.
+.. Ok that's very similar to 'set', just the other way around. 
+   We sent "get foo", the server replied with a first line that is 
+   just the $ character follwed by the number of bytes the value stored 
+   at key contained, followed by the actual bytes. Again "\r\n" are 
+   appended both to the bytes count and the actual data. In Redis 
+   slang this is called a bulk reply.
 
-What about requesting a non existing key?
+:com:`SET` の場合とよく似ていますね。 ``"get foo"`` を送信すると、サーバはまず最初の行として、 ``$`` 文字に続き、キーに格納された値のバイト数を付けて送信してきます。その次に実際のバイト列が送信されます。この場合も、バイト数と実際のデータの間には ``"\n\r"`` が付加されています。Redisコミュニティでは、これを「バルクリプライ」と呼んでいます。
+
+.. What about requesting a non existing key?
+
+それでは、存在しないキーを要求するとどうなるでしょうか？
 
 .. code-block:: none
 
    GET blabla
    $-1
 
-When the key does not exist instead of the length, just the "$-1" string is sent. Since a -1 length of a bulk reply has no meaning it is used in order to specifiy a 'nil' value and distinguish it from a zero length value. Another way to check if a given key exists or not is indeed the EXISTS command:
+.. When the key does not exist instead of the length, just the "$-1" 
+   string is sent. Since a -1 length of a bulk reply has no meaning it 
+   is used in order to specifiy a 'nil' value and distinguish it from a 
+   zero length value. Another way to check if a given key exists or not is 
+   indeed the EXISTS command:
+
+キーが存在しない時は、長さの代わりに、 ``"$-1"`` という文字列が送信されてきます。バルクリプライにおける-1の長さというのは意味をなさない内容であり、 ``'nil'`` の値を指定するために使用され、長さがゼロの値とは区別されます。与えられたキーが存在するかどうかを調べるには、 :conf:`EXISTS` というコマンドを使うことができます。
 
 .. code-block:: none
 
@@ -271,20 +345,34 @@ When the key does not exist instead of the length, just the "$-1" string is sent
    EXISTS foo
    :1
 
-As you can see the server replied ':0' the first time since 'nokey' does not exist, and ':1' for 'foo', a key that actually exists. Replies starting with the colon character are integer reply.
+.. As you can see the server replied ':0' the first time since 'nokey' 
+   does not exist, and ':1' for 'foo', a key that actually exists. 
+   Replies starting with the colon character are integer reply.
 
-Ok... now you know the basics, read the REDIS COMMAND REFERENCE section to learn all the commands supported by Redis and the PROTOCOL SPECIFICATION section for more details about the protocol used if you plan to implement one for a language missing a decent client implementation.
+最初に存在しない ``'nokey'`` の存在チェックを行うと、 ``':0'`` という返事が、実際に存在する ``'foo'`` というキーに対してチェックを行うと、 ``':1'`` という結果がサーバから返ってきているのが分かります。コロン(:)から始まるリプライは、数値を返すリプライです。
+
+.. Ok... now you know the basics, read the REDIS COMMAND REFERENCE 
+   section to learn all the commands supported by Redis and the PROTOCOL 
+   SPECIFICATION section for more details about the protocol used if 
+   you plan to implement one for a language missing a decent client 
+   implementation.
+
+どうでしょうか？これで基本は理解しました。Redisでサポートしているすべてのコマンドについて知りたい場合は、 :ref:`command_referenece` を参照してください。また、もしまだ実装されていない言語向けのクライアントライブラリを実装したいと思っているのであれば、 :ref:`protocol_specification` のセクションを参照してください。
 
 .. License
 
 ライセンス
 ==========
 
-Redis is released under the BSD license. See the COPYING file for more information.
+.. Redis is released under the BSD license. See the COPYING file for more information.
+
+RedisはBSDライセンスでリリースされています。詳細については、ソースコードに添付の :file:`COPYING` ファイルを参照してください。
 
 .. Credits
 
 クレジット
 ==========
 
-Redis is written and maintained by Salvatore Sanfilippo, Aka 'antirez'.
+.. Redis is written and maintained by Salvatore Sanfilippo, Aka 'antirez'.
+
+Redisの開発とメンテナンスは、Salvatore Sanfilippo, アカウント名 'antirez' が行っています。
