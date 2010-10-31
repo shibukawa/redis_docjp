@@ -257,7 +257,7 @@ epub_copyright = u'2010, antirez'
 
 from sphinx import addnodes
 
-def parse_command(env, sig, signode):
+def split_id(env, sig, signode):
     names = sig.split(" ")
     signode += addnodes.desc_name(names[0], names[0])
     plist = addnodes.desc_parameterlist()
@@ -270,5 +270,5 @@ def parse_command(env, sig, signode):
 
 
 def setup(app):
-    app.add_object_type('command', 'com', u'pair: %s; コマンド', parse_command)
-    app.add_object_type('confval', 'conf', u'pair: %s; 設定')
+    app.add_object_type('command', 'com', u'pair: %s; コマンド', split_id)
+    app.add_object_type('confval', 'conf', u'pair: %s; 設定', split_id)

@@ -51,28 +51,77 @@
  
       daemonize no
 
-# When running daemonized, Redis writes a pid file in /var/run/redis.pid by
-# default. You can specify a custom pid file location here.
-pidfile /var/run/redis.pid
+.. confval:: pidfile filename
 
-# Accept connections on the specified port, default is 6379
-port 6379
+   .. When running daemonized, Redis writes a pid file in /var/run/redis.pid by
+      default. You can specify a custom pid file location here.
 
-# If you want you can bind a single interface, if the bind option is not
-# specified all the interfaces will listen for incoming connections.
-#
-# bind 127.0.0.1
+   デーモンとして起動するときに、デフォルトではRedisはpidを :file:`/var/run/redis.pid` というファイルに書き出します。この設定を変えることで、pidファイルの位置を変えることができます。
 
-# Close the connection after a client is idle for N seconds (0 to disable)
-timeout 300
+   .. code-block:: nginx
 
-# Set server verbosity to 'debug'
-# it can be one of:
-# debug (a lot of information, useful for development/testing)
-# verbose (many rarely useful info, but not a mess like the debug level)
-# notice (moderately verbose, what you want in production probably)
-# warning (only very important / critical messages are logged)
-loglevel verbose
+      pidfile /var/run/redis.pid
+
+.. confval:: port portnumber
+
+   .. Accept connections on the specified port, default is 6379
+
+   コネクションを受け付けるポートを指定します。デフォルトは ``6379`` です。
+
+   .. code-block:: nginx
+
+      port 6379
+
+.. confval:: bind 127.0.0.1
+
+   .. If you want you can bind a single interface, if the bind option is not
+      specified all the interfaces will listen for incoming connections.
+
+   もし、特定の一つのインタフェースにバインドしたい場合に設定します。もし :conf:`bind` オプションが指定されなかった場合には、コネクションがやってきたすべてのインタフェースを ``listen`` します。
+
+   .. code-block:: nginx
+
+       bind 127.0.0.1
+
+.. confval:: timeout N
+
+   .. Close the connection after a client is idle for N seconds (0 to disable)
+
+   指定されたN秒数間、コマンドが送信されなければ、クライアントとの通信を切断します。
+
+   ``0`` を指定するとタイムアウトが行われなくなります。
+
+   .. code-block:: nginx
+
+      timeout 300
+
+.. confval:: loglevel level
+
+   .. Set server verbosity to 'debug'
+      it can be one of:
+
+   サーバのログの情報量を設定します。設定できる項目は次の通りです。
+
+   .. debug (a lot of information, useful for development/testing)
+      verbose (many rarely useful info, but not a mess like the debug level)
+      notice (moderately verbose, what you want in production probably)
+      warning (only very important / critical messages are logged)
+
+   ``debug``
+      多くの情報を出します。開発/テスト用です。
+
+   ``verbose``
+      あまり重要でない情報も含めて多くの情報を出力しますが、 ``debug`` レベルよりは減ります。
+
+   ``notice``
+      運用時に使用したいと思うような、適度な量のログを出力します。
+
+   ``warning``
+      とても重要なメッセージや、重大なメッセージだけをログに出力します。
+      
+   .. code-block:: nginx
+
+      loglevel verbose
 
 # Specify the log file name. Also 'stdout' can be used to force
 # Redis to log on the standard output. Note that if you use standard
@@ -84,8 +133,12 @@ logfile stdout
 # dbid is a number between 0 and 'databases'-1
 databases 16
 
-################################ SNAPSHOTTING  #################################
-#
+.. SNAPSHOTTING
+
+スナップショットの設定
+======================
+
+
 # Save the DB on disk:
 #
 #   save <seconds> <changes>
@@ -123,7 +176,10 @@ dbfilename dump.rdb
 # Note that you must specify a directory here, not a file name.
 dir ./
 
-################################# REPLICATION #################################
+.. REPLICATION
+
+レプリケーションの設定
+======================
 
 # Master-Slave replication. Use slaveof to make a Redis instance a copy of
 # another Redis server. Note that the configuration is local to the slave
@@ -138,6 +194,9 @@ dir ./
 # refuse the slave request.
 #
 # masterauth <master-password>
+
+セキュリティの設定
+==================
 
 ################################## SECURITY ###################################
 
@@ -154,7 +213,10 @@ dir ./
 #
 # requirepass foobared
 
-################################### LIMITS ####################################
+.. LIMITS
+
+リソース制限の設定
+==================
 
 # Set the max number of connected clients at the same time. By default there
 # is no limit, and it's up to the number of file descriptors the Redis process
@@ -202,7 +264,10 @@ dir ./
 #
 # maxmemory-samples 3
 
-############################## APPEND ONLY MODE ###############################
+.. APPEND ONLY MODE
+
+追記専用モードの設定
+=====================
 
 # By default Redis asynchronously dumps the dataset on disk. If you can live
 # with the idea that the latest records will be lost if something like a crash
@@ -269,7 +334,10 @@ appendfsync everysec
 # "no" that is the safest pick from the point of view of durability.
 no-appendfsync-on-rewrite no
 
-################################ VIRTUAL MEMORY ###############################
+.. VIRTUAL MEMORY
+
+仮想メモリの設定
+=================
 
 # Virtual Memory allows Redis to work with datasets bigger than the actual
 # amount of RAM needed to hold the whole dataset in memory.
@@ -341,7 +409,10 @@ vm-pages 134217728
 # Virtual Memory implementation.
 vm-max-threads 4
 
-############################### ADVANCED CONFIG ###############################
+.. ADVANCED CONFIG
+
+高度な設定
+==========
 
 # Glue small output buffers together in order to send small replies in a
 # single TCP packet. Uses a bit more CPU but most of the times it is a win
@@ -375,7 +446,10 @@ hash-max-zipmap-value 512
 # want to free memory asap when possible.
 activerehashing yes
 
-################################## INCLUDES ###################################
+.. INCLUDES
+
+インクルード
+============
 
 # Include one or more other config files here.  This is useful if you
 # have a standard template that goes to all redis server but also need
