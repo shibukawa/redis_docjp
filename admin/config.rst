@@ -2,23 +2,54 @@
 設定ファイル
 ============
 
-# Redis configuration file example
+単位について
+============
 
-# Note on units: when memory size is needed, it is possible to specifiy
-# it in the usual form of 1k 5GB 4M and so forth:
-#
-# 1k => 1000 bytes
-# 1kb => 1024 bytes
-# 1m => 1000000 bytes
-# 1mb => 1024*1024 bytes
-# 1g => 1000000000 bytes
-# 1gb => 1024*1024*1024 bytes
-#
-# units are case insensitive so 1GB 1Gb 1gB are all the same.
+.. Note on units: when memory size is needed, it is possible to specifiy
+   it in the usual form of 1k 5GB 4M and so forth:
 
-# By default Redis does not run as a daemon. Use 'yes' if you need it.
-# Note that Redis will write a pid file in /var/run/redis.pid when daemonized.
-daemonize no
+メモリサイズが飛鳥となる部分では、 ``1k`` 、 ``5GB`` 、``4MB`` など、良く使われる方法で設定することができます。
+
+.. 1k => 1000 bytes
+   1kb => 1024 bytes
+   1m => 1000000 bytes
+   1mb => 1024*1024 bytes
+   1g => 1000000000 bytes
+   1gb => 1024*1024*1024 bytes
+
+.. list-table::
+   
+   - * 1k
+     * 1,000バイト
+   - * 1kb
+     * 1,024バイト
+   - * 1m
+     * 1,000,000バイト
+   - * 1mb
+     * 1,024 * 1,024バイト
+   - * 1g
+     * 1,000,000,000バイト
+   - * 1gb
+     * 1,024 * 1,024 * 1,024バイト
+
+.. units are case insensitive so 1GB 1Gb 1gB are all the same.
+
+単位に関しては大文字、小文字の区別はしないため、 ``1GB`` 、 ``1Gb`` 、 ``1gB`` はどれも同じ意味になります。
+
+起動モード設定
+==============
+
+.. confval:: daemonize yes/no
+
+   .. By default Redis does not run as a daemon. Use 'yes' if you need it.
+      Note that Redis will write a pid file in /var/run/redis.pid when 
+      daemonized.
+
+   デフォルトではRedisは通常のプログラムとして動作します。必要に応じて ``'yes'`` を設定してください。デーモンとして動作する場合は、Redisはpidを :file:`/var/run/redis.pid` に書き込みます。
+
+   .. code-block:: nginx
+ 
+      daemonize no
 
 # When running daemonized, Redis writes a pid file in /var/run/redis.pid by
 # default. You can specify a custom pid file location here.
