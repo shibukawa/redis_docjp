@@ -404,192 +404,293 @@
 追記専用モードの設定
 =====================
 
-# By default Redis asynchronously dumps the dataset on disk. If you can live
-# with the idea that the latest records will be lost if something like a crash
-# happens this is the preferred way to run Redis. If instead you care a lot
-# about your data and don't want to that a single record can get lost you should
-# enable the append only mode: when this mode is enabled Redis will append
-# every write operation received in the file appendonly.aof. This file will
-# be read on startup in order to rebuild the full dataset in memory.
-#
-# Note that you can have both the async dumps and the append only file if you
-# like (you have to comment the "save" statements above to disable the dumps).
-# Still if append only mode is enabled Redis will load the data from the
-# log file at startup ignoring the dump.rdb file.
-#
-# IMPORTANT: Check the BGREWRITEAOF to check how to rewrite the append
-# log file in background when it gets too big.
+.. confval:: appendonly yes/no
 
-appendonly no
+   .. By default Redis asynchronously dumps the dataset on disk. If you can live
+      with the idea that the latest records will be lost if something like a 
+      crash happens this is the preferred way to run Redis. If instead you 
+      care a lot about your data and don't want to that a single record 
+      can get lost you should enable the append only mode: when this mode 
+      is enabled Redis will append every write operation received in the 
+      file appendonly.aof. This file will be read on startup in order 
+      to rebuild the full dataset in memory.
 
-# The name of the append only file (default: "appendonly.aof")
-# appendfilename appendonly.aof
+   Redisはデフォルトでは非同期でデータセットをディスクに書き出します。もし、クラッシュした場合に最新のいくつかのデータが失われても良いのであれば、Redisの実行方法として、これがベストな方法です。もしデータが大切で、1データも失いたくないのであれば、 :ref:`append_only_mode` を有効にすべきです。このモードが設定されると、Redisは :file:`appendonly.aof` に書き込み操作を受け取るたびにすべて記録していきます。このファイルは起動時に全データセットをメモリ内に構築していくときに読み込まれます。
 
-# The fsync() call tells the Operating System to actually write data on disk
-# instead to wait for more data in the output buffer. Some OS will really flush 
-# data on disk, some other OS will just try to do it ASAP.
-#
-# Redis supports three different modes:
-#
-# no: don't fsync, just let the OS flush the data when it wants. Faster.
-# always: fsync after every write to the append only log . Slow, Safest.
-# everysec: fsync only if one second passed since the last fsync. Compromise.
-#
-# The default is "everysec" that's usually the right compromise between
-# speed and data safety. It's up to you to understand if you can relax this to
-# "no" that will will let the operating system flush the output buffer when
-# it wants, for better performances (but if you can live with the idea of
-# some data loss consider the default persistence mode that's snapshotting),
-# or on the contrary, use "always" that's very slow but a bit safer than
-# everysec.
-#
-# If unsure, use "everysec".
+   .. Note that you can have both the async dumps and the append only file 
+      if you like (you have to comment the "save" statements above to 
+      disable the dumps). Still if append only mode is enabled Redis will 
+      load the data from the log file at startup ignoring the dump.rdb file.
 
-# appendfsync always
-appendfsync everysec
-# appendfsync no
+   もし使用したければ、非同期のダンプと、追記専用モードの両方を併用することもできます。もしダンプを止めたければ、 :conf:`save` 文をコメントアウトする必要があります。その場合でも、もし追記専用モードが有効になっているのであれば、Redisは起動時に、ログファイルからデータをロードしようとして、 :file:`dump.rdb` ファイルを無視します。
 
-# When the AOF fsync policy is set to always or everysec, and a background
-# saving process (a background save or AOF log background rewriting) is
-# performing a lot of I/O against the disk, in some Linux configurations
-# Redis may block too long on the fsync() call. Note that there is no fix for
-# this currently, as even performing fsync in a different thread will block
-# our synchronous write(2) call.
-#
-# In order to mitigate this problem it's possible to use the following option
-# that will prevent fsync() from being called in the main process while a
-# BGSAVE or BGREWRITEAOF is in progress.
-#
-# This means that while another child is saving the durability of Redis is
-# the same as "appendfsync none", that in pratical terms means that it is
-# possible to lost up to 30 seconds of log in the worst scenario (with the
-# default Linux settings).
-# 
-# If you have latency problems turn this to "yes". Otherwise leave it as
-# "no" that is the safest pick from the point of view of durability.
-no-appendfsync-on-rewrite no
+   .. note::
+
+      .. Check the BGREWRITEAOF to check how to rewrite the append
+         log file in background when it gets too big.
+
+      追記ログファイルが大きくなりすぎる場合には、バックグラウンドのリライト方法を確認するために、 :com:`BGREWRITEAOF` をチェックしてください。
+
+   .. code-block:: nginx
+
+      appendonly no
+
+.. confval:: appendfilename filename
+
+   .. The name of the append only file (default: "appendonly.aof")
+
+   追記専用ファイルの名前です。デフォルトは :file:`appendonly.aof` です。
+
+   .. code-block:: nginx
+
+      appendfilename appendonly.aof
+
+.. confval:: appendfsync mode
+
+   .. The fsync() call tells the Operating System to actually write data on disk
+      instead to wait for more data in the output buffer. Some OS will really 
+      flush data on disk, some other OS will just try to do it ASAP.
+
+   ``fsync()`` を呼び出すと、オペレーティングシステムに対して、出力バッファにデータが貯まるのを待つのではなく、データをディスクに書き出すように指示することができます。OSによっては実際にデータをディスクに書き出したり、なるべく速く書き出すようにしたりします。
+
+   .. Redis supports three different modes:
+
+   Redisは次の3つのモードをサポートしています。
+
+   .. no: don't fsync, just let the OS flush the data when it wants. Faster.
+
+   ``no``
+      fsyncしません。データの書き出しはOSに任せます。高速です。
+   
+   .. always: fsync after every write to the append only log . Slow, Safest.
+
+   ``always``
+      追記専用ログに書き込むたびにfsyncを行います。低速ですが安全です。
+
+   .. everysec: fsync only if one second passed since the last fsync. 
+      Compromise.
+
+   ``everysec``
+      最後のfsyncから1秒経過するとfsyncを行います。上の2つの中間です。
+
+   .. The default is "everysec" that's usually the right compromise between
+      speed and data safety. It's up to you to understand if you can relax 
+      this to "no" that will will let the operating system flush the output 
+      buffer when it wants, for better performances (but if you can live 
+      with the idea of some data loss consider the default persistence mode 
+      that's snapshotting), or on the contrary, use "always" that's very 
+      slow but a bit safer than everysec.
+
+   デフォルトは、速度とデータの安全性の中庸をとった、 ``everysec`` です。もし背景を理解した上で、 ``no`` を選択しても問題ない、と感じたのであれば、それを選択してもらってもかまいません。こうすると、OSが自分の好きなタイミングで書き出しを行います。しかし、もしデータ損失について、問題ないと考えているのであれば、デフォルトの永続化モードのスナップショットの使用を考えた方が良いでしょう。その反対に非常に遅くはなりますが、 ``always`` を選択すると、 ``everysec`` よりも安全になります。
+
+   .. If unsure, use "everysec".
+
+   自信がないのであれば、 ``everysec`` を使用してください。
+
+   .. code-block:: nginx
+
+      appendfsync everysec
+
+.. confval:: no-appendfsync-on-rewrite yes/no
+
+   .. When the AOF fsync policy is set to always or everysec, and a background
+      saving process (a background save or AOF log background rewriting) is
+      performing a lot of I/O against the disk, in some Linux configurations
+      Redis may block too long on the fsync() call. Note that there is no fix 
+      for this currently, as even performing fsync in a different thread will
+      block our synchronous write(2) call.
+
+   .. In order to mitigate this problem it's possible to use the following 
+      option that will prevent fsync() from being called in the main process 
+      while a BGSAVE or BGREWRITEAOF is in progress.
+
+   .. This means that while another child is saving the durability of Redis is
+      the same as "appendfsync none", that in pratical terms means that it is
+      possible to lost up to 30 seconds of log in the worst scenario (with the
+      default Linux settings).
+ 
+   .. If you have latency problems turn this to "yes". Otherwise leave it as
+      "no" that is the safest pick from the point of view of durability.
+
+   .. code-block:: nginx
+
+      no-appendfsync-on-rewrite no
 
 .. VIRTUAL MEMORY
 
 仮想メモリの設定
 =================
 
-# Virtual Memory allows Redis to work with datasets bigger than the actual
-# amount of RAM needed to hold the whole dataset in memory.
-# In order to do so very used keys are taken in memory while the other keys
-# are swapped into a swap file, similarly to what operating systems do
-# with memory pages.
-#
-# To enable VM just set 'vm-enabled' to yes, and set the following three
-# VM parameters accordingly to your needs.
+.. confval:: vm-enabled yes/no
 
-vm-enabled no
-# vm-enabled yes
+   .. Virtual Memory allows Redis to work with datasets bigger than the actual
+      amount of RAM needed to hold the whole dataset in memory.
+      In order to do so very used keys are taken in memory while the other keys
+      are swapped into a swap file, similarly to what operating systems do
+      with memory pages.
 
-# This is the path of the Redis swap file. As you can guess, swap files
-# can't be shared by different Redis instances, so make sure to use a swap
-# file for every redis process you are running. Redis will complain if the
-# swap file is already in use.
-#
-# The best kind of storage for the Redis swap file (that's accessed at random) 
-# is a Solid State Disk (SSD).
-#
-# *** WARNING *** if you are using a shared hosting the default of putting
-# the swap file under /tmp is not secure. Create a dir with access granted
-# only to Redis user and configure Redis to create the swap file there.
-vm-swap-file /tmp/redis.swap
+   .. To enable VM just set 'vm-enabled' to yes, and set the following three
+      VM parameters accordingly to your needs.
 
-# vm-max-memory configures the VM to use at max the specified amount of
-# RAM. Everything that deos not fit will be swapped on disk *if* possible, that
-# is, if there is still enough contiguous space in the swap file.
-#
-# With vm-max-memory 0 the system will swap everything it can. Not a good
-# default, just specify the max amount of RAM you can in bytes, but it's
-# better to leave some margin. For instance specify an amount of RAM
-# that's more or less between 60 and 80% of your free RAM.
-vm-max-memory 0
+   .. code-block:: nginx
 
-# Redis swap files is split into pages. An object can be saved using multiple
-# contiguous pages, but pages can't be shared between different objects.
-# So if your page is too big, small objects swapped out on disk will waste
-# a lot of space. If you page is too small, there is less space in the swap
-# file (assuming you configured the same number of total swap file pages).
-#
-# If you use a lot of small objects, use a page size of 64 or 32 bytes.
-# If you use a lot of big objects, use a bigger page size.
-# If unsure, use the default :)
-vm-page-size 32
+      vm-enabled no
 
-# Number of total memory pages in the swap file.
-# Given that the page table (a bitmap of free/used pages) is taken in memory,
-# every 8 pages on disk will consume 1 byte of RAM.
-#
-# The total swap size is vm-page-size * vm-pages
-#
-# With the default of 32-bytes memory pages and 134217728 pages Redis will
-# use a 4 GB swap file, that will use 16 MB of RAM for the page table.
-#
-# It's better to use the smallest acceptable value for your application,
-# but the default is large in order to work in most conditions.
-vm-pages 134217728
+.. confval:: vm-swap-file path
 
-# Max number of VM I/O threads running at the same time.
-# This threads are used to read/write data from/to swap file, since they
-# also encode and decode objects from disk to memory or the reverse, a bigger
-# number of threads can help with big objects even if they can't help with
-# I/O itself as the physical device may not be able to couple with many
-# reads/writes operations at the same time.
-#
-# The special value of 0 turn off threaded I/O and enables the blocking
-# Virtual Memory implementation.
-vm-max-threads 4
+   .. This is the path of the Redis swap file. As you can guess, swap files
+      can't be shared by different Redis instances, so make sure to use a swap
+      file for every redis process you are running. Redis will complain if the
+      swap file is already in use.
+
+   .. The best kind of storage for the Redis swap file (that's accessed at 
+      random) is a Solid State Disk (SSD).
+
+   .. warning::
+
+      .. if you are using a shared hosting the default of putting
+         the swap file under /tmp is not secure. Create a dir with access 
+         granted only to Redis user and configure Redis to create the swap 
+         file there.
+
+   .. code-block:: nginx
+
+      vm-swap-file /tmp/redis.swap
+
+.. confval:: vm-max-memory num
+
+   .. vm-max-memory configures the VM to use at max the specified amount of
+       RAM. Everything that deos not fit will be swapped on disk *if* 
+       possible, that is, if there is still enough contiguous space in the 
+       swap file.
+
+   .. With vm-max-memory 0 the system will swap everything it can. Not a good
+      default, just specify the max amount of RAM you can in bytes, but it's
+      better to leave some margin. For instance specify an amount of RAM
+      that's more or less between 60 and 80% of your free RAM.
+
+   .. code-block:: nginx
+
+      vm-max-memory 0
+
+.. confval:: vm-page-size num
+
+   .. Redis swap files is split into pages. An object can be saved using 
+      multiple contiguous pages, but pages can't be shared between different 
+      objects. So if your page is too big, small objects swapped out on disk 
+      will waste a lot of space. If you page is too small, there is less 
+      space in the swap file (assuming you configured the same number of 
+      total swap file pages).
+
+   .. If you use a lot of small objects, use a page size of 64 or 32 bytes.
+      If you use a lot of big objects, use a bigger page size.
+      If unsure, use the default :)
+
+   .. code-block:: nginx
+
+      vm-page-size 32
+
+.. confval:: vm-pages number
+
+   .. Number of total memory pages in the swap file.
+      Given that the page table (a bitmap of free/used pages) is taken in 
+      memory, every 8 pages on disk will consume 1 byte of RAM.
+
+   .. The total swap size is vm-page-size * vm-pages
+
+   .. With the default of 32-bytes memory pages and 134217728 pages Redis will
+      use a 4 GB swap file, that will use 16 MB of RAM for the page table.
+
+   .. It's better to use the smallest acceptable value for your application,
+      but the default is large in order to work in most conditions.
+
+   .. code-block:: nginx
+
+      vm-pages 134217728
+
+.. confval:: vm-max-threads number
+
+   .. Max number of VM I/O threads running at the same time.
+      This threads are used to read/write data from/to swap file, since they
+      also encode and decode objects from disk to memory or the reverse, a 
+      bigger number of threads can help with big objects even if they can't 
+      help with I/O itself as the physical device may not be able to couple 
+      with many reads/writes operations at the same time.
+
+   .. The special value of 0 turn off threaded I/O and enables the blocking
+       Virtual Memory implementation.
+
+   .. code-block:: nginx
+
+      vm-max-threads 4
 
 .. ADVANCED CONFIG
 
 高度な設定
 ==========
 
-# Glue small output buffers together in order to send small replies in a
-# single TCP packet. Uses a bit more CPU but most of the times it is a win
-# in terms of number of queries per second. Use 'yes' if unsure.
-glueoutputbuf yes
+.. confval:: glueoutputbuf yes/no
 
-# Hashes are encoded in a special way (much more memory efficient) when they
-# have at max a given numer of elements, and the biggest element does not
-# exceed a given threshold. You can configure this limits with the following
-# configuration directives.
-hash-max-zipmap-entries 64
-hash-max-zipmap-value 512
+   .. Glue small output buffers together in order to send small replies in a
+      single TCP packet. Uses a bit more CPU but most of the times it is a win
+      in terms of number of queries per second. Use 'yes' if unsure.
 
-# Active rehashing uses 1 millisecond every 100 milliseconds of CPU time in
-# order to help rehashing the main Redis hash table (the one mapping top-level
-# keys to values). The hash table implementation redis uses (see dict.c)
-# performs a lazy rehashing: the more operation you run into an hash table
-# that is rhashing, the more rehashing "steps" are performed, so if the
-# server is idle the rehashing is never complete and some more memory is used
-# by the hash table.
-# 
-# The default is to use this millisecond 10 times every second in order to
-# active rehashing the main dictionaries, freeing memory when possible.
-#
-# If unsure:
-# use "activerehashing no" if you have hard latency requirements and it is
-# not a good thing in your environment that Redis can reply form time to time
-# to queries with 2 milliseconds delay.
-#
-# use "activerehashing yes" if you don't have such hard requirements but
-# want to free memory asap when possible.
-activerehashing yes
+   .. code-block:: nginx
+ 
+      glueoutputbuf yes
+
+.. confval:: hash-max-zipmap-entries num
+
+.. confval:: hash-max-zipmap-value num
+
+   .. Hashes are encoded in a special way (much more memory efficient) when they
+      have at max a given numer of elements, and the biggest element does not
+      exceed a given threshold. You can configure this limits with the following
+      configuration directives.
+
+   .. code-block:: nginx
+
+      hash-max-zipmap-entries 64
+      hash-max-zipmap-value 512
+
+.. confval:: activerehashing yes/no
+
+   .. Active rehashing uses 1 millisecond every 100 milliseconds of CPU time in
+      order to help rehashing the main Redis hash table (the one mapping 
+      top-level keys to values). The hash table implementation redis uses 
+      (see dict.c) performs a lazy rehashing: the more operation you run into 
+      an hash table that is rhashing, the more rehashing "steps" are 
+      performed, so if the server is idle the rehashing is never complete and 
+      some more memory is used by the hash table.
+ 
+   .. The default is to use this millisecond 10 times every second in order to
+      active rehashing the main dictionaries, freeing memory when possible.
+
+   .. If unsure:
+      use "activerehashing no" if you have hard latency requirements and it is
+      not a good thing in your environment that Redis can reply form time to 
+      time to queries with 2 milliseconds delay.
+
+   .. use "activerehashing yes" if you don't have such hard requirements but
+      want to free memory asap when possible.
+
+   .. code-block:: nginx
+
+      activerehashing yes
 
 .. INCLUDES
 
 インクルード
 ============
 
-# Include one or more other config files here.  This is useful if you
-# have a standard template that goes to all redis server but also need
-# to customize a few per-server settings.  Include files can include
-# other files, so use this wisely.
-#
-# include /path/to/local.conf
-# include /path/to/other.conf
+.. confval:: include path
+
+   .. Include one or more other config files here.  This is useful if you
+      have a standard template that goes to all redis server but also need
+      to customize a few per-server settings.  Include files can include
+      other files, so use this wisely.
+
+   .. code-block:: nginx
+
+      include /path/to/local.conf
+      include /path/to/other.conf
