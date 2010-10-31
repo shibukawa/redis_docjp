@@ -6,3 +6,4 @@ Redis How To
    :maxdepth: 2
 
    replication
+   append_only_file
