@@ -316,7 +316,7 @@ Redisコマンドリファレンス
 
 .. Commands operating on hashes
 
-ハッシュ表の操作
+ハッシュの操作
 ================
 
 .. list-table::

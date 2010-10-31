@@ -26,6 +26,7 @@
 
 
 .. command:: DEL key1 key2 ... keyN
+
    計算時間: O(1)
 
    .. Remove the specified keys. If a given key does not exist no operation is performed for this key. The command returns the number of keys removed.
@@ -40,11 +41,12 @@
 
      Integer reply（整数値）。具体的には下記::
    
-      an integer greater than 0 if one or more keys were removed
-      0 if none of the specified key existed
+       an integer greater than 0 if one or more keys were removed
+       0 if none of the specified key existed
 
 
-.. commane:: TYPE key
+.. command:: TYPE key
+
    計算時間: O(1)
 
    .. Return the type of the value stored at key in form of a string. The type can be one of "none", "string", "list", "set". "none" is returned if the key does not exist.
@@ -115,6 +117,7 @@
 
 
 .. command:: RANDOMKEY
+
    計算時間: O(1)
 
    .. Return a randomly selected key from the currently selected DB.
@@ -131,6 +134,7 @@
 
 
 .. command:: RENAME oldkey newkey
+
    計算時間: O(1)
 
    .. Atomically renames the key oldkey to newkey. If the source and destination name are the same an error is returned. If newkey already exists it is overwritten.
@@ -147,6 +151,7 @@
 
 
 .. command:: RENAMENX oldkey newkey
+
    計算時間: O(1)
 
    .. Rename oldkey into newkey but fails if the destination key newkey already exists.
@@ -156,11 +161,11 @@
    返り値
 
      .. Integer reply, specifically:
+
      Integer reply（整数値）が返ります。具体的には下記::
 
-        1 if the key was renamed
-        0 if the target key already exist
-
+       1 if the key was renamed
+       0 if the target key already exist
 
 .. command:: DBSIZE
 
@@ -308,13 +313,22 @@
 .. command:: COMMAND_1 ...
 .. command:: COMMAND_2 ...
 .. command:: COMMAND_N ...
-.. command:: EXEC or DISCARD
+.. command:: EXEC
+.. command:: DISCARD
 
-MULTI, EXEC, DISCARD and WATCH commands are the foundation of Redis Transactions. A Redis Transaction allows the execution of a group of Redis commands in a single step, with two important guarantees:
+   .. MULTI, EXEC, DISCARD and WATCH commands are the foundation of Redis Transactions. A Redis Transaction allows the execution of a group of Redis commands in a single step, with two important guarantees:
 
-All the commands in a transaction are serialized and executed sequentially. It can never happen that a request issued by another client is served in the middle of the execution of a Redis transaction. This guarantees that the commands are executed as a single atomic operation.
-Either all of the commands or none are processed. The EXEC command triggers the execution of all the commands in the transaction, so if a client loses the connection to the server in the context of a transaction before calling the MULTI command none of the operations are performed, instead if the EXEC command is called, all the operations are performed. An exception to this rule is when the Append Only File is enabled: every command that is part of a Redis transaction will log in the AOF as long as the operation is completed, so if the Redis server crashes or is killed by the system administrator in some hard way it is possible that only a partial number of operations are registered.
-Since Redis 2.1.0, it's also possible to add a further guarantee to the above two, in the form of optimistic locking of a set of keys in a way very similar to a CAS (check and set) operation. This is documented later in this manual page.
+   :com:`MULTI`, :com:`EXEC`, :com:`DISCARD`, :com:`WATCH` コマンドはRedisトランザクションの基礎です。Redisトランザクションでは単一ステップでひとまとめのRedisコマンドを実行出来るようにしてあります。このトランザクションでは２つのことが保証されています:
+
+   .. All the commands in a transaction are serialized and executed sequentially. It can never happen that a request issued by another client is served in the middle of the execution of a Redis transaction. This guarantees that the commands are executed as a single atomic operation.
+
+   トランザクション中のすべてのコマンドはシリアライズ化され、順番に実行されます。他のクライアントからのリクエストがRedisトランザクションの実行中に行われることは決してありません。このことによって一連のコマンドは単一のアトミックな操作として扱われることが保証されます。
+
+   .. Either all of the commands or none are processed. The EXEC command triggers the execution of all the commands in the transaction, so if a client loses the connection to the server in the context of a transaction before calling the MULTI command none of the operations are performed, instead if the EXEC command is called, all the operations are performed. An exception to this rule is when the Append Only File is enabled: every command that is part of a Redis transaction will log in the AOF as long as the operation is completed, so if the Redis server crashes or is killed by the system administrator in some hard way it is possible that only a partial number of operations are registered.
+
+   すべてのコマンドが実行されるか全く実行されないかのどちらかとなります。 :com:`EXEC` コマンド
+
+   .. Since Redis 2.1.0, it's also possible to add a further guarantee to the above two, in the form of optimistic locking of a set of keys in a way very similar to a CAS (check and set) operation. This is documented later in this manual page.
 
 Usage
 A Redis transaction is entered using the MULTI command. The command always replies with OK. At this point the user can issue multiple commands. Instead of executing these commands, Redis will "queue" them. All the commands are executed once EXEC is called.

@@ -42,12 +42,12 @@ redisドキュメント日本語訳
    :hidden:
 
    commandreference/connection
+   commandreference/alldata
    commandreference/strings
    commandreference/lists
    commandreference/sets
    commandreference/sortedsets
    commandreference/hashes
-   commandreference/alldata
 
 索引など
 ========
