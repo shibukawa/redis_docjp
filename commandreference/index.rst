@@ -24,6 +24,7 @@ Redisコマンドリファレンス
 
 .. list-table::
    :header-rows: 1
+   :widths: 4 10 15
 
    * - **コマンド**
      - **パラメータ**
@@ -42,6 +43,7 @@ Redisコマンドリファレンス
 
 .. list-table::
    :header-rows: 1
+   :widths: 4 10 15
 
    * - **コマンド**
      - **パラメータ**
@@ -99,6 +101,7 @@ Redisコマンドリファレンス
 
 .. list-table::
    :header-rows: 1
+   :widths: 4 10 15
 
    * - **コマンド**
      - **パラメータ**
@@ -153,6 +156,7 @@ Redisコマンドリファレンス
 
 .. list-table::
    :header-rows: 1
+   :widths: 4 10 15
 
    * - **コマンド**
      - **パラメータ**
@@ -205,6 +209,7 @@ Redisコマンドリファレンス
 
 .. list-table::
    :header-rows: 1
+   :widths: 4 10 15
 
    * - **コマンド**
      - **パラメータ**
@@ -260,6 +265,7 @@ Redisコマンドリファレンス
 
 .. list-table::
    :header-rows: 1
+   :widths: 4 10 15
 
    * - **コマンド**
      - **パラメータ**
@@ -315,6 +321,7 @@ Redisコマンドリファレンス
 
 .. list-table::
    :header-rows: 1
+   :widths: 4 10 15
 
    * - **コマンド**
      - **パラメータ**
@@ -361,6 +368,7 @@ Redisコマンドリファレンス
 
 .. list-table::
    :header-rows: 1
+   :widths: 4 10 15
 
    * - **コマンド**
      - **パラメータ**
@@ -377,11 +385,12 @@ Redisコマンドリファレンス
 
 .. list-table::
    :header-rows: 1
+   :widths: 4 10 15
 
    * - **コマンド**
      - **パラメータ**
      - **内容**
-   * - :com:`MULTI`/:com:`EXEC`/:com:`DISCARD`/:com:`WATCH`/:com:`UNWATCH`
+   * - :com:`MULTI` / :com:`EXEC` / :com:`DISCARD` / :com:`WATCH` / :com:`UNWATCH`
      - --
      - Redisアトミックトランザクション
    
@@ -393,11 +402,12 @@ Redisコマンドリファレンス
 
 .. list-table::
    :header-rows: 1
+   :widths: 4 10 15
 
    * - **コマンド**
      - **パラメータ**
      - **内容**
-   * - :com:`SUBSCRIBE`/:com:`UNSUBSCRIBE`/:com:`PUBLISH`
+   * - :com:`SUBSCRIBE` / :com:`UNSUBSCRIBE` / :com:`PUBLISH`
      - --
      - Redisパブリッシュ／サブスクライブ メッセージング・パラダイムの実装
    
@@ -408,6 +418,7 @@ Redisコマンドリファレンス
 
 .. list-table::
    :header-rows: 1
+   :widths: 4 10 15
 
    * - **コマンド**
      - **パラメータ**
@@ -436,6 +447,7 @@ Redisコマンドリファレンス
 
 .. list-table::
    :header-rows: 1
+   :widths: 4 10 15
 
    * - **コマンド**
      - **パラメータ**

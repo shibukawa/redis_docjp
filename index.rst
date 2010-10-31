@@ -8,6 +8,7 @@ redisドキュメント日本語訳
    features
    quickstart
    readme
+   copying
 
 .. toctree::
    :maxdepth: 2
