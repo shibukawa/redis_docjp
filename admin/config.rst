@@ -555,8 +555,12 @@
       file for every redis process you are running. Redis will complain if the
       swap file is already in use.
 
+   Redisが使うスワップファイルのパスを設定します。あなたの想像通りスワップファイルは異なるRedisインスタンス間で共有することができないため、実行しようとしているRedisのプロセスごとにスワップファイルを用意しましょう。もしスワップファイルが既に使用されていると、Redisは文句を言うでしょう。
+
    .. The best kind of storage for the Redis swap file (that's accessed at 
       random) is a Solid State Disk (SSD).
+
+   スワップファイルに対してはランダムアクセスが行われるため、スワップファイルに適したストレージはソリッドステートディスク(SSD)です。
 
    .. warning::
 
@@ -565,6 +569,8 @@
          granted only to Redis user and configure Redis to create the swap 
          file there.
 
+      もし共有のホスティング環境で使用しようとしているのであれば、デフォルトの :file:`/tmp` 以下のパスは安全性の面で問題があります。Redisを実行しているユーザ権限でのみアクセスできるディレクトリを作成し、その場所にスワップファイルを作るように設定してください。
+
    .. code-block:: nginx
 
       vm-swap-file /tmp/redis.swap
@@ -572,14 +578,18 @@
 .. confval:: vm-max-memory num
 
    .. vm-max-memory configures the VM to use at max the specified amount of
-       RAM. Everything that deos not fit will be swapped on disk *if* 
-       possible, that is, if there is still enough contiguous space in the 
-       swap file.
+      RAM. Everything that does not fit will be swapped on disk *if* 
+      possible, that is, if there is still enough contiguous space in the 
+      swap file.
+
+   使用する最大のメモリ量を指定します。もし、このメモリ容量に収まらず、スワップファイル上に十分な連続的な空間があれば、その内容はディスクにスワップされます。
 
    .. With vm-max-memory 0 the system will swap everything it can. Not a good
       default, just specify the max amount of RAM you can in bytes, but it's
       better to leave some margin. For instance specify an amount of RAM
       that's more or less between 60 and 80% of your free RAM.
+
+   :conf:`vm-max-memory` をゼロにすると、システムはできる限りすべての内容をスワップファイルに書き込もうとします。デフォルトではなく、自分が利用可能なRAMの最大容量を指定すると良いのですが、ある程度のマージンを取り、フリーのメモリ領域の60-80%ぐらいの量を指定すると良いでしょう。
 
    .. code-block:: nginx
 
@@ -598,6 +608,10 @@
       If you use a lot of big objects, use a bigger page size.
       If unsure, use the default :)
 
+   スワップファイルはページに分けて保存されます。Redisは、オブジェクトは複数の連続したページに保存することができますが、ページを異なる種類のオブジェクトで共有することはできません。そのため、ページを大きく設定すると、小さなオブジェクトがスワップされると、大きなスペースが消費されてしまいます。もしページが小さすぎるとスワップファイル内のスペースが小さくなります(全体のスワップファイルのページ数にも同じ数を設定していたとします)。
+
+   もし、小さなオブジェクトを大量に使うのであれば、64もしくは32バイトのページサイズを使用してください。大きなオブジェクトを使う場合は、それに大路手大きなページサイズを使用してください。自信がない場合はデフォルトで使用すると良いでしょう。
+
    .. code-block:: nginx
 
       vm-page-size 32
@@ -608,13 +622,21 @@
       Given that the page table (a bitmap of free/used pages) is taken in 
       memory, every 8 pages on disk will consume 1 byte of RAM.
 
+   スワップファイル内のトータルのメモリページ数を設定します。ページが使用しているかどうかのページテーブル(使用している/フリーというのをビット配列で表現)がRAM内に作成されます。8ページで1バイトのRAMを消費します。
+
    .. The total swap size is vm-page-size * vm-pages
+
+   トータルのスワップのサイズは :conf:`vm-page-size` × :conf:`vm-pages` になります。
 
    .. With the default of 32-bytes memory pages and 134217728 pages Redis will
       use a 4 GB swap file, that will use 16 MB of RAM for the page table.
 
+   デフォルト設定ではそれぞれ32バイト、134,217,728ページとなりますが、この時には4GBのスワップファイルが作られ、16MBのメモリがページテーブルとして使用されます。
+
    .. It's better to use the smallest acceptable value for your application,
       but the default is large in order to work in most conditions.
+
+   アプリケーションごとに、適用可能な最小の値を設定すべきですが、ほとんどの状況でうまく動作するように、大きめの値がデフォルトで設定されています。
 
    .. code-block:: nginx
 
@@ -629,8 +651,12 @@
       help with I/O itself as the physical device may not be able to couple 
       with many reads/writes operations at the same time.
 
+   同時に実行される、VM I/Oスレッドの最大数を設定します。このスレッドは、メモリの内容をディスクに書き出すためにエンコードしたり、ディスクから読み込んだ内容のデコードを行ったり、スワップファイルに対する読み書きを行います。物理デバイスに対して同時に読み書きの操作ため、I/Oそのものの助けにはなりませんが、大きな数をしていると、大きなオブジェクトに対するエンコード、デコードの手助けはできます。
+
    .. The special value of 0 turn off threaded I/O and enables the blocking
        Virtual Memory implementation.
+
+   ``0`` を指定すると、スレッドによるI/Oを停止し、ブロッキングを行う仮想メモリ実装が使用されるようになります。
 
    .. code-block:: nginx
 
