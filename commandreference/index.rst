@@ -2,11 +2,11 @@
 
 .. Redis Command Reference¶
 
-.. _redis_command_referenece:
+.. _command_referenece:
 
-=========================
-Redisコマンドリファレンス
-=========================
+====================
+コマンドリファレンス
+====================
 
 .. Every command name links to a specific wiki page describing the behavior of the command.
 

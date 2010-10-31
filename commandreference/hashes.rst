@@ -2,9 +2,14 @@
 
 .. Redis Hash Type
 
-===================
- Redisハッシュ型
-===================
+.. index::
+   pair: データ型; ハッシュ型 
+
+.. _hashes:
+
+==========
+ハッシュ型
+==========
 
 .. Redis Hashes are unordered maps of Redis Strings between fields and values. It is possible to add, remove, test for existence of fields in O(1) amortized time. It is also possible to enumerate all the keys, values, or both, in O(N) (where N is the number of fields inside the hash).
 

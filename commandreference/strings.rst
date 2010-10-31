@@ -2,9 +2,14 @@
 
 .. Redis String Type
 
-===============
- Redis文字列型
-===============
+.. index::
+   pair: データ型; 文字列型 
+
+.. _strings:
+
+========
+文字列型
+========
 
 .. Strings are the most basic Redis kind of values. Redis Strings are binary safe, this means a Redis string can contain any kind of data, for instance a JPEG image or a serialized Ruby object, and so forth.
 

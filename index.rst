@@ -33,22 +33,22 @@ redisドキュメント日本語訳
 
    commandreference/index
 
-ハッカーズガイド
-================
-
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
+
+   datatypes
 
 .. toctree::
    :hidden:
 
    commandreference/connection
    commandreference/alldata
-   commandreference/strings
-   commandreference/lists
-   commandreference/sets
-   commandreference/sortedsets
-   commandreference/hashes
+
+ハッカーズガイド
+================
+
+.. toctree::
+   :maxdepth: 1
 
 索引など
 ========

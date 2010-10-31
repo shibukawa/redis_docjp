@@ -2,9 +2,14 @@
 
 .. Redis List Type
 
-===============
- Redisリスト型
-===============
+.. index::
+   pair: データ型; リスト型 
+
+.. _lists:
+
+========
+リスト型
+========
 
 .. Redis Lists are lists of Redis Strings, sorted by insertion order. It's possible to add elements to a Redis List pushing new elements on the head (on the left) or on the tail (on the right) of the list.
 

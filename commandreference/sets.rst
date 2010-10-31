@@ -2,9 +2,14 @@
 
 .. Redis Set Type
 
-===============
- Redisセット型
-===============
+.. index::
+   pair: データ型; セット型 
+
+.. _sets:
+
+========
+セット型
+========
 
 .. Redis Sets are unordered collections of Redis Strings. It's possible to add, remove, and test for existence of members in O(1).
 

@@ -2,9 +2,14 @@
 
 .. Redis Sorted Set Type
 
-=========================
- Redisソート済みセット型
-=========================
+.. index::
+   pair: データ型; ソート済みセット型
+
+.. _sortedsets:
+
+==================
+ソート済みセット型
+==================
 
 .. Redis Sorted Sets are, similarly to Sets, collections of Redis Strings. The difference is that every member of a Sorted Set hash an associated score that is used in order to take this member in order.
 

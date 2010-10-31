@@ -37,7 +37,7 @@ RedisはANSI Cで実装された、究極に速く、パワフルなキー・バ
    introduction will provide examples. Once you walk through the Redis Quick 
    Start Guide to get your instance of Redis running, you can follow along.
 
-それぞれの値の型を操作するための、専用のコマンドがあります。これらのコマンドの最新のリストは :ref:`redis_command_referenece` に、データ型ごとに分類されて掲載されています。また、Redisのソースには :ref:`command_line_interface` が含まれており、サーバと直接対話することができ、このイントロダクションで提供しているサンプルを動かしてみることができます。 :ref:`quick_start` のガイドに従うと、動作しているRedisインスタンスの設定が行えるため、これからの説明の通りに動かすことができるようになります。
+それぞれの値の型を操作するための、専用のコマンドがあります。これらのコマンドの最新のリストは :ref:`command_referenece` に、データ型ごとに分類されて掲載されています。また、Redisのソースには :ref:`command_line_interface` が含まれており、サーバと直接対話することができ、このイントロダクションで提供しているサンプルを動かしてみることができます。 :ref:`quick_start` のガイドに従うと、動作しているRedisインスタンスの設定が行えるため、これからの説明の通りに動かすことができるようになります。
 
 .. One of the most powerful aspects of Redis is the wide range of commands 
    which are optimized to work with specific data value types and executed 
@@ -366,7 +366,7 @@ Redisチュートリアル
 
 .. Redis is released under the BSD license. See the COPYING file for more information.
 
-RedisはBSDライセンスでリリースされています。詳細については、ソースコードに添付の :file:`COPYING` ファイルを参照してください。
+RedisはBSDライセンスでリリースされています。詳細については、 :ref:`license` を参照してください。
 
 .. Credits
 
