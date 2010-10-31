@@ -123,146 +123,281 @@
 
       loglevel verbose
 
-# Specify the log file name. Also 'stdout' can be used to force
-# Redis to log on the standard output. Note that if you use standard
-# output for logging but daemonize, logs will be sent to /dev/null
-logfile stdout
+.. confval:: logfile filename
 
-# Set the number of databases. The default database is DB 0, you can select
-# a different one on a per-connection basis using SELECT <dbid> where
-# dbid is a number between 0 and 'databases'-1
-databases 16
+   .. Specify the log file name. Also 'stdout' can be used to force
+      Redis to log on the standard output. Note that if you use standard
+      output for logging but daemonize, logs will be sent to /dev/null
+
+   ログファイルの名前を指定します。 ``'stdout'`` を指定すると、Redisは標準出力にログを出力します。ただし、デーモンとして起動しているときに標準出力にログを出そうとしても、ログは :file:`/dev/null` に出力されてしまうので注意してください。
+
+   .. code-block:: nginx
+
+      logfile stdout
+
+.. confval:: databases num
+
+   .. Set the number of databases. The default database is DB 0, you can select
+      a different one on a per-connection basis using SELECT <dbid> where
+      dbid is a number between 0 and 'databases'-1
+
+   データベースの番号を設定します。デフォルトのデータベースは ``DB 0`` です。ユーザは、 :com:`SELECT` ``<dbid>`` を使うことで、コネクションごとに違うデータベースを選択することができます。この ``dbid`` には、0から、 :conf:`databases` - 1 まで設定できます。
+
+   .. code-block:: nginx
+
+      databases 16
 
 .. SNAPSHOTTING
 
 スナップショットの設定
 ======================
 
+.. confval:: save seconds changes
 
-# Save the DB on disk:
-#
-#   save <seconds> <changes>
-#
-#   Will save the DB if both the given number of seconds and the given
-#   number of write operations against the DB occurred.
-#
-#   In the example below the behaviour will be to save:
-#   after 900 sec (15 min) if at least 1 key changed
-#   after 300 sec (5 min) if at least 10 keys changed
-#   after 60 sec if at least 10000 keys changed
-#
-#   Note: you can disable saving at all commenting all the "save" lines.
+   .. Save the DB on disk:
 
-save 900 1
-save 300 10
-save 60 10000
+   データベースをディスクに保存するタイミングを設定することができます。
 
-# Compress string objects using LZF when dump .rdb databases?
-# For default that's set to 'yes' as it's almost always a win.
-# If you want to save some CPU in the saving child set it to 'no' but
-# the dataset will likely be bigger if you have compressible values or keys.
-rdbcompression yes
+   .. code-block:: nginx
 
-# The filename where to dump the DB
-dbfilename dump.rdb
+      save <seconds> <changes>
 
-# The working directory.
-#
-# The DB will be written inside this directory, with the filename specified
-# above using the 'dbfilename' configuration directive.
-# 
-# Also the Append Only File will be created inside this directory.
-# 
-# Note that you must specify a directory here, not a file name.
-dir ./
+   .. Will save the DB if both the given number of seconds and the given
+      number of write operations against the DB occurred.
+
+   このような設定があると、与えられた秒数経過するか、指定された回数分、書き込み命令を受け付けるとデータベースを保存します。
+
+   .. code-block:: nginx
+
+      save 900 1
+      save 300 10
+      save 60 10000
+   
+   .. In the example below the behaviour will be to save:
+      after 900 sec (15 min) if at least 1 key changed
+      after 300 sec (5 min) if at least 10 keys changed
+      after 60 sec if at least 10000 keys changed
+
+   このような設定がされると、次のようなタイミングで保存します:
+
+   * もし最低1回、キーの変更が発生すると、900秒(15分)後
+   * もし最低10回、キーの変更が発生すると、300秒(5分)後
+   * もし最低10,000回、キーの変更が発生すると、60秒後
+
+   .. note::
+
+      .. you can disable saving at all commenting all the "save" lines.
+
+      :conf:`save` 行をすべてコメントアウトすると、保存が行われなくなります。
+
+.. confval:: rdbcompression yes/no
+
+   .. Compress string objects using LZF when dump .rdb databases?
+      For default that's set to 'yes' as it's almost always a win.
+      If you want to save some CPU in the saving child set it to 'no' but
+      the dataset will likely be bigger if you have compressible values or 
+      keys.
+
+   ``.rdb`` データベースにダンプするときに、文字列オブジェクトをLZFを使って圧縮するかどうかを設定します。デフォルトでは ``'yes'`` になっており、常に圧縮するようになっています。もし保存時にCPUパワーを節約したい場合は ``'no'`` を設定してください。ただし、値やキーを圧縮すると指定した場合に比べると、データセットの大きさは大きくなります。
+
+   .. code-block:: nginx
+
+      rdbcompression yes
+
+.. confval:: dbfilename filename
+
+   .. The filename where to dump the DB
+
+   DBをダンプするファイル名を指定します。
+
+   .. code-block:: nginx
+
+      dbfilename dump.rdb
+
+.. confval:: dir path
+
+   .. The working directory.
+
+   作業ディレクトリを設定します。
+
+   .. The DB will be written inside this directory, with the filename specified
+      above using the 'dbfilename' configuration directive.
+
+   DBは、このディレクトリ内に、 :conf:`dbfilename` 設定ディレクティブで設定された名前で書き出されます。
+
+   .. Also the Append Only File will be created inside this directory.
+
+   :ref:`append_only_file` もこのディレクトリ内に作成されます。
+ 
+   .. note::
+
+      .. that you must specify a directory here, not a file name.
+
+      この設定では、ファイル名ではなく、ディレクトリ名を設定してください。
+
+   .. code-block:: nginx
+
+      dir ./
 
 .. REPLICATION
 
 レプリケーションの設定
 ======================
 
-# Master-Slave replication. Use slaveof to make a Redis instance a copy of
-# another Redis server. Note that the configuration is local to the slave
-# so for example it is possible to configure the slave to save the DB with a
-# different interval, or to listen to another port, and so on.
-#
-# slaveof <masterip> <masterport>
+.. confval:: slaveof masterip masterport
 
-# If the master is password protected (using the "requirepass" configuration
-# directive below) it is possible to tell the slave to authenticate before
-# starting the replication synchronization process, otherwise the master will
-# refuse the slave request.
-#
-# masterauth <master-password>
+   .. Master-Slave replication. Use slaveof to make a Redis instance a copy of
+      another Redis server. Note that the configuration is local to the slave
+      so for example it is possible to configure the slave to save the DB with a
+      different interval, or to listen to another port, and so on.
+
+   マスター/スレーブ間のレプリケーションの設定です。 :conf:`slaveof` を使うと、他のRedisサーバのコピーとなるインスタンスが作られます。この設定ファイルで設定される設定値はスレーブに限定して行われるため、マスターとは異なる間隔でDBを保存したり、別のポートでlistenしたり、といったこともできます。
+
+   .. code-block:: nginx
+
+       slaveof 192.168.1.10 6379
+
+.. confval:: masterauth master-password
+
+   .. If the master is password protected (using the "requirepass" configuration
+      directive below) it is possible to tell the slave to authenticate before
+      starting the replication synchronization process, otherwise the master 
+      will refuse the slave request.
+
+   もし、マスターサーバーがパスワードで保護されているのであれば(:conf:`requirepass` 設定ディレクティブが使用されている)、レプリケーション同期プロセスを開始する前に認証をパスさせることができます。もし、パスワードが異なる、この設定が行われていないなどの場合は、マスターはスレーブからのリクエストを拒絶します。
+
+   .. code-block:: nginx
+
+      masterauth foobared
+
+.. SECURITY
 
 セキュリティの設定
 ==================
 
-################################## SECURITY ###################################
+.. confval:: requirepass password
 
-# Require clients to issue AUTH <PASSWORD> before processing any other
-# commands.  This might be useful in environments in which you do not trust
-# others with access to the host running redis-server.
-#
-# This should stay commented out for backward compatibility and because most
-# people do not need auth (e.g. they run their own servers).
-# 
-# Warning: since Redis is pretty fast an outside user can try up to
-# 150k passwords per second against a good box. This means that you should
-# use a very strong password otherwise it will be very easy to break.
-#
-# requirepass foobared
+   .. Require clients to issue AUTH <PASSWORD> before processing any other
+      commands.  This might be useful in environments in which you do not trust
+      others with access to the host running redis-server.
+
+   クライアントが他のコマンドを送る前に、 :com:`AUTH` を実行するように要求します。これは、Redisサーバが実行しているホストに、信頼できないホストからのアクセスがある場合に便利です。
+
+   .. This should stay commented out for backward compatibility and because most
+      people do not need auth (e.g. they run their own servers).
+
+   後方互換性のためや、自分自身のためにサーバを立てている場合など、認証が必要ない場合にはコメントアウトしておいてください。
+ 
+   .. Warning::
+
+      .. since Redis is pretty fast an outside user can try up to
+         150k passwords per second against a good box. This means that you 
+         should use a very strong password otherwise it will be very easy 
+         to break.
+
+      Redisはとても高速なため、性能の良いマシン上で実行している場合は、毎秒150,000回程度のパスワードチェックを行うことがでいます。そのため、弱いパスワードであれば簡単に突破されてしまうため、非常に強いパスワードを設定するようにしてください。
+
+   .. code-block:: nginx
+
+      requirepass foobared
 
 .. LIMITS
 
 リソース制限の設定
 ==================
 
-# Set the max number of connected clients at the same time. By default there
-# is no limit, and it's up to the number of file descriptors the Redis process
-# is able to open. The special value '0' means no limits.
-# Once the limit is reached Redis will close all the new connections sending
-# an error 'max number of clients reached'.
-#
-# maxclients 128
+.. confval:: maxclients clientcount
 
-# Don't use more memory than the specified amount of bytes.
-# When the memory limit is reached Redis will try to remove keys with an
-# EXPIRE set. It will try to start freeing keys that are going to expire
-# in little time and preserve keys with a longer time to live.
-# Redis will also try to remove objects from free lists if possible.
-#
-# If all this fails, Redis will start to reply with errors to commands
-# that will use more memory, like SET, LPUSH, and so on, and will continue
-# to reply to most read-only commands like GET.
-#
-# WARNING: maxmemory can be a good idea mainly if you want to use Redis as a
-# 'state' server or cache, not as a real DB. When Redis is used as a real
-# database the memory usage will grow over the weeks, it will be obvious if
-# it is going to use too much memory in the long run, and you'll have the time
-# to upgrade. With maxmemory after the limit is reached you'll start to get
-# errors for write operations, and this may even lead to DB inconsistency.
-#
-# maxmemory <bytes>
+   .. Set the max number of connected clients at the same time. By default there
+      is no limit, and it's up to the number of file descriptors the Redis 
+      process is able to open. The special value '0' means no limits.
+      Once the limit is reached Redis will close all the new connections sending
+      an error 'max number of clients reached'.
 
-# MAXMEMORY POLICY: how Redis will select what to remove when maxmemory
-# is reached? You can select among five behavior:
-# 
-# volatile-lru -> remove the key with an expire set using an LRU algorithm
-# allkeys-lru -> remove any key accordingly to the LRU algorithm
-# volatile-random -> remove a random key with an expire set
-# allkeys->random -> remove a random key, any key
-# volatile-ttl -> remove the key with the nearest expire time (minor TTL)
-#
-# maxmemory-policy volatile-lru
+   同時に接続できるクライアント数を設定します。デフォルトでは無制限になっており、Redisプロセスがオープンできる最大のファイルディスクリプタの数まで接続を許可します。 ``'0'`` を設定すると無制限になります。最大の接続数に達する津お、Redisは全ての新しいコネクションを閉じ、 ``'max number of clients reached'`` エラーを送信します。
 
-# LRU and minimal TTL algorithms are not precise algorithms but approximated
-# algorithms (in order to save memory), so you can select as well the sample
-# size to check. For instance for default Redis will check three keys and
-# pick the one that was used less recently, you can change the sample size
-# using the following configuration directive.
-#
-# maxmemory-samples 3
+   .. code-block:: nginx
+
+      maxclients 128
+
+.. confval:: maxmemory bytes
+
+   .. Don't use more memory than the specified amount of bytes.
+      When the memory limit is reached Redis will try to remove keys with an
+      EXPIRE set. It will try to start freeing keys that are going to expire
+      in little time and preserve keys with a longer time to live.
+      Redis will also try to remove objects from free lists if possible.
+
+   指定された量以上のメモリを使用しなくなります。Redisは、メモリ使用量の限界に達すると、 :com:`EXPIRE` されたセットのキーを削除しようとします。キーを開放しようとします。また、少しで期限が切れそうなキーや、長い間維持されてきたキーを削除しようとします。可能であれば、フリーのリストのオブジェクトも可能であれば削除しようとします。
+
+   .. If all this fails, Redis will start to reply with errors to commands
+      that will use more memory, like SET, LPUSH, and so on, and will continue
+      to reply to most read-only commands like GET.
+
+   もしこれらがすべて失敗した場合には、 :com:`SET` や :com:`LPUSH` などの、メモリを使用するコマンドに対してエラーを返すようになります。 :com:`GET` などの読み込み専用のコマンドは引き続き処理可能です。
+
+   .. warning::
+
+      .. maxmemory can be a good idea mainly if you want to use Redis as a
+         'state' server or cache, not as a real DB. When Redis is used as a real
+         database the memory usage will grow over the weeks, it will be 
+         obvious if it is going to use too much memory in the long run, 
+         and you'll have the time to upgrade. With maxmemory after the limit 
+         is reached you'll start to get errors for write operations, 
+         and this may even lead to DB inconsistency.
+
+      もしRedisを本物のDBではなく、状態の保持やキャッシュに使おうとしている場合は :conf:`maxmemory` を使うのは良い選択です。Redisが本当のデータベースとして使用されるのであれば、使用される記憶容量は徐々に成長していきます。長期間運用していると、大量のメモリを使用することになり、アップグレードのために時間を取る必要があるでしょう。もし限界を超えてしまうと、書き込み操作がエラーを返すようになるため、DBのデータが予期されない矛盾を含むことになるかもしれません。
+
+    .. code-block:: nginx
+
+       maxmemory 500MB
+
+.. confval:: maxmemory-policy policy
+
+   .. how Redis will select what to remove when maxmemory
+      is reached? You can select among five behavior:
+
+   Redisのメモリ使用量が :conf:`maxmemory` に達した場合、何から削除していくのか、というのを選択します。次の5つの振る舞いから選択することができます。
+ 
+   .. volatile-lru -> remove the key with an expire set using an LRU algorithm
+      allkeys-lru -> remove any key accordingly to the LRU algorithm
+      volatile-random -> remove a random key with an expire set
+      allkeys->random -> remove a random key, any key
+      volatile-ttl -> remove the key with the nearest expire time (minor TTL)
+
+   ``volatile-lru``
+      LRUアルゴリズムを使用し、期限切れになったセットのキーを削除します
+
+   ``allkeys-lru``
+      LRCアルゴリズムに従い、どれかのキーを削除します
+
+   ``volatile-random``
+     期限切れになったセットの中から、ランダムにキーを削除します
+
+   ``allkeys-random``
+     どれかのキーをランダムに削除します
+
+   ``volatile-ttl``
+     一番期限に近いキーから削除していきます
+
+
+   .. code-block:: nginx
+
+      maxmemory-policy volatile-lru
+
+.. confval:: maxmemory-samples number
+
+   .. LRU and minimal TTL algorithms are not precise algorithms but approximated
+      algorithms (in order to save memory), so you can select as well the sample
+      size to check. For instance for default Redis will check three keys and
+      pick the one that was used less recently, you can change the sample size
+      using the following configuration directive.
+
+   LRCと最小TTL(生存期間)アルゴリズムは正確なアルゴリズムではなく、メモリの節約のために近似アルゴリズムになっています。そのため、チェックを行うサンプルの数を選択できるようになっています。デフォルトのRedisでは3つのキーをチェックし、その中からもっと使われたのが古いものを1つ選ぶというアルゴリズムになっています。この設定ディレクティブを使用すると、このサンプル値を変更することができます。
+   
+   .. code-block:: nginx
+
+      maxmemory-samples 3
 
 .. APPEND ONLY MODE
 
