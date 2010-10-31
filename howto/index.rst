@@ -7,3 +7,5 @@ Redis How To
 
    replication
    append_only_file
+   pipelining
+
