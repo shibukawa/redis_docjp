@@ -47,6 +47,7 @@ redisドキュメント日本語訳
    commandreference/sets
    commandreference/sortedsets
    commandreference/hashes
+   commandreference/alldata
 
 索引など
 ========
