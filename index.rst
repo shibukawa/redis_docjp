@@ -19,6 +19,7 @@ redisドキュメント日本語訳
 ============================
 
 .. toctree::
+   :maxdepth: 1
 
    admin/cli
    admin/server
@@ -59,7 +60,7 @@ redisドキュメント日本語訳
 翻訳について
 ============
 
-このドキュメントは、RedisのWiki(http://code.google.com/p/redis/wiki/)の内容を三項にしながら、構成などはSphinxに合わせつつ翻訳しています。また、必要に応じて、配布物の中のファイルなども引用しながら訳しています。
+このドキュメントは、RedisのWiki(http://code.google.com/p/redis/wiki/)の内容を参考にしながら、構成などはSphinxに合わせつつ翻訳しています。また、必要に応じて、配布物の中のファイルなども引用しながら訳しています。
 
 .. warning::
 

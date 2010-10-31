@@ -8,7 +8,7 @@
 .. Note on units: when memory size is needed, it is possible to specifiy
    it in the usual form of 1k 5GB 4M and so forth:
 
-メモリサイズが飛鳥となる部分では、 ``1k`` 、 ``5GB`` 、``4MB`` など、良く使われる方法で設定することができます。
+メモリサイズが飛鳥となる部分では、 ``1k`` 、 ``5GB`` 、 ``4MB`` など、良く使われる方法で設定することができます。
 
 .. 1k => 1000 bytes
    1kb => 1024 bytes
@@ -314,7 +314,7 @@
       Once the limit is reached Redis will close all the new connections sending
       an error 'max number of clients reached'.
 
-   同時に接続できるクライアント数を設定します。デフォルトでは無制限になっており、Redisプロセスがオープンできる最大のファイルディスクリプタの数まで接続を許可します。 ``'0'`` を設定すると無制限になります。最大の接続数に達する津お、Redisは全ての新しいコネクションを閉じ、 ``'max number of clients reached'`` エラーを送信します。
+   同時に接続できるクライアント数を設定します。デフォルトでは無制限になっており、Redisプロセスがオープンできる最大のファイルディスクリプタの数まで接続を許可します。 ``'0'`` を設定すると無制限になります。最大の接続数に達すると、Redisは全ての新しいコネクションを閉じ、 ``'max number of clients reached'`` エラーを送信します。
 
    .. code-block:: nginx
 
@@ -348,9 +348,9 @@
 
       もしRedisを本物のDBではなく、状態の保持やキャッシュに使おうとしている場合は :conf:`maxmemory` を使うのは良い選択です。Redisが本当のデータベースとして使用されるのであれば、使用される記憶容量は徐々に成長していきます。長期間運用していると、大量のメモリを使用することになり、アップグレードのために時間を取る必要があるでしょう。もし限界を超えてしまうと、書き込み操作がエラーを返すようになるため、DBのデータが予期されない矛盾を含むことになるかもしれません。
 
-    .. code-block:: nginx
+   .. code-block:: nginx
 
-       maxmemory 500MB
+      maxmemory 500MB
 
 .. confval:: maxmemory-policy policy
 
@@ -500,17 +500,25 @@
       for this currently, as even performing fsync in a different thread will
       block our synchronous write(2) call.
 
+   AOFのfsyncポリシーが ``always`` か ``everysec`` に設定されており、バックグラウンドのセーブ用のプロセス(バックグラウンドのセーブか、AOFのログのバックグラウンド書き込み)がディスクに対して大量のI/Oを発生していたとすると、Linuxの設定によっては、 ``fsync()`` 呼び出し時にRedisが長時間ブロックしてしまう可能性があります。現在では修正方法がないため、別スレッドの ``fsync`` 呼び出しは、同期的な書き込みの呼び出しまでブロックさせてしまいます。
+
    .. In order to mitigate this problem it's possible to use the following 
       option that will prevent fsync() from being called in the main process 
       while a BGSAVE or BGREWRITEAOF is in progress.
+
+   このオプションを使うと、 :com:`BGSAVE` や :com:`BGREWRITEAOF` が実行中は、メインのスレッドでは ``fsync()`` 呼び出しが行われないようになり、この問題を回避することができます。
 
    .. This means that while another child is saving the durability of Redis is
       the same as "appendfsync none", that in pratical terms means that it is
       possible to lost up to 30 seconds of log in the worst scenario (with the
       default Linux settings).
+
+   これはつまり、他の子スレッドが保存している間は、 :conf:`appendfsync` ``none`` が設定されているのと同じ動作をするようになるため、利用者の視点で説明するとすれば、クラッシュした場合に、最悪のシナリオ(+デフォルトのLinuxの設定)を想定すると、最大で30秒のログが失われる可能性があるということです。
  
    .. If you have latency problems turn this to "yes". Otherwise leave it as
       "no" that is the safest pick from the point of view of durability.
+
+   もし遅延時間の問題を持っているのであれば、 ``yes`` を設定してください。そうでない場合には、安全性の観点から ``no`` を選択して、この問題は放置するようにしてください。
 
    .. code-block:: nginx
 
