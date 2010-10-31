@@ -15,6 +15,7 @@ Redisリスト型はRedis文字列型のリストになっています。Redis�
 :com:`LPUSH` コマンドでは新しい要素をリストの先頭に追加して、 :com:`RPUSH` では新しい要素を末尾に追加します。対応するリストを持たないキーに対してこの操作が行われた場合は、新しいリストが作成されます。
 
 .. For instance if perform the following operations:
+
 たとえば次のような操作をした場合は結果は次のようになります::
 
    LPUSH mylist a   # now the list is "a"

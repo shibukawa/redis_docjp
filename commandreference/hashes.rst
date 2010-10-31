@@ -20,7 +20,7 @@ Redisハッシュ型は面白い作りになっています。どのような点
 
 .. Commands operating on hashes try to make a good use of the return value in order to signal the application about previous existence of fields. For instance the HSET command will return 1 if the field set was not already present in the hash, otherwise will return 0 (and the user knows this was just an update operation).
 
-Redisハッシュはアプリケーションが以前あるフィールドが存在したかどうか警告するために便利な値を返すようにつくられています。たとえば :com:`HSET` コマンドはフィールドがすでにハッシュ表の中にあった場合は ``1`` を、それ以外の場合は ``0``　を返すようにしています。（そしてユーザはこれは単に更新操作であることを知っている）
+Redisハッシュはアプリケーションが以前あるフィールドが存在したかどうか警告するために便利な値を返すようにつくられています。たとえば :com:`HSET` コマンドはフィールドがすでにハッシュ表の中にあった場合は ``1`` を、それ以外の場合は ``0`` を返すようにしています。（そしてユーザはこれは単に更新操作であることを知っている）
 
 .. The max number of fields in a set is 2^32-1 (4294967295, more than 4 billion of members per hash).
 

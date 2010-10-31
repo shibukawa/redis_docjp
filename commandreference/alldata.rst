@@ -14,7 +14,7 @@
    
    .. Return value
    
-   返り値
+   **返り値**
 
      .. Integer reply, specifically:
 
@@ -35,7 +35,7 @@
    
    .. Return value
 
-   返り値
+   **返り値**
 
      .. Integer reply, specifically:
 
@@ -57,7 +57,7 @@
 
    .. Return value
    
-   返り値
+   **返り値**
 
      .. Status code reply, specifically:
 
@@ -72,7 +72,7 @@
    
    .. See also
 
-   参照
+   **参照**
    
      .. Redis Data Types
      
@@ -109,7 +109,7 @@
    
    .. Return value
    
-   返り値
+   **返り値**
    
       .. Multi bulk reply
 
@@ -126,7 +126,7 @@
 
    .. Return value
    
-   返り値
+   **返り値**
 
    .. Singe line reply, specifically the randomly selected key or an empty string is the database is empty.
    
@@ -143,7 +143,7 @@
 
    .. Return value
 
-   返り値
+   **返り値**
 
      .. Status code repy
 
@@ -158,7 +158,7 @@
 
    .. Return value
    
-   返り値
+   **返り値**
 
      .. Integer reply, specifically:
 
@@ -175,7 +175,7 @@
    
    .. Return value
    
-   返り値
+   **返り値**
 
      .. Integer reply
 
@@ -247,7 +247,7 @@
 
    .. Return value
 
-   返り値
+   **返り値**
 
      Integer reply（整数値）が返ります
 
@@ -260,7 +260,7 @@
    
    .. Return value
 
-   返り値
+   **返り値**
 
      Status code reply（ステータスコード）が返ります。
 
@@ -273,7 +273,7 @@
 
    .. Return value
    
-   返り値
+   **返り値**
 
      Integer reply（整数値）が返ります。具体的には下記::
 
@@ -289,7 +289,7 @@
 
    .. Return value
 
-   返り値
+   **返り値**
 
      Status code reply（ステータスコード）が返ります。
 
@@ -302,7 +302,7 @@
 
    .. Return value
    
-   返り値
+   **返り値**
 
      Status code reply（ステータスコード）が返ります。
 
@@ -326,11 +326,17 @@
 
    .. Either all of the commands or none are processed. The EXEC command triggers the execution of all the commands in the transaction, so if a client loses the connection to the server in the context of a transaction before calling the MULTI command none of the operations are performed, instead if the EXEC command is called, all the operations are performed. An exception to this rule is when the Append Only File is enabled: every command that is part of a Redis transaction will log in the AOF as long as the operation is completed, so if the Redis server crashes or is killed by the system administrator in some hard way it is possible that only a partial number of operations are registered.
 
-   すべてのコマンドが実行されるか全く実行されないかのどちらかとなります。 :com:`EXEC` コマンド
+   すべてのコマンドが実行されるか全く実行されないかのどちらかとなります。 :com:`EXEC` コマンドはトランザクション中のすべてのコマンドの実行のトリガーとなります。なので、もしクライアントが :com:`MULTI` を呼び出す前にサーバへの接続を失った場合は、操作はひとつも実行されませんが、 :com:`EXEC` を呼べばすべての操作が実行されます。このルールの例外としてAppend Only File（追記専用ファイル、以下AOF）が有効になっている場合があります。この場合、Redisトランザクションに関するコマンドは操作が完了するまではAOFにログを録ります。したがってもしRedisサーバがクラッシュする、もしくはシステムアドミニストレータによってkillされたとき、トランザクションの操作の中から部分的に実行された分が登録される、ということが起きえます。
 
    .. Since Redis 2.1.0, it's also possible to add a further guarantee to the above two, in the form of optimistic locking of a set of keys in a way very similar to a CAS (check and set) operation. This is documented later in this manual page.
 
-Usage
+   Redis 2.1.0から、上記の２項目に加えてさらにCAS（check and set）操作に似た方法でキーの束を楽観的ロックすることが可能になりました。これについては本文のあとの方で説明します。
+
+   .. Usage
+
+   **使い方**
+
+
 A Redis transaction is entered using the MULTI command. The command always replies with OK. At this point the user can issue multiple commands. Instead of executing these commands, Redis will "queue" them. All the commands are executed once EXEC is called.
 
 Calling DISCARD instead will flush the transaction queue and will exit the transaction.
@@ -436,8 +442,12 @@ ZREM zset ele
 EXEC
 If EXEC fails (returns a nil value) we just re-iterate the operation.
 
-Return value
-Multi bulk reply, specifically:
+   .. Return value
 
-The result of a MULTI/EXEC command is a multi bulk reply where every element is the return value of every command in the atomic transaction.
+   **戻り値**
+
+     Multi bulk replyを返します。具体的には下記::
+
+       The result of a MULTI/EXEC command is a multi bulk reply where every element is the return value of every command in the atomic transaction.
+
 If a MULTI/EXEC transaction is aborted because of WATCH detected modified keys, a Null Multi Bulk reply is returned.
