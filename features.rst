@@ -42,7 +42,7 @@ RedisはANSI Cで書かれていて、すべてのデータセットをメモリ
    Redis supports an append-only file persistence mode. Check more on 
    Persistence, or read the AppendOnlyFileHowto for more information.
 
-もし、データが失われることが許容できないのであれば、追記専用ファイル永続化モードもサポートしています。詳細については、 :ref:`persistence` か、 :ref:`append_only_file_howto` を参照してください。
+もし、データが失われることが許容できないのであれば、追記専用ファイル永続化モードもサポートしています。詳細については、 :ref:`persistence` か、 :ref:`append_only_file` を参照してください。
 
 .. Support for Data Structures
 
@@ -106,7 +106,7 @@ Redisはシンプルで高速なマスター/スレーブのレプリケーシ�
 
 .. Read more about Master/Slave Replication.
 
-詳しくは、 :ref:`master_slave_replication` を参照してください。
+詳しくは、 :ref:`replication` を参照してください。
 
 .. Sharding
 

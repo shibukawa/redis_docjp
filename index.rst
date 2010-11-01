@@ -10,10 +10,6 @@ redisドキュメント日本語訳
    readme
    copying
 
-.. toctree::
-   :maxdepth: 2
-
-   howto/index
 
 アドミニストレーションガイド
 ============================
@@ -23,26 +19,30 @@ redisドキュメント日本語訳
 
    admin/cli
    admin/server
+   admin/append_only_file
+   admin/replication
    admin/config
 
 デベロッパーズガイド
 ====================
 
 .. toctree::
+   :hidden:
+
+   commandreference/connection
+   commandreference/alldata
+
+.. toctree::
    :maxdepth: 1
 
    commandreference/index
+   developer/pipelining
 
 .. toctree::
    :maxdepth: 2
 
    datatypes
 
-.. toctree::
-   :hidden:
-
-   commandreference/connection
-   commandreference/alldata
 
 ハッカーズガイド
 ================

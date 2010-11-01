@@ -1,11 +1,14 @@
 .. -*- coding: utf-8 -*-;
 
-=========================
-Redis Replication Howto
-=========================
+.. Redis Replication Howto
+
+.. _replication:
+
+==========================
+レプリケーションの設定方法
+==========================
 
 .. General Information
-.. --------------------
 
 一般的な情報
 -----------------
@@ -35,10 +38,9 @@ Redisのマスタースレーブのレプリケーションの利用と設定は
 
 
 .. How Redis replication works
-.. ----------------------------
 
-Redisのレプリケーション動作に付いて
-----------------------------------------------
+どのようにRedisはレプリケーションしているのか？
+-----------------------------------------------
 
 .. In order to start the replication, or after the connection closes in order resynchronize with the master, the slave connects to the master and issues the SYNC command.
 

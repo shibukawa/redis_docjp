@@ -1,17 +1,19 @@
-=========================
-Append Only File HOWTO
-=========================
+.. Append Only File HOWTO
 
+.. _append_only_file:
+
+======================
+追記専用ファイルモード
+======================
 
 .. General Information
-.. --------------------------
 
 一般的な情報
 ----------------------
 
 .. Append only file is an alternative durability option for Redis. What this mean? Let's start with some fact:
 
-AppendOnlyFileは、Redisを強固にするオプションです。意味が分からない？では、一緒に観ていきましょう:
+追記専用ファイルは、Redisを強固にするオプションです。意味が分からない？では、一緒に観ていきましょう:
 
 .. * For default Redis saves snapshots of the dataset on disk, in a binary file called dump.rdb (by default at least). For instance you can configure Redis to save the dataset every 60 seconds if there are at least 100 changes in the dataset, or every 1000 seconds if there is at least a single change in the dataset. This is known as "Snapshotting".
 
@@ -31,16 +33,14 @@ Snapshottingは、堅牢性が高いとは言えません。もし、あなた�
 
 .. * You have to turn it on editing the configuration file. Just make sure you have "appendonly yes" somewhere.
 
-* 設定ファイルで、'appendonly yes"項目を有効化します。
+* 設定ファイルで、" :conf:`appendonly` yes"の項目を有効化します。
 
 .. * Append only files work this way: every time Redis receive a command that changes the dataset (for instance a SET or LPUSH command) it appends this command in the append only file. When you restart Redis it will first re-play the append only file to rebuild the state.
 
 * Redisがコマンドを受け取るたびにすべてのコマンドをファイルに追記していきます。Redisを再起動した場合には、コマンドをすべてリプレイしデータセットの状態をリビルドします。
 
 
-
 .. Log rewriting
-.. -------------------
 
 ログの書き換えについて
 ------------------------------
@@ -93,7 +93,6 @@ Redisは興味深い機能を持っています。追記型のログファイル
 
 
 .. How durable is the append only file?
-.. ------------------------------------------
 
 追記専用ログファイルを使うとどれくらい安全？
 ----------------------------------------------------------
@@ -118,21 +117,20 @@ redis.confを見てみよう。あなたはいつでもコンフィギュレー�
 
 
 .. What should I do if my Append Only File gets corrupted?
-.. ----------------------------------------------------------------
 
 もし不正動作に見舞われたら？
 ---------------------------------
 
 .. It is possible that the server crashes while writing the AOF file (this still should never lead to inconsistencies) corrupting the file in a way that is no longer loadable by Redis. When this happens you can fix this problem using the following procedure:
 
-無いとは言えません。AOFファイルを書き込み時にサーバがクラッシュして、Redisで読み込み不能なファイルが作成された場合などです。もしこのような事態になった場合は以下の手順を試してください。
+無いとは言えません。追記専用ファイルの書き込み時にサーバがクラッシュして、Redisで読み込み不能なファイルが作成された場合などです。もしこのような事態になった場合は以下の手順を試してください。
 
 .. * Make a backup copy of your AOF file.
 .. * Fix the original file with: ./redis-check-aof --fix <filename>
 .. * Optionally use diff -u to check what is the difference between two files.
 .. * Restart the server with the fixed file.
 
-* あなたのAOFファイルのバックアップコピーを作成してください。
+* 追記専用ファイルのバックアップコピーを作成してください。
 * オリジナルファイルに対してフィックスをかけます。
 
 .. code-block:: nginx 

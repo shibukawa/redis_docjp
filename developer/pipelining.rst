@@ -50,10 +50,11 @@ Redisは、典型的なTCPを使ったクライアント/サーバモデルで�
 幸いなことに、これらを改善する方法があります。
 
 .. Redis Pipelining
-.. =================
 
-Redis パイプライニング
-==================================
+.. _pipelining:
+
+パイプライニング
+================
 
 .. A Request/Response server can be implemented so that it is able to process new requests even if the client didn't already read the old responses. This way it is possible to send multiple commands to the server without waiting for the replies at all, and finally read the replies in a single step.
 
@@ -111,7 +112,7 @@ Redis 各種クライアントを用いたベンチマークサンプルです�
 Ruby Sample
 -------------
 
-.. literalinclude:: ruby_redis_benchmark.rb
+.. literalinclude:: benchmark.rb
      :language: ruby
      :encoding: utf-8
      :linenos:
@@ -127,7 +128,7 @@ Running the above simple script will provide this figures in my Mac OS X system,
 Python Sample
 --------------
 
-.. literalinclude:: python_redis_benchmark.py
+.. literalinclude:: benchmark.py
      :language: python
      :encoding: utf-8
      :linenos:
