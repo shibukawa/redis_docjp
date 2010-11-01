@@ -128,9 +128,9 @@
    
    **返り値**
 
-   .. Singe line reply, specifically the randomly selected key or an empty string is the database is empty.
+     .. Singe line reply, specifically the randomly selected key or an empty string is the database is empty.
    
-   Single line reply（単一行）が返ります。具体的にはランダムに選択されたキーまたはデータベースが空のときは空文字列が返ります。
+     Single line reply（単一行）が返ります。具体的にはランダムに選択されたキーまたはデータベースが空のときは空文字列が返ります。
 
 
 .. command:: RENAME oldkey newkey
@@ -185,6 +185,7 @@
 .. command:: EXPIRE key seconds
 .. command:: EXPIREAT key unixtime (Redis >= 1.1)
 .. command:: PERSIST key
+
    計算時間: O(1)
 
    .. Set a timeout on the specified key. After the timeout the key will be automatically deleted by the server. A key with an associated timeout is said to be volatile in Redis terminology.
@@ -209,7 +210,7 @@
 
    .. How the expire is removed from a key
 
-   どのようにキーからタイムアウトが削除されるか
+   **どのようにキーからタイムアウトが削除されるか**
 
      .. When the key is set to a new value using the SET command, or when a key is destroied via DEL, the timeout is removed from the key.
 
@@ -217,7 +218,7 @@
 
    .. Restrictions with write operations against volatile keys
 
-   揮発性のキーに対する書き込み制限
+   **揮発性のキーに対する書き込み制限**
 
      .. IMPORTANT: Since Redis 2.1.3 or greater, there are no restrictions about the operations you can perform against volatile keys, however older versions of Redis, including the current stable version 2.0.0, has the following limitations:
 
@@ -336,111 +337,177 @@
 
    **使い方**
 
+     .. A Redis transaction is entered using the MULTI command. The command always replies with OK. At this point the user can issue multiple commands. Instead of executing these commands, Redis will "queue" them. All the commands are executed once EXEC is called.
 
-A Redis transaction is entered using the MULTI command. The command always replies with OK. At this point the user can issue multiple commands. Instead of executing these commands, Redis will "queue" them. All the commands are executed once EXEC is called.
+     Redisのトランザクションは :com:`MULTI` コマンドを使って登録します。コマンドはつねにOKを返します。このときユーザは複数のコマンドを発行できます。これらのコマンドを実行する代わりに、Redisではキューにためます。キュー内のコマンドは :com:`EXEC` が呼ばれたタイミングで実行されます。
+     
 
-Calling DISCARD instead will flush the transaction queue and will exit the transaction.
+     .. Calling DISCARD instead will flush the transaction queue and will exit the transaction.
 
-The following is an example using the Ruby client:
+     :com:`DISCARD` を呼ぶとトランザクションキューをフラッシュして、トランザクションから出ます。
 
-?> r.multi
-=> "OK"
->> r.incr "foo"
-=> "QUEUED"
->> r.incr "bar"
-=> "QUEUED"
->> r.incr "bar"
-=> "QUEUED"
->> r.exec
-=> [1, 1, 2]
-As it is possible to see from the session above, MULTI returns an "array" of replies, where every element is the reply of a single command in the transaction, in the same order the commands were queued.
+     .. The following is an example using the Ruby client:
 
-When a Redis connection is in the context of a MULTI request, all the commands will reply with a simple string "QUEUED" if they are correct from the point of view of the syntax and arity (number of arguments) of the commaand. Some commands are still allowed to fail during execution time.
+     Rubyクライアントのでの例です::
 
-This is more clear on the protocol level; In the following example one command will fail when executed even if the syntax is right:
+       ?> r.multi
+       => "OK"
+       >> r.incr "foo"
+       => "QUEUED"
+       >> r.incr "bar"
+       => "QUEUED"
+       >> r.incr "bar"
+       => "QUEUED"
+       >> r.exec
+       => [1, 1, 2]
+       
+     .. As it is possible to see from the session above, MULTI returns an "array" of replies, where every element is the reply of a single command in the transaction, in the same order the commands were queued.
 
-Trying 127.0.0.1...
-Connected to localhost.
-Escape character is '^]'.
-MULTI
-+OK
-SET a 3 
-abc
-+QUEUED
-LPOP a
-+QUEUED
-EXEC
-*2
-+OK
--ERR Operation against a key holding the wrong kind of value
-MULTI returned a two elements bulk reply where one is an +OK code and one is a -ERR reply. It's up to the client lib to find a sensible way to provide the error to the user.
+     この例でわかるように、 :com:`MULTI` はトランザクション中の各コマンドの返り値を要素に持った配列を返します。要素の並び順はコマンドの並び順に一致します。
 
-IMPORTANT: even when a command will raise an error, all the other commands in the queue will be processed. Redis will NOT stop the processing of commands once an error is found.
-Another example, again using the write protocol with telnet, shows how syntax errors are reported ASAP instead:
+     .. When a Redis connection is in the context of a MULTI request, all the commands will reply with a simple string "QUEUED" if they are correct from the point of view of the syntax and arity (number of arguments) of the commaand. Some commands are still allowed to fail during execution time.
 
-MULTI
-+OK
-INCR a b c
--ERR wrong number of arguments for 'incr' command
-This time due to the syntax error the "bad" INCR command is not queued at all.
+     Redisへ接続している間に :com:`MULTI` が呼びだされたとき、すべてのコマンドが文法上も引数も正しく呼びだされたときは文字列 ~QUEUED" を返します。実行時にうまく動作しなくてもかまいません。
 
-The DISCARD command
-DISCARD can be used in order to abort a transaction. No command will be executed, and the state of the client is again the normal one, outside of a transaction. Example using the Ruby client:
+     .. This is more clear on the protocol level; In the following example one command will fail when executed even if the syntax is right
 
-?> r.set("foo",1)
-=> true
->> r.multi
-=> "OK"
->> r.incr("foo")
-=> "QUEUED"
->> r.discard
-=> "OK"
->> r.get("foo")
-=> "1"
-Check and Set (CAS) transactions using WATCH
-WATCH is used in order to provide a CAS (Check and Set) behavior to Redis Transactions.
+     プロトコルレベルではより明確に見て取れます。次の例は文法上正しいですが実行時にコマンドが失敗する例です::
 
-WATCHed keys are monitored in order to detect changes against this keys. If at least a watched key will be modified before the EXEC call, the whole transaction will abort, and EXEC will return a nil object (A Null Multi Bulk reply) to notify that the transaction failed.
+       Trying 127.0.0.1...
+       Connected to localhost.
+       Escape character is '^]'.
+       MULTI
+       +OK
+       SET a 3 
+       abc
+       +QUEUED
+       LPOP a
+       +QUEUED
+       EXEC
+       *2
+       +OK
+       -ERR Operation against a key holding the wrong kind of value
 
-For example imagine we have the need to atomically increment the value of a key by 1 (I know we have INCR, let's suppose we don't have it).
+     .. MULTI returned a two elements bulk reply where one is an +OK code and one is a -ERR reply. It's up to the client lib to find a sensible way to provide the error to the user.
 
-The first try may be the following:
+     :com:`MULTI` は要素が2つのBulk replyを返してきました。そのうち一つは"+OK"でもう一つは"-ERR"です。ユーザにエラーを提供する方法はクライアントライブラリ次第です。
 
-val = GET mykey
-val = val + 1
-SET mykey $val
-This will work reliably only if we have a single client performing the operation in a given time. If multiple clients will try to increment the key about at the same time there will be a race condition. For instance client A and B will read the old value, for instance, 10. The value will be incremented to 11 by both the clients, and finally SET as the value of the key. So the final value will be "11" instead of "12".
+     .. even when a command will raise an error, all the other commands in the queue will be processed. Redis will NOT stop the processing of commands once an error is found.
+Another example, again using the write protocol with telnet, shows how syntax errors are reported ASAP instead
 
-Thanks to WATCH we are able to model the problem very well:
+     ..warning:: コマンドがエラーをあげたときですら、キューに入っているそれ以外のコマンドは処理されます。Redisはエラーが得られたとしてもプロセスを **止めません** 。
+     他の例では再度telnetを用いて書き込みプロトコルを使っていますが、文法エラーができるだけ早く報告されるように設定しています::
 
-WATCH mykey
-val = GET mykey
-val = val + 1
-MULTI
-SET mykey $val
-EXEC
-Using the above code, if there are race conditions and another client modified the result of val in the time between our call to WATCH and our call to EXEC, the transaction will fail.
+       MULTI
+       +OK
+       INCR a b c
+       -ERR wrong number of arguments for 'incr' command
+       
+     .. This time due to the syntax error the "bad" INCR command is not queued at all.
 
-We'll have just to re-iterate the operation hoping this time we'll not get a new race. This form of locking is called optimistic locking and is a very powerful form of locking as in many problems there are multiple clients accessing a much bigger number of keys, so it's very unlikely that there are collisions: usually operations don't need to be performed multiple times.
+     この場合は、文法エラーによって"bad"な :com:`INCR` コマンドはキューに入りませんでした。
 
-WATCH explained
-So what is WATCH really about? It is a command that will make the EXEC conditional: we are asking Redis to perform the transaction only if no other client modified any of the WATCHed keys. Otherwise the transaction is not entered at all. (Note that if you WATCH a volatile key and Redis expires the key after you WATCHed it, EXEC will still work. More.)
 
-WATCH can be called multiple times. Simply all the WATCH calls will have the effects to watch for changes starting from the call, up to the moment EXEC is called.
+   .. The DISCARD command
 
-When EXEC is called, either if it will fail or succeed, all keys are UNWATCHed. Also when a client connection is closed, everything gets UNWATCHed.
+   **DISCARDコマンド**
 
-It is also possible to use the UNWATCH command (without arguments) in order to flush all the watched keys. Sometimes this is useful as we optimistically lock a few keys, since possibly we need to perform a transaction to alter those keys, but after reading the current content of the keys we don't want to proceed. When this happens we just call UNWATCH so that the connection can already be used freely for new transactions.
+     .. DISCARD can be used in order to abort a transaction. No command will be executed, and the state of the client is again the normal one, outside of a transaction. Example using the Ruby client:
+     :com:`DISCARD` はトランザクションを中止するために用いられます。それ以降のコマンドは実行されません。そしてクライアントの状態がトランザクション外では再度通常となります。Rubyクライアントの例を挙げます::
 
-WATCH used to implement ZPOP
-A good example to illustrate how WATCH can be used to create new atomic operations otherwise not supported by Redis is to implement ZPOP, that is a command that pops the element with the lower score from a sorted set in an atomic way. This is the simplest implementation:
+       ?> r.set("foo",1)
+       => true
+       >> r.multi
+       => "OK"
+       >> r.incr("foo")
+       => "QUEUED"
+       >> r.discard
+       => "OK"
+       >> r.get("foo")
+       => "1"
 
-WATCH zset
-ele = ZRANGE zset 0 0
-MULTI
-ZREM zset ele
-EXEC
-If EXEC fails (returns a nil value) we just re-iterate the operation.
+   .. Check and Set (CAS) transactions using WATCH
+
+   **確認とWATCHを用いたセット(CAS)トランザクション**
+
+     .. WATCH is used in order to provide a CAS (Check and Set) behavior to Redis Transactions.
+
+     :com:`WATCH` はRedisトランザクションにCAS (Check and Set)ビヘイビアを提供するために用います。
+
+     .. WATCHed keys are monitored in order to detect changes against this keys. If at least a watched key will be modified before the EXEC call, the whole transaction will abort, and EXEC will return a nil object (A Null Multi Bulk reply) to notify that the transaction failed.
+
+     :com:`WATCH` されたキーは変更を検知するために監視されています。もし :com:`EXEC` を呼ぶ前にこれらのキーが修正された場合、すべてのトランザクションは中止され、 :com:`EXEC` はトランザクションが失敗したことを通知するためにnilオブジェクトを返します。（Null Multi Bulk replyが返ります）
+
+     .. For example imagine we have the need to atomically increment the value of a key by 1 (I know we have INCR, let's suppose we don't have it).
+
+     たとえばキーを自動的に1増やさないといけないという状況を考えてみましょう。（ :com:`INCR` コマンドがあることは承知ですが、いまは忘れておきましょう）
+
+     .. The first try may be the following
+
+     まずはこんな例を考えてみましょう::
+
+       val = GET mykey
+       val = val + 1
+       SET mykey $val
+       
+     .. This will work reliably only if we have a single client performing the operation in a given time. If multiple clients will try to increment the key about at the same time there will be a race condition. For instance client A and B will read the old value, for instance, 10. The value will be incremented to 11 by both the clients, and finally SET as the value of the key. So the final value will be "11" instead of "12".
+
+     このサンプルは1つのクライアントが限られた時間で動作する場合であれば上手く動くと思います。もし複数のクライアントが同時にキーをインクリメントしようとしたら、競合状態に陥ります。例えば、クライアントAとクライアントBが古い値、ここでは10としますが、を読んだとします。この値は両方のクライアントによってインクリメントされ11となります。そして最終的にそのキーの値として12ではなく11がセットされてしまうのです。
+
+     .. Thanks to WATCH we are able to model the problem very well
+     
+     :com:`WATCH` コマンドのおかげでこの問題をうまく解決できます::
+
+       WATCH mykey
+       val = GET mykey
+       val = val + 1
+       MULTI
+       SET mykey $val
+       EXEC
+       
+     .. Using the above code, if there are race conditions and another client modified the result of val in the time between our call to WATCH and our call to EXEC, the transaction will fail.
+
+     上記のコードを使うことで、もし競合状態になって他のクライアントが :com:`WATCH` と :com:`EXEC` の間に ``val`` の値を修正した場合はトランザクションは失敗します。
+
+     .. We'll have just to re-iterate the operation hoping this time we'll not get a new race. This form of locking is called optimistic locking and is a very powerful form of locking as in many problems there are multiple clients accessing a much bigger number of keys, so it's very unlikely that there are collisions: usually operations don't need to be performed multiple times.
+
+     この場合出来ることは、再度操作を実行して今度は競合状態にならないことを願うだけです。このような形式でのロックは楽観的ロックと呼ばれ、複数のクライアントが非常に多くのキーにアクセスするような多くの問題で非常に有力なロック形式となっています。衝突が起きる、ということはあまりありません。なので普通は操作を何度もやり直すということはありません。
+
+   **WATCH explained**
+
+     .. So what is WATCH really about? It is a command that will make the EXEC conditional: we are asking Redis to perform the transaction only if no other client modified any of the WATCHed keys. Otherwise the transaction is not entered at all. (Note that if you WATCH a volatile key and Redis expires the key after you WATCHed it, EXEC will still work. More.)
+
+     では :com:`WATCH` は実際には何をするものなのでしょうか。それは :com:`EXEC` に条件をつけるコマンドと理解してください。Redisにもし他のクライアントが :com:`WATCH` したキーを修正しなかった場合のみトランザクション処理を行うという条件をつけるのです。もし修正されてしまった場合はトランザクションは実行されません。（ :com:`WATCH` で揮発性のキーを監視して、Redisが監視開始後にそのキーを無効とした場合、 :com:`EXEC` は動作することに注意してください）
+
+     .. WATCH can be called multiple times. Simply all the WATCH calls will have the effects to watch for changes starting from the call, up to the moment EXEC is called.
+
+     :com:`WATCH` は複数回呼ぶことが出来ます。すべての :com:`WATCH` の呼出しにおいて、それぞれの呼び出し時から :com:`EXEC` の呼び出し時まで監視は有効になっています。
+
+     .. When EXEC is called, either if it will fail or succeed, all keys are UNWATCHed. Also when a client connection is closed, everything gets UNWATCHed.
+
+     :com:`EXEC` が呼び出されたとき、成功したかどうかにかかわらず、すべてのキーは :com:`UNWATCH` の状態になります。クライアントの接続が閉じた時も同様です。
+
+     .. It is also possible to use the UNWATCH command (without arguments) in order to flush all the watched keys. Sometimes this is useful as we optimistically lock a few keys, since possibly we need to perform a transaction to alter those keys, but after reading the current content of the keys we don't want to proceed. When this happens we just call UNWATCH so that the connection can already be used freely for new transactions.
+
+     すべての監視下のキーをフラッシュするために :com:`UNWATCH` コマンドを使うこともできます（引数はありません）。たとえばいくつかのキーを楽観的ロックしたあとに、それらのキーを変更したいという理由でトランザクションをしたい時があります。しかしキーに対応する現在の値を読んだあとにはもう処理を行ないたくない、というときに :com:`UNWATCH` を使います。これでコネクションは新しいトランザクションの為に使えます。
+
+     .. note:: このパラグラフ翻訳があやしい
+
+   **WATCH used to implement ZPOP**
+
+     .. A good example to illustrate how WATCH can be used to create new atomic operations otherwise not supported by Redis is to implement ZPOP, that is a command that pops the element with the lower score from a sorted set in an atomic way. This is the simplest implementation
+
+     :com:`WATCH` コマンドを使ってアトミックな操作を作成する良い例を次に示します。それを見ることで、 :com:`WATCH` が無かったら :com:`ZPOP` が実装できなかったとわかるでしょう。 :com:`ZPOP` はソート済みセットの低いスコアの方から要素をアトミックにポップするコマンドです。これは最も単純な実装例です::
+
+       WATCH zset
+       ele = ZRANGE zset 0 0
+       MULTI
+       ZREM zset ele
+       EXEC
+       
+    .. If EXEC fails (returns a nil value) we just re-iterate the operation.
+
+    もし :com:`EXEC` が失敗したら（nil値を返したら）、単純に操作を再実行するだけです。
 
    .. Return value
 
@@ -450,4 +517,7 @@ If EXEC fails (returns a nil value) we just re-iterate the operation.
 
        The result of a MULTI/EXEC command is a multi bulk reply where every element is the return value of every command in the atomic transaction.
 
-If a MULTI/EXEC transaction is aborted because of WATCH detected modified keys, a Null Multi Bulk reply is returned.
+     .. If a MULTI/EXEC transaction is aborted because of WATCH detected modified keys, a Null Multi Bulk reply is returned.
+
+     もし :com:`MULTI`/:com:`EXEC` トランザクションが :com:`WATCH` がキーが修正されたのを検知したせいで中止になった場合、Null Multi Bulk replyが返ります。
+
