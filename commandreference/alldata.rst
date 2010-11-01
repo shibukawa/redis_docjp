@@ -393,7 +393,7 @@
      :com:`MULTI` は要素が2つのBulk replyを返してきました。そのうち一つは"+OK"でもう一つは"-ERR"です。ユーザにエラーを提供する方法はクライアントライブラリ次第です。
 
      .. even when a command will raise an error, all the other commands in the queue will be processed. Redis will NOT stop the processing of commands once an error is found.
-Another example, again using the write protocol with telnet, shows how syntax errors are reported ASAP instead
+     .. Another example, again using the write protocol with telnet, shows how syntax errors are reported ASAP instead
 
      ..warning:: コマンドがエラーをあげたときですら、キューに入っているそれ以外のコマンドは処理されます。Redisはエラーが得られたとしてもプロセスを **止めません** 。
      他の例では再度telnetを用いて書き込みプロトコルを使っていますが、文法エラーができるだけ早く報告されるように設定しています::
@@ -413,6 +413,7 @@ Another example, again using the write protocol with telnet, shows how syntax er
    **DISCARDコマンド**
 
      .. DISCARD can be used in order to abort a transaction. No command will be executed, and the state of the client is again the normal one, outside of a transaction. Example using the Ruby client:
+
      :com:`DISCARD` はトランザクションを中止するために用いられます。それ以降のコマンドは実行されません。そしてクライアントの状態がトランザクション外では再度通常となります。Rubyクライアントの例を挙げます::
 
        ?> r.set("foo",1)
