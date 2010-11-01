@@ -673,6 +673,8 @@
       single TCP packet. Uses a bit more CPU but most of the times it is a win
       in terms of number of queries per second. Use 'yes' if unsure.
 
+   一つのTCPパケットに収まる、小さな返信を送るために、小さな出力バッファを同士を繋げます。これはCPUパワーを少し消費しますが、1秒あたりに処理できるクエリーの数を増やします。もし、よく分からないのであれば、 ``yes`` を使用してください。
+
    .. code-block:: nginx
  
       glueoutputbuf yes
@@ -685,6 +687,8 @@
       have at max a given numer of elements, and the biggest element does not
       exceed a given threshold. You can configure this limits with the following
       configuration directives.
+
+   与えられた最大数の要素を持つ時に、メモリ効率を高めるために特殊な方法でハッシュがエンコードされるようになります。また、大きな要素も、この指定されたスレッショルドを超えなくなります。この設定を操作することで、この制限を設定することができます。
 
    .. code-block:: nginx
 
@@ -700,17 +704,25 @@
       an hash table that is rhashing, the more rehashing "steps" are 
       performed, so if the server is idle the rehashing is never complete and 
       some more memory is used by the hash table.
+
+   100ミリ秒ごとに1ミリ秒のCPU時間を使用して、Redisのメインのハッシュテーブル(トップレベルのキーと値を保持している)の再ハッシュ化を行います。Redisが使用しているハッシュテーブルは、遅延再ハッシュが行えるような実装になっています(:file:`dict.c` を参照)。ハッシュテーブルに操作を行えば行うほど、多くの再ハッシュのステップが実行されるようになっています。そのため、サーバーがアイドル状態であれば、再ハッシュは完了しません。また、ハッシュテーブルに少し多くのメモリが使用されることになります。
  
    .. The default is to use this millisecond 10 times every second in order to
       active rehashing the main dictionaries, freeing memory when possible.
+
+   デフォルトでは、メインの辞書のリハッシュを行い、なるべく多くのメモリを開放するために、1秒間に10回、1ミリ秒の時間を使うようになっています。
 
    .. If unsure:
       use "activerehashing no" if you have hard latency requirements and it is
       not a good thing in your environment that Redis can reply form time to 
       time to queries with 2 milliseconds delay.
 
+   もしよく分からない場合、もし遅延時間に対する制約が厳しく、最大で2ミリ秒の遅延が起きることが許されないような環境であれば ``activerehashing no`` を使用してください。
+
    .. use "activerehashing yes" if you don't have such hard requirements but
       want to free memory asap when possible.
+
+   もし、これほど厳しい要求がなく、できる限り早くメモリを開放したい思っているのであれば、 ``activerehashing yes`` を使用してください。
 
    .. code-block:: nginx
 
@@ -727,6 +739,8 @@
       have a standard template that goes to all redis server but also need
       to customize a few per-server settings.  Include files can include
       other files, so use this wisely.
+
+   1つ以上の設定ファイルをこの命令のある場所にインクルードします。この命令は、多くのサーバで大部分の設定は同じだが、一部分だけがサーバによって異なる、という場合に有効です。インクルードされるファイルも、また別のファイルをインクルードすることができます。
 
    .. code-block:: nginx
 
