@@ -1,0 +1,25 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+  <head>
+    <meta content="text/html; charset=UTF-8" http-equiv="content-type">
+    <title>Retwis.py - Example Twitter clone based on the Redis Key-Value DB</title>
+    <link href="{{ static_url("style.css") }}" rel="stylesheet" type="text/css">
+  </head>
+  <body>
+    <div id="page">
+      <div id="header">
+        <a href="/"><img style="border:none" src="{{ static_url("logo.png") }}" width="192" height="85" alt="Retwis"></a>
+        <div id="navbar">
+          <a href="/">home</a> | <a href="/timeline">timeline</a>
+          {% block logout %}
+            | <a href="/logout">logout</a>
+          {% end %}
+        </div>
+      </div>
+      {% block contents %}
+         here is hotspot.
+      {% end %}
+      <div id="footer">Redis is a very simple Twitter clone written in PHP as example application of the <a href="http://code.google.com/p/redis/">Redis key-value database</a></div>
+    </div>
+  </body>
+</html>
