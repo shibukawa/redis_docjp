@@ -226,6 +226,15 @@ class HomeHandler(RedisAuthMixin, RequestHandler):
             user_posts=formatter.post, link=formatter.link)
 
 
+class TimelineHandler(RequestHandler):
+    def get(self):
+        redis = Redis()
+        formatter = PostFormatter(redis)
+        formatter.show_user_posts(None, 0, 50)
+        self.render("template/timeline.html",
+            posts = formatter.post)
+
+
 settings = {
    "static_path": os.path.join(os.path.dirname(__file__), "static"),
    "login_url": "/welcome"
@@ -238,6 +247,7 @@ application = Application([
     (r"/logout", LogoutHandler),
     (r"/register", RegisterHandler),
     (r"/post", PostHandler),
+    (r"/timeline", TimelineHandler),
 ], **settings)
 
 
