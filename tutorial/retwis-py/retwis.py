@@ -1,35 +1,112 @@
 # -*- encoding: utf-8 -*-
 
 import os
-import time
 import random
+import hashlib
 
+from time import time
 from redis import Redis
 
 from tornado.web import (Application, RequestHandler, authenticated)
-from tornado.escape import (json_encode, json_decode)
+from tornado.escape import (json_encode, json_decode
+, url_escape)
 from tornado.ioloop import IOLoop
 from tornado.httpserver import HTTPServer
 
 
+posttemplate = """
+<div class="post">
+    <a class="username" href="/profile?u=%s">%s</a>%s<br>
+    <i>posted %s ago via web</i>
+</div>
+"""
+
 def getrand():
-    return random.randint(0, 2**15)
+    return random.getrandbits(32)
 
 
 def encode_cookie(obj):
     return json_encode(obj).encode("base64").replace("\n", "")
 
+
 def decode_cookie(obj):
     return json_decode(obj.decode("base64"))
+
+
+class PostFormatter(object):
+    def __init__(self, redis):
+        self._redis = redis
+        self._posts = []
+        self._links = []
+        self._is_last = False
+
+    @property
+    def post(self):
+        return "\n".join(self._posts)
+    
+    @property
+    def link(self):
+        if not self._links:
+            return ''
+        return '<div class="rightlink">%s</div>' % " | ".join(self._links)
+
+    def _elapsed(self, t):
+        d = time()-int(t);
+        if d < 60:
+            return "%d seconds" % int(d)
+        elif d < 120:
+            return "1 minute"
+        elif d < 3600:
+            return "%d minutes" % int(d/60)
+        elif d < 7200:
+            return "1 hour"
+        elif d < 3600 * 24:
+            return "%d hours" % int(d/3600)
+        elif d < 3600 * 48:
+            return "1 day"
+        else:
+            return "%d days" % int(d/3600/24)
+
+    def show_post(self, id):
+        postdata = self._redis.get("post:%s" % id);
+        if not postdata:
+            return False;
+        userid, time, post = postdata.split("|", 2)
+        username = self._redis.get("uid:%s:username" % userid)
+        self._posts.append(posttemplate % (url_escape(username), username, post, self._elapsed(time)))
+        return True
+
+    def show_user_posts(self, userid, start, count): 
+        if userid == None:
+            key = "global:timeline"
+        else:
+            key = "uid:%s:posts" % userid
+        posts = self._redis.lrange(key, start, start+count)
+        for post in posts:
+            self.show_post(post)
+            if len(self._posts) == count:
+                break
+        self._is_last = (len(self._posts) != count+1)
+
+    def user_post_with_pagenation(self, path, username, userid, start, count):
+        if username:
+            userstr = '&u=%s' % url_escape(username)
+        else:
+            userstr = ""
+        self.show_user_posts(userid, start, count)
+        if start > 0:
+            self._links.append('<a href="%s?start=%d" %s>&laquo; Newer posts</a>' % (
+                path, max(start - 10, 0), userstr)) 
+        if not self._is_last:
+            self._links.append('<a href="%s?start=%d" %s>Older posts &raquo;</a>' % (
+                path, start + 10, userstr))
 
 
 class RedisAuthMixin(object):
     def get_current_user(self):
         user_json = self.get_cookie("auth", None)
         if not user_json:
-            print "not login"
             return None
-        print "login:ok", decode_cookie(user_json)
         return decode_cookie(user_json)
 
 
@@ -56,7 +133,6 @@ class WelcomeHandler(RequestHandler):
             self.write("template/welcome.html", register_error=None, login_error=
                 "Wrong username or password")
             return
-        print "login ok"
         authsecret = redis.get("uid:%s:auth" % userid)
         user_info = {"id":userid, "name":username, "auth":authsecret}
         self.set_cookie("auth",encode_cookie(user_info), expires_days=365)
@@ -113,23 +189,22 @@ class LogoutHandler(RequestHandler, RedisAuthMixin):
         self.redirect("/")
 
 
-class UpdateHandler(RequestHandler, RedisAuthMixin):
+class PostHandler(RedisAuthMixin, RequestHandler): 
     @authenticated
     def post(self):
         # save status
         redis = Redis()
         userid = self.current_user["id"]
-        postid = r.incr("blobal:nextPostId")
+        postid = redis.incr("blobal:nextPostId")
         status = self.get_argument("status").replace("\n", " ")
-        post = "%s|%d|%s" % (userid, int(time.time()), status)
-        redis.set("post:"+postid, post)
+        post = "%s|%d|%s" % (userid, int(time()), status)
+        redis.set("post:%d" % postid, post)
 
         # spread status to all followers
         followers = redis.smembers("uid:%s:followers" % userid)
-        if not followers:
-            followers = set()
+        followers.add(userid)
         for fid in followers:
-            redis.rpush("uid:%s:posts" % fid, postid) 
+            redis.rpush("uid:%d:posts" % fid, postid) 
         redis.rpush("global:timeline", postid)
         redis.ltrim("global:timeline", 0, 1000)
         self.redirect("/")
@@ -140,11 +215,15 @@ class HomeHandler(RedisAuthMixin, RequestHandler):
     def get(self):
         redis = Redis()
         user = self.current_user
+        start = int(self.get_argument("start", "0"))
+        formatter = PostFormatter(redis)
+        path = self.request.path.split("?")[0]
+        formatter.user_post_with_pagenation(path, None, user["id"], start, 10)
         self.render("template/home.html", 
             username=user["name"],
             followers=redis.scard("uid:%s:followers" % user["id"]),
             following=redis.scard("uid:%s:following" % user["id"]),
-            user_posts="")
+            user_posts=formatter.post, link=formatter.link)
 
 
 settings = {
@@ -158,6 +237,7 @@ application = Application([
     (r"/welcome", WelcomeHandler),
     (r"/logout", LogoutHandler),
     (r"/register", RegisterHandler),
+    (r"/post", PostHandler),
 ], **settings)
 
 
