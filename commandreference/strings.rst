@@ -59,3 +59,41 @@ Redis文字列はRedisオブジェクト内にカプセル化されています�
    **返り値**
 
      Status code replyを返す。
+
+
+.. command:: GET key
+
+   計算時間: O(1)
+
+   .. Get the value of the specified key. If the key does not exist the special value 'nil' is returned. If the value stored at key is not a string an error is returned because GET can only handle string values.
+
+   指定したキー ``key`` に対応する値を取得します。もしキーが存在しなかったら特別な値 "nil" を返します。もしキーに対応する値が文字列型ではなかったらエラーが返ります。なぜなら :com:`GET` は文字列型にしか対応していないからです。
+
+   **返り値**
+
+   Bulk replyを返す。
+
+
+.. command:: GETSET key value
+
+   計算時間: O(1)
+
+   .. GETSET is an atomic set this value and return the old value command. Set key to the string value and return the old value stored at key. The string can't be longer than 1073741824 bytes (1 GB).
+
+   :com:`GETSET` はキー ``key`` に新しい値 ``value`` をセットして、そのキーにセットされていた古い値を返すアトミックなコマンドです。文字列型は1073741824バイト（1GB）以下でなければなりません。
+
+   .. Return value
+
+   **返り値** 
+   
+   Bulk replyが返ります。
+
+   .. Design patterns
+   
+   **デザインパターン**
+
+   .. GETSET can be used together with INCR for counting with atomic reset when a given condition arises. For example a process may call INCR against the key mycounter every time some event occurred, but from time to time we need to get the value of the counter and reset it to zero atomically using GETSET mycounter 0.
+
+   :com:`GETSET` は :com:`INCR` と一緒に使ってある条件の時にアトミックにリセットするカウンターを作ることができます。たとえば、あるプロセスがあるイベントが起きるたびに :com:`INCR` をキー ``mycounter`` に対して呼び出すとします。しかし時々その値を取り出して自動的にゼロにリセットしたい、というようなときに ``GETSET mycounter 0`` として使うのです。
+
+
