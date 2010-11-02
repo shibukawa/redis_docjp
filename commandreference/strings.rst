@@ -43,3 +43,19 @@ Redis文字列はRedisオブジェクト内にカプセル化されています�
 .. Starting from version 1.1 Redis is also able to encode in a special way strings that are actually just numbers. Instead to save the string as an array of characters Redis will save the integer value in order to use less memory. With many datasets this can reduce the memory usage of about 30% compared to Redis 1.0.
 
 バージョン1.1からRedisでは文字列を特別な方法でエンコードして数値のみの形にすることができるようになりました。メモリ使用量を減らすために文字列を文字の配列として保存する代わりに、Redisは整数値を保存しています。これによって、Redis 1.0と比較してメモリ使用量を30%減らすことができました。
+
+
+文字列型のコマンド
+====================
+
+.. command:: SET key value
+
+   計算時間: O(1)
+
+   .. Set the string value as value of the key. The string can't be longer than 1073741824 bytes (1 GB).
+
+   文字列値 ``value`` をキー ``key`` にセットします。文字列は1073741824バイト(1GB)以下でなければいけません。
+
+   **返り値**
+
+     Status code replyを返す。
