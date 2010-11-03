@@ -8,8 +8,7 @@ from time import time
 from redis import Redis
 
 from tornado.web import (Application, RequestHandler, authenticated)
-from tornado.escape import (json_encode, json_decode
-, url_escape)
+from tornado.escape import (json_encode, json_decode, url_escape)
 from tornado.ioloop import IOLoop
 from tornado.httpserver import HTTPServer
 
@@ -204,8 +203,8 @@ class PostHandler(RedisAuthMixin, RequestHandler):
         followers = redis.smembers("uid:%s:followers" % userid)
         followers.add(userid)
         for fid in followers:
-            redis.rpush("uid:%d:posts" % fid, postid) 
-        redis.rpush("global:timeline", postid)
+            redis.rpush("uid:%s:posts" % fid, postid) 
+        redis.lpush("global:timeline", postid)
         redis.ltrim("global:timeline", 0, 1000)
         self.redirect("/")
 
@@ -235,6 +234,40 @@ class TimelineHandler(RequestHandler):
             posts = formatter.post)
 
 
+class ProfileHandler(RedisAuthMixin, RequestHandler):
+    @authenticated
+    def get(self):
+        redis = Redis()
+        username = self.get_argument("u")
+        userid = redis.get("username:%s:id" % username)
+        if not userid:
+            self.redirect("/")
+        else:
+            isfollowing = redis.sismember(
+                "uid:%s:following" % self.current_user["id"],userid);
+            self.render("template/profile.html",
+                isfollowing = isfollowing, userid = userid, username = username)
+
+
+class FollowHandler(RedisAuthMixin, RequestHandler):
+    @authenticated
+    def get(self):
+        redis = Redis()
+        userid = self.get_argument("uid")
+        flag = self.get_argument("f")
+        username = redis.get("uid:%s:username" % userid)
+        if userid is not None and flag is not None:
+            myuserid = self.current_user["id"]
+            if userid != myuserid:
+                if flag == "0":
+                    redis.sadd("uid:%s:followers" % userid, myuserid)
+                    redis.sadd("uid:%s:following" % myuserid, userid)
+                else:
+                    redis.srem("uid:%s:followers" % userid, myuserid)
+                    redis.srem("uid:%s:following" % myuserid, userid)
+        self.redirect("/")
+
+
 settings = {
    "static_path": os.path.join(os.path.dirname(__file__), "static"),
    "login_url": "/welcome"
@@ -248,6 +281,8 @@ application = Application([
     (r"/register", RegisterHandler),
     (r"/post", PostHandler),
     (r"/timeline", TimelineHandler),
+    (r"/profile", ProfileHandler),
+    (r"/follow", FollowHandler),
 ], **settings)
 
 
