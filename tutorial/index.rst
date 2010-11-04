@@ -63,13 +63,22 @@ RedisとPythonを使ったシンプルなTwitterクローンの設計と実装
 
    SET foo bar
 
-Redis will store our data permanently, so we can later ask for "What is the value stored at key foo?" and Redis will reply with bar:
+.. Redis will store our data permanently, so we can later ask for 
+   "What is the value stored at key foo?" and Redis will reply with bar:
+
+Redisはデータを永続化して保持します。後で「 ``foo`` キーに保持されている値はなんですか？」と問い合わせると、Redisは ``bar`` と返事を返します。
 
 .. code-block:: none
 
    GET foo => bar
 
-Other common operations provided by key-value stores are DEL used to delete a given key, and the associated value, SET-if-not-exists (called SETNX on Redis) that sets a key only if it does not already exist, and INCR that is able to atomically increment a number stored at a given key:
+.. Other common operations provided by key-value stores are DEL used 
+   to delete a given key, and the associated value, SET-if-not-exists 
+   (called SETNX on Redis) that sets a key only if it does not already 
+   exist, and INCR that is able to atomically increment a number stored 
+   at a given key:
+
+他に、キー・バリュー・ストアで一般的に提供されている操作が、与えられたキーと関連する値を削除する :com:`DEL` と、「もし存在していなければセットする(SET-if-not-existes)」という操作(Redisでは :com:`SETNX`)と、与えられたキーに格納された値を自動でインクリメントする :com:`INCR` です。 
 
 .. code-block:: none
 
@@ -77,9 +86,17 @@ Other common operations provided by key-value stores are DEL used to delete a gi
    INCR foo => 11
    INCR foo => 12
    INCR foo => 13
-   Atomic operations
 
-So far it should be pretty simple, but there is something special about INCR. Think about this, why to provide such an operation if we can do it ourself with a bit of code? After all it is as simple as:
+.. Atomic operations
+
+アトミックな操作
+----------------
+
+.. So far it should be pretty simple, but there is something special 
+   about INCR. Think about this, why to provide such an operation if 
+   we can do it ourself with a bit of code? After all it is as simple as:
+
+これまでの説明はシンプルですが、 :com:`INCR` だけは少し特殊です。これを見ると、「なぜ、自分でも簡単に行えそうなこんなものが操作として提供されているのだろう？」と疑問に思うでしょう。この通り、これと同じ操作は簡単に実装できます。
 
 .. code-block:: none
 
@@ -87,20 +104,44 @@ So far it should be pretty simple, but there is something special about INCR. Th
    x = x + 1
    SET foo x
 
-The problem is that doing the increment this way will work as long as there is only a client working with the value x at a time. See what happens if two computers are accessing this data at the same time:
+.. The problem is that doing the increment this way will work as long as 
+   there is only a client working with the value x at a time. See what 
+   happens if two computers are accessing this data at the same time:
+
+この方法でインクリメントしたときに、この値 ``x`` に操作を行うクライアントが一つしかない場合は問題なく動作します。2つのコンピュータが同時にこのデータにアクセスしに行った時に何が起きるか見てみましょう。
+
+.. x = GET foo (yields 10)
+   y = GET foo (yields 10)
+   x = x + 1 (x is now 11)
+   y = y + 1 (y is now 11)
+   SET foo x (foo is now 11)
+   SET foo y (foo is now 11)
 
 .. code-block:: none
 
-  x = GET foo (yields 10)
-  y = GET foo (yields 10)
-  x = x + 1 (x is now 11)
-  y = y + 1 (y is now 11)
-  SET foo x (foo is now 11)
-  SET foo y (foo is now 11)
+  x = GET foo (xは10)
+  y = GET foo (yも10)
+  x = x + 1 (xは11)
+  y = y + 1 (yも11)
+  SET foo x (fooは11になった)
+  SET foo y (fooここでまた11が設定された)
 
-Something is wrong with that! We incremented the value two times, but instead to go from 10 to 12 our key holds 11. This is because the INCR operation done with GET / increment / SET is not an atomic operation. Instead the INCR provided by Redis, Memcached, ..., are atomic implementations, the server will take care to protect the get-increment-set for all the time needed to complete in order to prevent simultaneous accesses.
+.. Something is wrong with that! We incremented the value two times, but 
+   instead to go from 10 to 12 our key holds 11. This is because the INCR 
+   operation done with GET / increment / SET is not an atomic operation. 
+   Instead the INCR provided by Redis, Memcached, ..., are atomic 
+   implementations, the server will take care to protect the 
+   get-increment-set for all the time needed to complete in order to 
+   prevent simultaneous accesses.
 
-What makes Redis different from other key-value stores is that it provides more operations similar to INCR that can be used together to model complex problems. This is why you can use Redis to write whole web applications without using an SQL database and without to get mad.
+何かおかしなことがおきています！2回インクリメントしたはずですので、10から12になってもいいのに、11です。これは自作の ``INCR`` 操作が、 :com:`GET` / インクリメント / :com:`SET` とアトミックな操作になっていません。RedisやMemcachedなどの提供する :com:`INCR` 操作はアトミックになっています。もし提供されていないとすると、取得して、演算して、格納する操作が終わるまでのすべてにわたって、同時アクセスを防ぐように気を配らなければなりません。
+
+.. What makes Redis different from other key-value stores is that it provides
+   more operations similar to INCR that can be used together to model complex
+   problems. This is why you can use Redis to write whole web applications
+   without using an SQL database and without to get mad.
+
+Redisと他のキー・バリュー・ストアの大きな違いとなっているのは、Redisでは :com:`INCR` のように、複雑な問題に対して使えるような操作が数多く提供されているという点です。また、これがRedisを使うと、SQLのデータベースを使わなくても、誰も怒らないようなウェブアプリケーションを書くことができる秘訣です。
 
 .. Beyond key-value stores
 
