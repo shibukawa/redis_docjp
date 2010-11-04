@@ -16,6 +16,7 @@ def without_pipelining(cnt):
 def with_pipelining(cnt):
   r = redis.Redis().pipeline()
   [r.ping() for x in range(cnt)]
+  r.execute()
 
 if __name__ == '__main__':
   bench('without pipeline', without_pipelining, 10000)

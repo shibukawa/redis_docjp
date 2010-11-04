@@ -138,12 +138,12 @@ Python Sample
   
 .. code-block:: nginx
 
-  without pipeline 0.817150115967
-     with pipeline 0.0532379150391
+  without pipeline 0.824854135513
+     with pipeline 0.197869062424
 
 .. As you can see using pipelining we improved the transfer by a factor of five.
 
-ご覧のとおり、パイプラインを使用したほうが15倍以上高速化されています。
+ご覧のとおり、パイプラインを使用したほうが4倍以上高速化されています。
 
 
 
