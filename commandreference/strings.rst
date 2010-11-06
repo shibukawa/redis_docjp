@@ -166,7 +166,6 @@ Redis文字列はRedisオブジェクト内にカプセル化されています�
       
    .. Handling deadlocks
 
-
    **デッドロックを扱う**
 
    .. In the above locking algorithm there is a problem: what happens if a client fails, crashes, or is otherwise not able to release the lock? It's possible to detect this condition because the lock key contains a UNIX timestamp. If such a timestamp is <= the current Unix time the lock is no longer valid.
@@ -200,13 +199,6 @@ Redis文字列はRedisオブジェクト内にカプセル化されています�
 
    幸いにも、このような問題は以下のようなアルゴリズムを使うことで避けられます。試しに良識あるクライアントC4が参加した場合にこのアルゴリズムを使ったとしてどうなるか、見てみましょう::
 
-   .. - C4 sends SETNX lock.foo in order to acquire the lock
-   .. - The crashed C3 client still holds it, so Redis will reply with 0 to C4.
-   .. - C4 GET lock.foo to check if the lock expired. If not it will sleep one second (for instance) and retry from the start.
-   .. - If instead the lock is expired because the UNIX time at lock.foo is older than the current UNIX time, C4 tries to perform GETSET lock.foo <current unix timestamp + lock timeout + 1>
-   .. - Thanks to the GETSET command semantic C4 can check if the old value stored at key is still an expired timestamp. If so we acquired the lock!
-   .. - Otherwise if another client, for instance C5, was faster than C4 and acquired the lock with the GETSET operation, C4 GETSET operation will return a non expired timestamp. C4 will simply restart from the first step. Note that even if C4 set the key a bit a few seconds in the future this is not a problem.
-
    * C4がロックを取得するために ``SETNX lock.foo`` を送ります
 
    * クラッシュしたクライアントC3がまだロックを保持しています。なのでRedisはC4に0を返します。
@@ -219,7 +211,164 @@ Redis文字列はRedisオブジェクト内にカプセル化されています�
 
    * あるいはもし他のクライアントC5がC4よりも早く :com:`GETSET` コマンドを発行してロックを収得してしまったら、C4の :com:`GETSET` の操作は有効期限切れでないタイムスタンプを返します。C4は単純に手順を最初からやり直します。ここでC4がキーに値をセットしてしまったとしても、ちょっと経てばこれは問題にならないということに注意してください。
 
-  .. IMPORTANT NOTE: In order to make this locking algorithm more robust, a client holding a lock should always check the timeout didn't expired before to unlock the key with DEL because client failures can be complex, not just crashing but also blocking a lot of time against some operation and trying to issue DEL after a lot of time (when the LOCK is already hold by some other client).
+   .. IMPORTANT NOTE: In order to make this locking algorithm more robust, a client holding a lock should always check the timeout didn't expired before to unlock the key with DEL because client failures can be complex, not just crashing but also blocking a lot of time against some operation and trying to issue DEL after a lot of time (when the LOCK is already hold by some other client).
 
-  .. warning:: このロック機構をよりロバストにするために、ロックを保持しているクライアントはロックを解放するために :com:`DEL` を実行する前にタイムアウト時間が有効期限切れになっていないか常に確認すべきです。なぜならクライアントのクライアントの失敗は複雑になりがちで、単純にクラッシュするだけじゃなく多くの操作に対してなギア何度もブロックをかけてしまったり、さらにはそのあと何回も ``DEL`` を発行しようとしたりしてしまいます。（ロックが既にほかのクライアントに保持されているときの話です）
+   .. warning:: このロック機構をよりロバストにするために、ロックを保持しているクライアントはロックを解放するために :com:`DEL` を実行する前にタイムアウト時間が有効期限切れになっていないか常に確認すべきです。なぜならクライアントのクライアントの失敗は複雑になりがちで、単純にクラッシュするだけじゃなく多くの操作に対してなギア何度もブロックをかけてしまったり、さらにはそのあと何回も ``DEL`` を発行しようとしたりしてしまいます。（ロックが既にほかのクライアントに保持されているときの話です）
 
+
+.. command:: SETEX key time value
+
+   計算時間: O(1)
+
+   .. The command is exactly equivalent to the following group of commands:
+
+   このコマンドは次の一連のコマンドと等価です::
+
+     SET _key_ _value_
+     EXPIRE _key_ _time_
+
+   .. The operation is atomic. An atomic SET+EXPIRE operation was already provided using MULTI/EXEC, but SETEX is a faster alternative provided because this operation is very common when Redis is used as a Cache.
+
+   この操作はアトミックです。アトミックな ``SET+EXPIRE`` の操作は既に :com:`MULTI`/:com:`EXEC` で提供されていますが、 :com:`SETEX` はより速い操作となっています。なぜならこの類いの操作はRedisがキャッシュとして用いられるときに非常によく行われるからです。
+
+   .. Return value
+
+   **返り値**
+
+     Status code replyが返ります
+
+.. command:: MSET key1 value1 key2 value2 ... keyN valueN (Redis >= 1.1)
+.. command:: MSETNX key1 value1 key2 value2 ... keyN valueN (Redis >= 1.1)
+
+   計算時間: キーそれぞれに対してO(1)
+
+   .. Set the the respective keys to the respective values. MSET will replace old values with new values, while MSETNX will not perform any operation at all even if just a single key already exists.
+
+   それぞれのキーに対してそれぞれの値をセットします。 :com:`MSET` は古い値を新しい値で上書きする一方で、 :com:`MSETNX` はたった1つでもキーが既存であれば一切の操作は行われません。
+   
+   .. Because of this semantic MSETNX can be used in order to set different keys representing different fields of an unique logic object in a way that ensures that either all the fields or none at all are set.
+
+   このセマンティクスによって :com:`MSETNX` は1つのユニークな論理オブジェクトの異なったフィールドを表す異なったキーに値がセットされたかもしくはどのキーにも値がセットされていないか確認しながらキーに値をセットできます。
+
+   .. Both MSET and MSETNX are atomic operations. This means that for instance if the keys A and B are modified, another client talking to Redis can either see the changes to both A and B at once, or no modification at all.
+
+   :com:`MSET` と :com:`MSETNX` はともにアトミックな操作です。これはつまり、たとえばキーAとキーBが修正されたらRedisに接続している他のクライアントがAまたはBに変更が起きたかあるいはまったく変更が起きなかったかを一度に確認することができます。
+
+   .. MSET Return value
+   
+   **MSETの返り値**
+
+     .. Status code reply Basically +OK as MSET can't fail
+
+     Status code reply が返ります。基本的に :com:`MSET` は失敗しないので ``+OK`` が返ります。
+
+   .. MSETNX Return value
+
+   **MSETNXの返り値**
+
+     .. Integer reply, specifically:
+
+     Integer replyが返ります。具体的には::
+
+       1 if the all the keys were set
+       0 if no key was set (at least one key already existed)
+
+
+.. command:: INCR key
+.. command:: INCRBY key integer
+.. command:: DECR key integer
+.. command:: DECRBY key integer
+
+   計算時間: O(1)
+
+   .. Increment or decrement the number stored at key by one. If the key does not exist or contains a value of a wrong type, set the key to the value of "0" before to perform the increment or decrement operation.
+
+   キーに対応する値を1つインクリメントまたはデクリメントします。キーが存在しない場合または間違った型の値が保持されていた場合は、インクリメントまたはデクリメントの操作をする前に、キーに対応する値を "0" にセットします。
+
+   .. INCRBY and DECRBY work just like INCR and DECR but instead to increment/decrement by 1 the increment/decrement is integer.
+
+   :com:`INCRBY` と :com:`DECRBY` は :com:`INCR` や :com:`DECR` と似た動作をしますが、1つインクリメント／デクリメントする代わりに、増減させる量は ``integer`` で指定します。
+
+   .. INCR commands are limited to 64 bit signed integers.
+
+   :com:`INCR` コマンドは64bitの符号付き整数の範囲に制限されています。
+
+   .. Note: this is actually a string operation, that is, in Redis there are not "integer" types. Simply the string stored at the key is parsed as a base 10 64 bit signed integer, incremented, and then converted back as a string.
+
+   .. note:: これらの操作は実際には文字列型の操作です。つまりRedisには「整数型」がないのです。単純にキーに保存された文字列はbase-10の64bit符号付き整数として読み取られ、インクリメントされて、再び文字列に変換されて戻されます。
+
+   .. Return value
+   
+   **返り値**
+
+     .. Integer reply, this commands will reply with the new value of key after the increment or decrement.
+
+     Integer replyが返ります。インクリメントまたはデクリメントされた結果の値が返ります。
+
+
+.. command:: APPEND key value
+   
+   計算時間: O(1). 追加される値が小さいという想定をした倍のならし計算時間はO(1)です。なぜならRedisで用いられている動的文字列ライブラリはアロケートしなおす際に必要なサイズの倍を取得しておくからです。
+
+   .. If the key already exists and is a string, this command appends the provided value at the end of the string. If the key does not exist it is created and set as an empty string, so APPEND will be very similar to SET in this special case.
+
+   もしキー ``key`` が既に存在して、それにひもづいた値が文字列の場合、このコマンドはキーに対応する値の文字列の末尾に ``value`` を結合します。もしキーが存在しなかった場合は ``value`` の値を持った新しい文字列が作成されます。この特別な状況だけ :com:`APPEND` は :com:`SET` にとてもよく似ているといえます。
+
+   .. note:: 原文ではキーが存在しない場合空の文字列ができるって書いてあるけどホント？
+
+   .. Return value
+
+   **返り値**
+
+     .. Integer reply, specifically the total length of the string after the append operation.
+
+     Integer replyが返ります。具体的には文字列の結合が行われた後の文字列長が返ります。
+
+   .. Examples
+
+   **例**::
+
+       redis> exists mykey
+       (integer) 0
+       redis> append mykey "Hello "
+       (integer) 6
+       redis> append mykey "World"
+       (integer) 11
+       redis> get mykey
+       "Hello World"
+
+
+.. command:: SUBSTR key start end
+
+   計算時間: O(start+n) （startは開始インデックスでnはリクエストされた範囲の長さです）このコマンドの参照操作の部分はO(1)なので小さな文字列においてはO(1)となります。
+
+   .. Return a subset of the string from offset start to offset end (both offsets are inclusive). Negative offsets can be used in order to provide an offset starting from the end of the string. So -1 means the last char, -2 the penultimate and so forth.
+
+   ある文字列のオフセット ``start`` からオフセット ``end`` までのサブセットを返します。（両方のオフセットは包含的でなければいけません）負数のオフセットは文字列の末尾からのオフセットを使うために用います。なので-1は末尾の文字を表し、-2は最後から2番目の値を表す、といった具合になります。
+
+   .. The function handles out of range requests without raising an error, but just limiting the resulting range to the actual length of the string.
+
+   この関数は範囲を超えた値に関してはエラーを上げることなく、文字列の範囲内で返せる値を返すという処理を行います。
+
+   .. Return value
+   
+   **返り値**
+
+     .. Bulk reply
+
+     Bulk replyが返ります。
+
+   .. Examples
+
+   **例**::
+
+     redis> set s "This is a string"
+     OK
+     redis> substr s 0 3
+     "This"
+     redis> substr s -3 -1
+     "ing"
+     redis> substr s 0 -1
+     "This is a string"
+     redis> substr s 9 100000
+     " string"
