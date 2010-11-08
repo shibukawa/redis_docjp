@@ -237,8 +237,13 @@ Redis文字列はRedisオブジェクト内にカプセル化されています�
 
      Status code replyが返ります
 
-.. command:: MSET key1 value1 key2 value2 ... keyN valueN (Redis >= 1.1)
-.. command:: MSETNX key1 value1 key2 value2 ... keyN valueN (Redis >= 1.1)
+.. command:: MSET key1 value1 key2 value2 ... keyN valueN
+
+   .. versionadded:: 1.1
+
+.. command:: MSETNX key1 value1 key2 value2 ... keyN valueN
+
+   .. versionadded:: 1.1
 
    計算時間: キーそれぞれに対してO(1)
 

@@ -82,6 +82,7 @@
 
 
 .. command:: KEYS pattern
+
    .. (with n being the number of keys in the DB, and assuming keys and pattern of limited length)
 
    計算時間: O(N) （nはデータベース内のキーの数。キーとパターンの数は制限されていると想定している。）
@@ -183,7 +184,10 @@
 
 
 .. command:: EXPIRE key seconds
-.. command:: EXPIREAT key unixtime (Redis >= 1.1)
+
+.. command:: EXPIREAT key unixtime
+   .. versionadded:: 1.1
+
 .. command:: PERSIST key
 
    計算時間: O(1)
@@ -308,13 +312,22 @@
      Status code reply（ステータスコード）が返ります。
 
 
-.. command:: WATCH key1 key2 ... keyN (Redis >= 2.1.0)
+.. command:: WATCH key1 key2 ... keyN
+
+   .. versionadded:: 2.1.0
+
 .. command:: UNWATCH
+
 .. command:: MULTI
+
 .. command:: COMMAND_1 ...
+
 .. command:: COMMAND_2 ...
+
 .. command:: COMMAND_N ...
+
 .. command:: EXEC
+
 .. command:: DISCARD
 
    .. MULTI, EXEC, DISCARD and WATCH commands are the foundation of Redis Transactions. A Redis Transaction allows the execution of a group of Redis commands in a single step, with two important guarantees:

@@ -142,7 +142,8 @@ Redisリスト型はリスト長の情報をキャッシュするので :com:`LL
 
    .. start and end can also be negative numbers indicating offsets from the end of the list. For example -1 is the last element of the list, -2 the penultimate element and so on.
 
-   ``start`` と ``end`` は負の整数にすることも可能です。この場合はリストの末尾からのオフセットとなります。たとえば、-`はリストの末尾、-2は最後から2番目、といった具合です。
+   ``start`` と ``end`` は負の整数にすることも可能です。この場合はリストの末尾からのオフセットとなります。たとえば、-1はリストの末尾、-2は最後から2番目、といった具合です。
+
 
    .. Indexes out of range will not produce an error: if start is over the end of the list, or start > end, an empty list is left as value. If end over the end of the list Redis will threat it just like the last element of the list.
 
@@ -197,6 +198,7 @@ Redisリスト型はリスト長の情報をキャッシュするので :com:`LL
    キー ``key`` に対応するリスト内の指定されたインデックス ``index`` の要素を値を新しい値 ``value`` にします。（引数 ``index`` に関しては :com:`LINDEX` を見て下さい）範囲外のインデックスを指定した場合はエラーが起きます。リストの先頭および末尾の要素に値をセットする場合はO(1)です。
 
    .. Similarly to other list commands accepting indexes, the index can be negative to access elements starting from the end of the list. So -1 is the last element, -2 is the penultimate, and so forth.
+
    インデックスを指定する他のリスト操作系のコマンドと同様に、負のインデックスを指定した場合はリストの末尾からの値となります。-1の場合はリストの末尾、-2ならその前、となります。
 
    .. Return value
@@ -207,6 +209,7 @@ Redisリスト型はリスト長の情報をキャッシュするので :com:`LL
 
 
 .. command:: LREM key count value
+
    計算時間: O(N) （Nはリストの長さ）
 
    .. Remove the first count occurrences of the value element from the list. If count is zero all the elements are removed. If count is negative elements are removed from tail to head, instead to go from head to tail that is the normal behaviour. So for example LREM with count -2 and hello as value to remove against the list (a,b,c,hello,x,hello,hello) will lave the list (a,b,c,hello,x). The number of removed elements is returned as an integer, see below for more information about the returned value. Note that non existing keys are considered like empty lists by LREM, so LREM against non existing keys will always return 0.
@@ -217,12 +220,13 @@ Redisリスト型はリスト長の情報をキャッシュするので :com:`LL
    
    **戻り値**
 
-   Integer replyが返ります。具体的には::
+     Integer replyが返ります。具体的には::
 
-     The number of removed elements if the operation succeeded
+       The number of removed elements if the operation succeeded
 
 
 .. command:: LPOP key
+
 .. command:: RPOP key
    
    計算時間: O(1)
@@ -242,14 +246,19 @@ Redisリスト型はリスト長の情報をキャッシュするので :com:`LL
      Bulk replyが返ります。
 
 
-.. command:: BLPOP key1 key2 ... keyN timeout (Redis >= 1.3.1)
-.. command:: BRPOP key1 key2 ... keyN timeout (Redis >= 1.3.1)
+.. command:: BLPOP key1 key2 ... keyN timeout 
+
+   .. versionadded:: 1.3.1
+
+.. command:: BRPOP key1 key2 ... keyN timeout 
+
+   .. versionadded:: 1.3.1
 
    計算時間: O(1)
 
    .. BLPOP (and BRPOP) is a blocking list pop primitive. You can see this commands as blocking versions of LPOP and RPOP able to block if the specified keys don't exist or contain empty lists.
 
-   :com:`BLPOP` （と :com:`BRPOP`）はブロッキングなポップのプリミティブです。言い換えれば、 :com:`LPOP` と :com:`RPOP` のブロッキング版で、指定されたキーが存在しない場合や対応するリストが空でも使うことができるものだとも言えます。
+   :com:`BLPOP` （と :com:`BRPOP` ）はブロッキングなポップのプリミティブです。言い換えれば、 :com:`LPOP` と :com:`RPOP` のブロッキング版で、指定されたキーが存在しない場合や対応するリストが空でも使うことができるものだとも言えます。
 
    .. The following is a description of the exact semantic. We describe BLPOP but the two commands are identical, the only difference is that BLPOP pops the element from the left (head) of the list, and BRPOP pops from the right (tail).
 
@@ -281,6 +290,8 @@ Redisリスト型はリスト長の情報をキャッシュするので :com:`LL
 
    When blocking, if a non-zero timeout is specified, the client will unblock returning a nil special value if the specified amount of seconds passed without a push operation against at least one of the specified keys.
 
+   ブロックしているときは、もしゼロでないタイムアウトが指定されていれば、クライアントは少なくとも1つのリストにプッシュ操作が特別な値"nil"を
+
    The timeout argument is interpreted as an integer value. A timeout of zero means instead to block forever.
 
    **Multiple clients blocking for the same keys**
@@ -302,7 +313,9 @@ Redisリスト型はリスト長の情報をキャッシュするので :com:`LL
    When a non-zero timeout is specified, and the BLPOP operation timed out, the return value is a nil multi bulk reply. Most client values will return false or nil accordingly to the programming language used.
 
 
-.. command:: RPOPLPUSH srckey dstkey (Redis >= 1.1)
+.. command:: RPOPLPUSH srckey dstkey
+
+   .. versionadded:: 1.1
 
    計算時間: O(1)
 
@@ -331,23 +344,31 @@ Redisリスト型はリスト長の情報をキャッシュするので :com:`LL
 
 .. command:: SORT key [BY pattern] [LIMIT start count] [GET pattern] [ASC|DESC] [ALPHA] [STORE dstkey]
 
-   Sort the elements contained in the List, Set, or Sorted Set value at key. By default sorting is numeric with elements being compared as double precision floating point numbers. This is the simplest form of SORT::
+   Sort the elements contained in the List, Set, or Sorted Set value at key. By default sorting is numeric with elements being compared as double precision floating point numbers. This is the simplest form of SORT
 
-   .. code:: SORT mylist
+   .. code-block:: none
+
+      SORT mylist
 
    Assuming mylist contains a list of numbers, the return value will be the list of numbers ordered from the smallest to the biggest number. In order to get the sorting in reverse order use DESC:
 
-   .. code:: SORT mylist DESC
+   .. code-block:: none
+
+      SORT mylist DESC
 
    The ASC option is also supported but it's the default so you don't really need it. If you want to sort lexicographically use ALPHA. Note that Redis is utf-8 aware assuming you set the right value for the LC_COLLATE environment variable.
 
    Sort is able to limit the number of returned elements using the LIMIT option:
 
-   .. code:: SORT mylist LIMIT 0 10
+   .. code-block:: none
+
+      SORT mylist LIMIT 0 10
 
    In the above example SORT will return only 10 elements, starting from the first one (start is zero-based). Almost all the sort options can be mixed together. For example the command:
 
-   .. code:: SORT mylist LIMIT 0 10 ALPHA DESC
+   .. code-block:: none
+
+      SORT mylist LIMIT 0 10 ALPHA DESC
 
    Will sort mylist lexicographically, in descending order, returning only the first 10 elements.
 
@@ -355,7 +376,9 @@ Redisリスト型はリスト長の情報をキャッシュするので :com:`LL
 
    **Sorting by external keys**
 
-   .. code:: SORT mylist BY weight_*
+   .. code-block:: none
+
+      SORT mylist BY weight_*
 
    the **BY** option takes a pattern (weight_* in our example) that is used in order to generate the key names of the weights used for sorting. Weight key names are obtained substituting the first occurrence of * with the actual value of the elements on the list (1,2,3,4 in our example).
 
@@ -363,25 +386,33 @@ Redisリスト型はリスト長の情報をキャッシュするので :com:`LL
 
    **Not Sorting at all**
 
-   .. code:: SORT mylist BY nosort
+   .. code-block:: none
+
+      SORT mylist BY nosort
 
    also the BY option can take a "nosort" specifier. This is useful if you want to retrieve a external key (using GET, read below) but you don't want the sorting overhead.
 
    **Retrieving external keys**
 
-   .. code:: SORT mylist BY weight_* GET object_*
+   .. code-block:: none
+
+      SORT mylist BY weight_* GET object_*
 
    Note that GET can be used multiple times in order to get more keys for every element of the original List, Set or Sorted Set sorted.
 
    Since Redis >= 1.1 it's possible to also GET the list elements itself using the special # pattern:
 
-   .. code:: SORT mylist BY weight_* GET object_* GET #
+   .. code-block:: none
+
+      SORT mylist BY weight_* GET object_* GET #
 
    **Storing the result of a SORT operation**
 
    By default SORT returns the sorted elements as its return value. Using the STORE option instead to return the elements SORT will store this elements as a Redis List in the specified key. An example:
 
-   .. code:: SORT mylist BY weight_* STORE resultkey
+   .. code-block:: none
+
+      SORT mylist BY weight_* STORE resultkey
 
    An interesting pattern using SORT ... STORE consists in associating an EXPIRE timeout to the resulting key so that in applications where the result of a sort operation can be cached for some time other clients will use the cached list instead to call SORT for every request. When the key will timeout an updated version of the cache can be created using SORT ... STORE again.
 
