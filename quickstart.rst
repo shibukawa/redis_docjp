@@ -21,7 +21,7 @@
 
 Redisの最新安定版のソースは下記のリンクでtarball形式で配布しています::
 
-  $ wget http://redis.googlecode.com/files/redis-1.02.tar.gz
+  $ wget http://redis.googlecode.com/files/redis-2.0.4.tar.gz 
 
 .. The unstable source code, with more features but not ready for production, can be downloaded using git:
 
