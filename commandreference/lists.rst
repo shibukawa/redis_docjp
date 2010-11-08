@@ -86,23 +86,40 @@ Redisリスト型はリスト長の情報をキャッシュするので :com:`LL
 
 
 .. command:: LRANGE key start end
-   計算時間: O(start+n) (with n being the length of the range and start being the start offset)
 
-   Return the specified elements of the list stored at the specified key. Start and end are zero-based indexes. 0 is the first element of the list (the list head), 1 the next element and so on.
+   計算時間: O(start+n) （nは範囲の長さ、startは開始位置のオフセット）
 
-   For example LRANGE foobar 0 2 will return the first three elements of the list.
+   .. Return the specified elements of the list stored at the specified key. Start and end are zero-based indexes. 0 is the first element of the list (the list head), 1 the next element and so on.
 
-   start and end can also be negative numbers indicating offsets from the end of the list. For example -1 is the last element of the list, -2 the penultimate element and so on.
+   キー ``key`` に対応するリスト内の指定された位置の要素を返します。 ``start`` と ``end`` はゼロから始まるインデックスです。0はリストの先頭の要素を指します。1は2番目の要素、といった具合です。
 
-   **Consistency with range functions in various programming languages**
+   .. For example LRANGE foobar 0 2 will return the first three elements of the list.
 
-   Note that if you have a list of numbers from 0 to 100, LRANGE 0 10 will return 11 elements, that is, rightmost item is included. This may or may not be consistent with behavior of range-related functions in your programming language of choice (think Ruby's Range.new, Array#slice or Python's range() function).
+   例えば ``LRANGE foobar 0 2`` と下場合にはリストの最初の3要素を返します。
 
-   LRANGE behavior is consistent with one of Tcl.
+   .. start and end can also be negative numbers indicating offsets from the end of the list. For example -1 is the last element of the list, -2 the penultimate element and so on.
 
-   **Out-of-range indexes**
+   ``start`` と ``end`` は負の整数とすることもできます。その場合はリストの末尾から数えたオフセットになります。例えば、-1はリストの末尾、-2は最後から2番目といった感じです。
+
+   .. **Consistency with range functions in various programming languages**
+
+   **多くのプログラミング言語におけるrange関数との一貫性**
+
+   .. Note that if you have a list of numbers from 0 to 100, LRANGE 0 10 will return 11 elements, that is, rightmost item is included. This may or may not be consistent with behavior of range-related functions in your programming language of choice (think Ruby's Range.new, Array#slice or Python's range() function).
+
+   0から100の数を持つリストを考えてください。この場合 ``LRANGE 0 10`` は11個の要素を返します。つまり最も右の要素が含まれるわけです。これはあなたがいま使っているプログラミング言語のrange関数、あるいはそれに類する関数（たとえばRubyの ``Range.new``, ``Array#slice`` またはPythonの ``range()`` 関数）の動作と一致するかもしれないし、一致しないかもしれません。このことは注意してください。
+
+   .. LRANGE behavior is consistent with one of Tcl.
+
+   :com:`LRANGE` の動作はtclのそれと一致します。
+
+   .. **Out-of-range indexes**
+
+   **範囲外のインデックス**
    
-   Indexes out of range will not produce an error: if start is over the end of the list, or start > end, an empty list is returned. If end is over the end of the list Redis will threat it just like the last element of the list.
+   .. Indexes out of range will not produce an error: if start is over the end of the list, or start > end, an empty list is returned. If end is over the end of the list Redis will threat it just like the last element of the list.
+
+   範囲外のインデックスはエラーの原因とはなりません。もし ``start`` がリストの末尾を超えた値、あるいは ``start`` が ``end`` よりも大きい場合は空リストが返ります。もし ``end`` がリストの末尾を超えていた場合はRedisはその値をリストの末尾に勝手に置き換えます。
 
    .. Return value
 
@@ -113,22 +130,34 @@ Redisリスト型はリスト長の情報をキャッシュするので :com:`LL
 
 .. command:: LTRIM key start end
 
-   計算時間: O(n) (with n being len of list - len of range)
+   計算時間: O(n) （nはリストの長さから範囲の長さを引いたものです）
 
-   Trim an existing list so that it will contain only the specified range of elements specified. Start and end are zero-based indexes. 0 is the first element of the list (the list head), 1 the next element and so on.
+   .. Trim an existing list so that it will contain only the specified range of elements specified. Start and end are zero-based indexes. 0 is the first element of the list (the list head), 1 the next element and so on.
 
-   For example LTRIM foobar 0 2 will modify the list stored at foobar key so that only the first three elements of the list will remain.
+   既存のリストを指定された範囲の要素を持つリストになるようにトリムします。 ``start`` と ``end`` は0から始まるインデックスです。0はリストの先頭を指し、1は2番目を指すという具合です。
 
-   start and end can also be negative numbers indicating offsets from the end of the list. For example -1 is the last element of the list, -2 the penultimate element and so on.
+   .. For example LTRIM foobar 0 2 will modify the list stored at foobar key so that only the first three elements of the list will remain.
 
-   Indexes out of range will not produce an error: if start is over the end of the list, or start > end, an empty list is left as value. If end over the end of the list Redis will threat it just like the last element of the list.
+   たとえば、 ``LTRIM foobar 0 2`` は ``foobar`` というキーに対応するリストを最初の3つの要素しか持たないリストに変更します。
 
-   Hint: the obvious use of LTRIM is together with LPUSH/RPUSH. For example:
+   .. start and end can also be negative numbers indicating offsets from the end of the list. For example -1 is the last element of the list, -2 the penultimate element and so on.
+
+   ``start`` と ``end`` は負の整数にすることも可能です。この場合はリストの末尾からのオフセットとなります。たとえば、-`はリストの末尾、-2は最後から2番目、といった具合です。
+
+   .. Indexes out of range will not produce an error: if start is over the end of the list, or start > end, an empty list is left as value. If end over the end of the list Redis will threat it just like the last element of the list.
+
+   範囲外のインデックスを指定してもエラーにはなりません。もし ``start`` がリストの末尾を超えた値、あるいは ``start`` が ``end`` よりも大きな値になったとしても、空リストが返るだけです。もし ``end`` がリストの末尾を超えた場合はRedisはそれを勝手にリストの末尾として解釈します。
+
+   .. Hint: the obvious use of LTRIM is together with LPUSH/RPUSH. For example:
+
+   ヒント: :com:`LTRIM` を :com:`LPUSH`/:com:`RPUSH` と一緒に用いるというのはよくあるイディオムです::
    
      LPUSH mylist <someelement>
      LTRIM mylist 0 99
 
-   The above two commands will push elements in the list taking care that the list will not grow without limits. This is very useful when using Redis to store logs for example. It is important to note that when used in this way LTRIM is an O(1) operation because in the average case just one element is removed from the tail of the list.
+   .. The above two commands will push elements in the list taking care that the list will not grow without limits. This is very useful when using Redis to store logs for example. It is important to note that when used in this way LTRIM is an O(1) operation because in the average case just one element is removed from the tail of the list.
+
+   いま例示した2つのコマンドは要素をあるリストに追加するものですが、そのリストが際限なしに大きくならないような操作をしています。この例は例えばRedisでログを残す場合に非常に有効です。:com:`LTRIM` がこのような用法で用いられた場合には計算時間はO(1)になることに注目してください。その理由は一般的にはリストの末尾の要素だけが削除されるだけだからです。
 
    .. Return value
 
@@ -138,13 +167,19 @@ Redisリスト型はリスト長の情報をキャッシュするので :com:`LL
 
 .. command:: LINDEX key index
 
-   計算時間: O(n) (with n being the length of the list)
+   計算時間: O(n) （nはリストの長さ）
 
-   Return the specified element of the list stored at the specified key. 0 is the first element, 1 the second and so on. Negative indexes are supported, for example -1 is the last element, -2 the penultimate and so on.
+   .. Return the specified element of the list stored at the specified key. 0 is the first element, 1 the second and so on. Negative indexes are supported, for example -1 is the last element, -2 the penultimate and so on.
 
-   If the value stored at key is not of list type an error is returned. If the index is out of range a 'nil' reply is returned.
+   キー ``key`` に対応するリスト内の指定されたインデックス ``index`` が指す要素を返します。0はリストの先頭、1は2番目の要素、といった具合です。負のインデックスも指定可能です。たとえば-1はリストの末尾、-2は最後から2番目、と続きます。
 
-   Note that even if the average time complexity is O(n) asking for the first or the last element of the list is O(1).
+   .. If the value stored at key is not of list type an error is returned. If the index is out of range a 'nil' reply is returned.
+
+   もしキー ``key`` に対応する値がリスト型でない場合、エラーが返ります。もしインデックスが範囲外だった場合、 "nil" が返ります。
+
+   .. Note that even if the average time complexity is O(n) asking for the first or the last element of the list is O(1).
+
+   たとえ平均計算時間がO(n)だとしても、先頭もしくは末尾の要素の場合にはO(1)で取得可能であることに気をつけてください。
 
    .. Return value
 
@@ -155,11 +190,14 @@ Redisリスト型はリスト長の情報をキャッシュするので :com:`LL
 
 .. command:: LSET key index value
 
-   計算時間: O(N) (with N being the length of the list)
+   計算時間: O(N) （Nはリストの長さ）
 
-   Set the list element at index (see LINDEX for information about the index argument) with the new value. Out of range indexes will generate an error. Note that setting the first or last elements of the list is O(1).
+   .. Set the list element at index (see LINDEX for information about the index argument) with the new value. Out of range indexes will generate an error. Note that setting the first or last elements of the list is O(1).
+   
+   キー ``key`` に対応するリスト内の指定されたインデックス ``index`` の要素を値を新しい値 ``value`` にします。（引数 ``index`` に関しては :com:`LINDEX` を見て下さい）範囲外のインデックスを指定した場合はエラーが起きます。リストの先頭および末尾の要素に値をセットする場合はO(1)です。
 
-   Similarly to other list commands accepting indexes, the index can be negative to access elements starting from the end of the list. So -1 is the last element, -2 is the penultimate, and so forth.
+   .. Similarly to other list commands accepting indexes, the index can be negative to access elements starting from the end of the list. So -1 is the last element, -2 is the penultimate, and so forth.
+   インデックスを指定する他のリスト操作系のコマンドと同様に、負のインデックスを指定した場合はリストの末尾からの値となります。-1の場合はリストの末尾、-2ならその前、となります。
 
    .. Return value
 
@@ -169,9 +207,11 @@ Redisリスト型はリスト長の情報をキャッシュするので :com:`LL
 
 
 .. command:: LREM key count value
-   計算時間: O(N) (with N being the length of the list)
+   計算時間: O(N) （Nはリストの長さ）
 
-   Remove the first count occurrences of the value element from the list. If count is zero all the elements are removed. If count is negative elements are removed from tail to head, instead to go from head to tail that is the normal behaviour. So for example LREM with count -2 and hello as value to remove against the list (a,b,c,hello,x,hello,hello) will lave the list (a,b,c,hello,x). The number of removed elements is returned as an integer, see below for more information about the returned value. Note that non existing keys are considered like empty lists by LREM, so LREM against non existing keys will always return 0.
+   .. Remove the first count occurrences of the value element from the list. If count is zero all the elements are removed. If count is negative elements are removed from tail to head, instead to go from head to tail that is the normal behaviour. So for example LREM with count -2 and hello as value to remove against the list (a,b,c,hello,x,hello,hello) will lave the list (a,b,c,hello,x). The number of removed elements is returned as an integer, see below for more information about the returned value. Note that non existing keys are considered like empty lists by LREM, so LREM against non existing keys will always return 0.
+
+   キー ``key`` 対応するリスト内で値が ``value`` に等しいの最初の ``count`` 要素を削除します。もし ``count`` がゼロだった場合は該当するすべての要素が削除されます。もし ``count`` が負だった場合には、通常とは逆に要素はリストの末尾から先頭に向かって削除されます。例えば ``key`` に対応するリストが ``(a,b,c,hello,x,hello,hello)`` だったとして ``LREM key -2 hello`` を呼び出した場合には ``(a,b,c,hello,x)`` が残ります。削除された要素数が整数値として返ります。返り値に関する詳細は後述します。存在しないキーの場合はLREMは空リストに対して操作をした、と判断しますのでそういう場合は常に0が返ります。
 
    .. Return value
    
@@ -187,9 +227,13 @@ Redisリスト型はリスト長の情報をキャッシュするので :com:`LL
    
    計算時間: O(1)
 
-   Atomically return and remove the first (LPOP) or last (RPOP) element of the list. For example if the list contains the elements "a","b","c" LPOP will return "a" and the list will become "b","c".
+   .. Atomically return and remove the first (LPOP) or last (RPOP) element of the list. For example if the list contains the elements "a","b","c" LPOP will return "a" and the list will become "b","c".
 
-   If the key does not exist or the list is already empty the special value 'nil' is returned.
+   キー ``key`` に対応するリストに対してアトミックに先頭 ( :com:`LPOP` )または末尾 ( :com:`RPOP` )の要素を返し、削除します。例えば "a","b","c"を含むリストに対して操作を行った場合は ``LPOP`` は"a"を返し、リストは"b","c"となります。
+
+   .. If the key does not exist or the list is already empty the special value 'nil' is returned.
+
+   もしキーが存在しない場合、あるいはリストがすでに空だった場合は特別な値 'nil' が返ります。
 
    .. Return value
 
@@ -203,21 +247,37 @@ Redisリスト型はリスト長の情報をキャッシュするので :com:`LL
 
    計算時間: O(1)
 
-   BLPOP (and BRPOP) is a blocking list pop primitive. You can see this commands as blocking versions of LPOP and RPOP able to block if the specified keys don't exist or contain empty lists.
+   .. BLPOP (and BRPOP) is a blocking list pop primitive. You can see this commands as blocking versions of LPOP and RPOP able to block if the specified keys don't exist or contain empty lists.
 
-   The following is a description of the exact semantic. We describe BLPOP but the two commands are identical, the only difference is that BLPOP pops the element from the left (head) of the list, and BRPOP pops from the right (tail).
+   :com:`BLPOP` （と :com:`BRPOP`）はブロッキングなポップのプリミティブです。言い換えれば、 :com:`LPOP` と :com:`RPOP` のブロッキング版で、指定されたキーが存在しない場合や対応するリストが空でも使うことができるものだとも言えます。
 
-   **Non blocking behavior**
+   .. The following is a description of the exact semantic. We describe BLPOP but the two commands are identical, the only difference is that BLPOP pops the element from the left (head) of the list, and BRPOP pops from the right (tail).
 
-   When BLPOP is called, if at least one of the specified keys contain a non empty list, an element is popped from the head of the list and returned to the caller together with the name of the key (BLPOP returns a two elements array, the first element is the key, the second the popped value).
+   これより実際のセマンティクスについての説明をします。 :com:`BLPOP` についての説明しか書きませんが、 :com:`BRPOP` はただ先頭から操作するか末尾から操作するかの違いなので、基本的には同じです。
 
-   Keys are scanned from left to right, so for instance if you issue BLPOP list1 list2 list3 0 against a dataset where list1 does not exist but list2 and list3 contain non empty lists, BLPOP guarantees to return an element from the list stored at list2 (since it is the first non empty list starting from the left).
+   .. Non blocking behavior
 
-   **Blocking behavior**
+   **ノンブロッキングな動作**
 
-   If none of the specified keys exist or contain non empty lists, BLPOP blocks until some other client performs a LPUSH or an RPUSH operation against one of the lists.
+   .. When BLPOP is called, if at least one of the specified keys contain a non empty list, an element is popped from the head of the list and returned to the caller together with the name of the key (BLPOP returns a two elements array, the first element is the key, the second the popped value).
 
-   Once new data is present on one of the lists, the client finally returns with the name of the key unblocking it and the popped value.
+   :com:`BLPOP` が呼び出されたとき、指定したキーのもし少なくとも一つが空でないリストを持っていた場合、そのリストの先頭の要素がポップされて、ポップされたリストに紐づいたキーとともに呼び出し元に返されます。（ :com:`BLPOP` は2つの要素の配列で、最初の要素はキー、2番目の要素はポップされた値となります）
+
+   .. Keys are scanned from left to right, so for instance if you issue BLPOP list1 list2 list3 0 against a dataset where list1 does not exist but list2 and list3 contain non empty lists, BLPOP guarantees to return an element from the list stored at list2 (since it is the first non empty list starting from the left).
+
+   キーは左から右にスキャンされます。たとえばlist1は存在しない、list2とlist3は空でないリストという状況だった場合には、 ``BLPOP list1 list2 list3 0`` を呼びだすと、list2から要素を取り出して返すことは保証されます。（なぜなら左から数えていってlist2が最初の空でないリストだからです）
+
+   .. Blocking behavior
+
+   **ブロッキングな動作**
+
+   .. If none of the specified keys exist or contain non empty lists, BLPOP blocks until some other client performs a LPUSH or an RPUSH operation against one of the lists.
+
+   指定したキーのどれもが存在しないあるいは空リストの場合には、 :com:`BLPOP` は他のクライアントが指定したリストのどれかに :com:`LPUSH` あるいは :com:`RPUSH` しない限りブロックします。
+
+   .. Once new data is present on one of the lists, the client finally returns with the name of the key unblocking it and the popped value.
+
+   リストのうちどれか一つにでも新しいデータが投入されれば、クライアントはようやくそのリストとひもづいているキーとポップされた値を返します。
 
    When blocking, if a non-zero timeout is specified, the client will unblock returning a nil special value if the specified amount of seconds passed without a push operation against at least one of the specified keys.
 
