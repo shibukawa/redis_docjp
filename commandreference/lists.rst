@@ -288,29 +288,45 @@ Redisリスト型はリスト長の情報をキャッシュするので :com:`LL
 
    リストのうちどれか一つにでも新しいデータが投入されれば、クライアントはようやくそのリストとひもづいているキーとポップされた値を返します。
 
-   When blocking, if a non-zero timeout is specified, the client will unblock returning a nil special value if the specified amount of seconds passed without a push operation against at least one of the specified keys.
+   .. When blocking, if a non-zero timeout is specified, the client will unblock returning a nil special value if the specified amount of seconds passed without a push operation against at least one of the specified keys.
 
-   ブロックしているときは、もしゼロでないタイムアウトが指定されていれば、クライアントは少なくとも1つのリストにプッシュ操作が特別な値"nil"を
+   ブロックしているときは、もしゼロでないタイムアウトが指定されていれば、クライアントはタイムアウトまでの間に少なくとも1つのリストにプッシュ操作がされなかった場合に、特別な値"nil"を返してブロックをやめます。
 
-   The timeout argument is interpreted as an integer value. A timeout of zero means instead to block forever.
+   .. The timeout argument is interpreted as an integer value. A timeout of zero means instead to block forever.
 
-   **Multiple clients blocking for the same keys**
+   タイムアウト用の引数 ``timeout`` は整数値として解釈されます。タイムアウト時間が0だった場合には制限なくブロックするようになります。
 
-   Multiple clients can block for the same key. They are put into a queue, so the first to be served will be the one that started to wait earlier, in a first-blpopping first-served fashion.
+   .. Multiple clients blocking for the same keys
 
-   **blocking POP inside a MULTI/EXEC transaction**
+   **複数のクライアントによる同キーに対してのブロッキング**
 
-   BLPOP and BRPOP can be used with pipelining (sending multiple commands and reading the replies in batch), but it does not make sense to use BLPOP or BRPOP inside a MULTI/EXEC block (a Redis transaction).
+   .. Multiple clients can block for the same key. They are put into a queue, so the first to be served will be the one that started to wait earlier, in a first-blpopping first-served fashion.
 
-   The behavior of BLPOP inside MULTI/EXEC when the list is empty is to return a multi-bulk nil reply, exactly what happens when the timeout is reached. If you like science fiction, think at it like if inside MULTI/EXEC the time will flow at infinite speed :)
+   複数のクライアントが同一キーに対してブロックすることが可能です。リクエストはキューに貯められるので、最初にそのキーに対して操作を行うことができるのは早くキューに並んだ順となります。
+
+   blocking POP inside a MULTI/EXEC transaction
+
+   **MULTI/EXECトランザクション内でのブロッキングなPOP**
+
+   .. BLPOP and BRPOP can be used with pipelining (sending multiple commands and reading the replies in batch), but it does not make sense to use BLPOP or BRPOP inside a MULTI/EXEC block (a Redis transaction).
+
+   :com:`BLPOP` と :com:`BRPOP` はパイプライン（１回のバッチで複数のコマンドを送信して、複数の返信を読み込む）に使えまが、 :com:`BLPOP` または :com:`BRPOP` を :com:`MULTI` / :com:`EXEC` ブロック（Redisトランザクション）内で使うのはあまり意味がありません。
+
+   .. The behavior of BLPOP inside MULTI/EXEC when the list is empty is to return a multi-bulk nil reply, exactly what happens when the timeout is reached. If you like science fiction, think at it like if inside MULTI/EXEC the time will flow at infinite speed :)
+
+   操作対象のリストが空の時に :com:`BLPOP` は :com:`MULTI` / :com:`EXEC` 内では風数のBulk nil replyを返す仕様になっています。まさにタイムアウトになった時に起きることと一緒です。もしSFが好きならば、 :com:`MULTI` / :com:`EXEC` の中では時間は無限の速さで流れていると考えてください。
 
    .. Return value
 
    **返り値**
 
-   BLPOP returns a two-elements array via a multi bulk reply in order to return both the unblocking key and the popped value.
+   .. BLPOP returns a two-elements array via a multi bulk reply in order to return both the unblocking key and the popped value.
 
-   When a non-zero timeout is specified, and the BLPOP operation timed out, the return value is a nil multi bulk reply. Most client values will return false or nil accordingly to the programming language used.
+   :com:`BLPOP` はmulti bulk replyを経由してブロックしているキーとポップされた値のペアからなる配列を返します。
+
+   .. When a non-zero timeout is specified, and the BLPOP operation timed out, the return value is a nil multi bulk reply. Most client values will return false or nil accordingly to the programming language used.
+
+   もしタイムアウトにゼロでない値が指定されて、 :com:`BLPOP` の操作がタイムアウトしたときに、返り値はnil multi bulk replyとなります。たいていのクライアントでは使っているプログラミング言語に応じて ``false`` か ``nil`` を返すことになると思います。
 
 
 .. command:: RPOPLPUSH srckey dstkey
@@ -319,21 +335,37 @@ Redisリスト型はリスト長の情報をキャッシュするので :com:`LL
 
    計算時間: O(1)
 
-   Atomically return and remove the last (tail) element of the srckey list, and push the element as the first (head) element of the dstkey list. For example if the source list contains the elements "a","b","c" and the destination list contains the elements "foo","bar" after an RPOPLPUSH command the content of the two lists will be "a","b" and "c","foo","bar".
+   .. Atomically return and remove the last (tail) element of the srckey list, and push the element as the first (head) element of the dstkey list. For example if the source list contains the elements "a","b","c" and the destination list contains the elements "foo","bar" after an RPOPLPUSH command the content of the two lists will be "a","b" and "c","foo","bar".
 
-   If the key does not exist or the list is already empty the special value 'nil' is returned. If the srckey and dstkey are the same the operation is equivalent to removing the last element from the list and pusing it as first element of the list, so it's a "list rotation" command.
+   キー ``srckey`` に対応するリストでアトミックに末尾の要素を削除して、その要素を ``dstkey`` に対応するリストの先頭にプッシュします。たとえば、ソースのリストが"a","b","c"でターゲットのリストが"foo","bar"だった場合に :com:`RPOPLPUSH` コマンドを実行すると２つのリストはそれぞれ "a","b" と "c","foo","bar"
 
-   **Programming patterns: safe queues**
+   .. If the key does not exist or the list is already empty the special value 'nil' is returned. If the srckey and dstkey are the same the operation is equivalent to removing the last element from the list and pusing it as first element of the list, so it's a "list rotation" command.
 
-   Redis lists are often used as queues in order to exchange messages between different programs. A program can add a message performing an LPUSH operation against a Redis list (we call this program a Producer), while another program (that we call Consumer) can process the messages performing an RPOP command in order to start reading the messages from the oldest.
+   もしキーが存在しないまたはリストがすでに空だった場合には特別な値"nil"が返されます。もし ``srckey`` と ``dstkey`` が同じだった場合は、そのリストの末尾の要素を取り除いて、先頭に持ってくる操作となります。これは「リストローテーション」コマンドですね。
 
-   Unfortunately if a Consumer crashes just after an RPOP operation the message gets lost. RPOPLPUSH solves this problem since the returned message is added to another "backup" list. The Consumer can later remove the message from the backup list using the LREM command when the message was correctly processed.
+   .. Programming patterns: safe queues
 
-   Another process, called Helper, can monitor the "backup" list to check for timed out entries to repush against the main queue.
+   **プログラミングパターン： セーフキュー**
 
-   **Programming patterns: server-side O(N) list traversal**
+   .. Redis lists are often used as queues in order to exchange messages between different programs. A program can add a message performing an LPUSH operation against a Redis list (we call this program a Producer), while another program (that we call Consumer) can process the messages performing an RPOP command in order to start reading the messages from the oldest.
 
-   Using RPOPPUSH with the same source and destination key a process can visit all the elements of an N-elements List in O(N) without to transfer the full list from the server to the client in a single LRANGE operation. Note that a process can traverse the list even while other processes are actively RPUSHing against the list, and still no element will be skipped.
+   Redisのリストはよく複数のプログラム缶でのメッセージキューとして用いられます。あるプログラム（プロデューサ）が :com:`LPUSH` によってRedisリストにメッセージを追加して、他のプログラム（コンシューマ）が :com:`RPOP` コマンドを使って古い順からメッセージを読み取るという処理を行ないます。
+
+   .. Unfortunately if a Consumer crashes just after an RPOP operation the message gets lost. RPOPLPUSH solves this problem since the returned message is added to another "backup" list. The Consumer can later remove the message from the backup list using the LREM command when the message was correctly processed.
+
+   もし残念なことにコンシューマが :com:`RPOP` の後にクラッシュしてしまった場合、メッセージはなくなってしまいます。 :com:`RPOPLPUSH` ならこの問題を解決できます。その理由は返されたメッセージは他の"バックアップ"リストに追加されるからです。コンシューマはメッセージがきちんと処理されたあとに :com:`LREM` コマンドを使ってバックアップリストから該当するメッセージを削除できます。
+
+   .. Another process, called Helper, can monitor the "backup" list to check for timed out entries to repush against the main queue.
+
+   ヘルパーと呼ばれる他のプロセスが"バックアップ"リストを監視してメインキューにタイムアウトした要素を再度プッシュすることもできます。
+
+   .. Programming patterns: server-side O(N) list traversal
+
+   **プログラミングパターン： サーバサイド O(N) リストトラバーサル***
+
+   .. Using RPOPLPUSH with the same source and destination key a process can visit all the elements of an N-elements List in O(N) without to transfer the full list from the server to the client in a single LRANGE operation. Note that a process can traverse the list even while other processes are actively RPUSHing against the list, and still no element will be skipped.
+
+   :com:`RPOPLPUSH` のソースとターゲットに同じキーを指定すると、N要素を持つリスト内のすべての要素をなめるとき、 :com:`LRANGE` の操作をするためにサーバからクライアントにO(N)でできます。ここで、そのリストを他のプロセスが :com:`RPUSH` している最中でさえも、すべての要素を漏らすことなくトラバースできることを知っておいてください。
 
    .. Return value
    

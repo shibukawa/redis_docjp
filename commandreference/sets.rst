@@ -47,3 +47,235 @@ Redisセットはハッシュ表を使って実装されていまので、メン
 .. It is possible that in the near future Redis will switch to skip lists (already used in sorted sets) in order to avoid such a problem.
 
 このような問題を回避するために、近いうちにスキップリストによる実装に変更する予定です。（ソート済みセットではすでにそうなっています）
+
+
+セット型のコマンド
+==================
+
+.. command:: SADD key member
+   
+   計算時間: O(1)
+
+   Add the specified member to the set value stored at key. If member is already a member of the set no operation is performed. If key does not exist a new set with the specified member as sole member is created. If the key exists but does not hold a set value an error is returned.
+
+   .. Return value
+
+   **返り値**
+
+     Integer reply, specifically:
+
+       1 if the new element was added
+       0 if the element was already a member of the set
+
+
+.. command:: SREM key member
+
+   Time complexity O(1)
+
+Remove the specified member from the set value stored at key. If member was not a member of the set no operation is performed. If key does not hold a set value an error is returned.
+Return value
+Integer reply, specifically:
+
+1 if the new element was removed
+0 if the new element was not a member of the set
+
+
+.. command:: SPOP key
+   
+   Time complexity O(1)
+
+Remove a random element from a Set returning it as return value. If the Set is empty or the key does not exist, a nil object is returned.
+The SRANDMEMBER command does a similar work but the returned element is not removed from the Set.
+Return value
+Bulk reply
+
+
+.. command:: SMOVE srckey dstkey member¶
+
+   Time complexity O(1)
+
+Move the specifided member from the set at srckey to the set at dstkey. This operation is atomic, in every given moment the element will appear to be in the source or destination set for accessing clients.
+If the source set does not exist or does not contain the specified element no operation is performed and zero is returned, otherwise the element is removed from the source set and added to the destination set. On success one is returned, even if the element was already present in the destination set.
+An error is raised if the source or destination keys contain a non Set value.
+Return value
+Integer reply, specifically:
+
+1 if the element was moved
+0 if the element was not found on the first set and no operation was performed
+
+
+.. command:: SCARD key
+
+   Time complexity O(1)
+
+Return the set cardinality (number of elements). If the key does not exist 0 is returned, like for empty sets.
+Return value
+Integer reply, specifically:
+
+the cardinality (number of elements) of the set as an integer.
+
+
+.. command:: SISMEMBER key member
+
+   Time complexity O(1)
+
+Return 1 if member is a member of the set stored at key, otherwise 0 is returned.
+Return value
+Integer reply, specifically:
+
+1 if the element is a member of the set
+0 if the element is not a member of the set OR if the key does not exist
+
+
+.. command:: SINTER key1 key2 ... keyN
+
+   Time complexity O(N*M) worst case where N is the cardinality of the smallest set and M the number of sets
+
+Return the members of a set resulting from the intersection of all the sets hold at the specified keys. Like in LRANGE the result is sent to the client as a multi-bulk reply (see the protocol specification for more information). If just a single key is specified, then this command produces the same result as SMEMBERS. Actually SMEMBERS is just syntax sugar for SINTERSECT.
+Non existing keys are considered like empty sets, so if one of the keys is missing an empty set is returned (since the intersection with an empty set always is an empty set).
+Return value
+Multi bulk reply, specifically the list of common elements.
+
+
+.. command:: SINTERSTORE dstkey key1 key2 ... keyN
+Time complexity O(N*M) worst case where N is the cardinality of the smallest set and M the number of sets
+
+This commnad works exactly like SINTER but instead of being returned the resulting set is sotred as dstkey.
+Return value
+Status code reply
+
+
+.. command:: SUNION key1 key2 ... keyN
+Time complexity O(N) where N is the total number of elements in all the provided sets
+
+Return the members of a set resulting from the union of all the sets hold at the specified keys. Like in LRANGE the result is sent to the client as a multi-bulk reply (see the protocol specification for more information). If just a single key is specified, then this command produces the same result as SMEMBERS.
+Non existing keys are considered like empty sets.
+Return value
+Multi bulk reply, specifically the list of common elements.
+
+
+.. command:: SUNIONSTORE dstkey key1 key2 ... keyN
+Time complexity O(N) where N is the total number of elements in all the provided sets
+
+This command works exactly like SUNION but instead of being returned the resulting set is stored as dstkey. Any existing value in dstkey will be over-written.
+Return value
+Status code reply
+
+
+.. command:: SDIFF key1 key2 ... keyN
+Time complexity O(N) with N being the total number of elements of all the sets
+
+Return the members of a set resulting from the difference between the first set provided and all the successive sets. Example:
+key1 = x,a,b,c
+key2 = c
+key3 = a,d
+SDIFF key1,key2,key3 => x,b
+Non existing keys are considered like empty sets.
+Return value
+Multi bulk reply, specifically the list of common elements.
+
+
+.. command:: SDIFFSTORE dstkey key1 key2 ... keyN
+Time complexity O(N) where N is the total number of elements in all the provided sets
+
+This command works exactly like SDIFF but instead of being returned the resulting set is stored in dstkey.
+Return value
+Status code reply
+
+
+.. command:: SMEMBERS key
+
+Time complexity O(N)
+
+Return all the members (elements) of the set value stored at key. This is just syntax glue for SINTER.
+Return value
+Multi bulk reply
+
+
+.. command:: SRANDMEMBER key
+
+   計算時間: O(1)
+
+   Return a random element from a Set, without removing the element. If the Set is empty or the key does not exist, a nil object is returned.
+The SPOP command does a similar work but the returned element is popped (removed) from the Set.
+Return value
+Bulk reply
+
+
+.. command:: SORT key [BY pattern] [LIMIT start count] [GET pattern] [ASC|DESC] [ALPHA] [STORE dstkey]
+
+   Sort the elements contained in the List, Set, or Sorted Set value at key. By default sorting is numeric with elements being compared as double precision floating point numbers. This is the simplest form of SORT::
+
+     SORT mylist
+
+   Assuming mylist contains a list of numbers, the return value will be the list of numbers ordered from the smallest to the biggest number. In order to get the sorting in reverse order use DESC::
+
+     SORT mylist DESC
+
+   The ASC option is also supported but it's the default so you don't really need it. If you want to sort lexicographically use ALPHA. Note that Redis is utf-8 aware assuming you set the right value for the LC_COLLATE environment variable.
+
+   Sort is able to limit the number of returned elements using the LIMIT option::
+
+     SORT mylist LIMIT 0 10
+
+   In the above example SORT will return only 10 elements, starting from the first one (start is zero-based). Almost all the sort options can be mixed together. For example the command::
+
+     SORT mylist LIMIT 0 10 ALPHA DESC
+
+   Will sort mylist lexicographically, in descending order, returning only the first 10 elements.
+
+   Sometimes you want to sort elements using external keys as weights to compare instead to compare the actual List Sets or Sorted Set elements. For example the list mylist may contain the elements 1, 2, 3, 4, that are just unique IDs of objects stored at object_1, object_2, object_3 and object_4, while the keys weight_1, weight_2, weight_3 and weight_4 can contain weights we want to use to sort our list of objects identifiers. We can use the following command:
+
+   **Sorting by external keys**
+
+     .. code-block:: none
+
+        SORT mylist BY weight_*
+
+     the BY option takes a pattern (weight_* in our example) that is used in order to generate the key names of the weights used for sorting. Weight key names are obtained substituting the first occurrence of * with the actual value of the elements on the list (1,2,3,4 in our example).
+
+     Our previous example will return just the sorted IDs. Often it is needed to get the actual objects sorted (object_1, ..., object_4 in the example). We can do it with the following 
+   
+   **Not Sorting at all**
+
+     .. code-block:: none
+
+        SORT mylist BY nosort
+
+     also the BY option can take a "nosort" specifier. This is useful if you want to retrieve a external key (using GET, read below) but you don't want the sorting overhead.
+Retrieving external keys
+
+     .. code-block:: none
+
+         SORT mylist BY weight_* GET object_*
+
+     Note that GET can be used multiple times in order to get more keys for every element of the original List, Set or Sorted Set sorted.
+
+     Since Redis >= 1.1 it's possible to also GET the list elements itself using the special # pattern::
+
+       SORT mylist BY weight_* GET object_* GET #
+
+   **Storing the result of a SORT operation**
+
+     By default SORT returns the sorted elements as its return value. Using the STORE option instead to return the elements SORT will store this elements as a Redis List in the specified key. An example::
+       SORT mylist BY weight_* STORE resultkey
+
+     An interesting pattern using SORT ... STORE consists in associating an EXPIRE timeout to the resulting key so that in applications where the result of a sort operation can be cached for some time other clients will use the cached list instead to call SORT for every request. When the key will timeout an updated version of the cache can be created using SORT ... STORE again.
+
+     Note that implementing this pattern it is important to avoid that multiple clients will try to rebuild the cached version of the cache at the same time, so some form of locking should be implemented (for instance using SETNX).
+
+   **SORT and Hashes: BY and GET by hash field**
+
+     It's possible to use BY and GET options against Hash fields using the following syntax::
+
+       SORT mylist BY weight_*->fieldname
+       SORT mylist GET object_*->fieldname
+
+     The two chars string -> is used in order to signal the name of the Hash field. The key is substituted as documented above with sort BY and GET against normal keys, and the Hash stored at the resulting key is accessed in order to retrieve the specified field.
+
+   .. Return value
+
+   **返り値**
+
+     Multi bulk reply, specifically a list of sorted elements.
+
