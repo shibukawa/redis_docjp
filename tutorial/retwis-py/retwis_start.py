@@ -1,4 +1,3 @@
-
 # -*- encoding: utf-8 -*-
 
 import os
@@ -21,46 +20,11 @@ def getrand():
     return hashlib.md5(bitstr).hexdigest()
 
 
-class RedisAuthMixin(object):
-    def get_current_user(self):
-        authcookie = self.get_cookie("auth", None)
-        if authcookie:
-            redis = Redis()
-            userid = redis.get("auth:%s" % authcookie)
-            if userid and redis.get("uid:%s:auth" % userid) == authcookie:
-                return self.__load_user_information(userid, redis)
-    
-    def __load_user_information(self, userid, redis):
-        username = redis.get("uid:%s:username" % userid)
-        return {"id":userid, "name":username}
+# <= begin user code
 
 
-class WelcomeHandler(RequestHandler):
-    def get(self):
-        self.render("template/welcome.html", register_error=None, login_error=None)
 
-    def post(self):
-        username = self.get_argument("username", None)
-        password = self.get_argument("password", None)
-        # you can change host, port, db with keyword parameter
-        if not username or not password:
-            self.render("template/welcome.html", register_error=None, login_error=
-                "You need to enter both username and password to login")
-            return
-        redis = Redis()
-        userid = redis.get("username:%s:id" % username)
-        if not userid:
-            self.render("template/welcome.html", register_error=None, login_error=
-                "Wrong username or password")
-            return
-        realpassword = redis.get("uid:%s:password" % userid)
-        if realpassword != password:
-            self.write("template/welcome.html", register_error=None, login_error=
-                "Wrong username or password")
-            return
-        authsecret = redis.get("uid:%s:auth" % userid)
-        self.set_cookie("auth",authsecret, expires_days=365)
-        self.redirect("/")
+# => end user code 
 
 
 class RegisterHandler(RequestHandler):
@@ -96,39 +60,6 @@ class RegisterHandler(RequestHandler):
         self.render("template/register.html", username=username)
 
 
-class LogoutHandler(RedisAuthMixin, RequestHandler):
-    @authenticated
-    def get(self):
-        redis = Redis()
-        userid = self.current_user["id"]
-        newauthsecret = getrand()
-        oldauthsecret = redis.get("uid:%s:auth" % userid)
-
-        redis.set("uid:%s:auth" % userid, newauthsecret)
-        redis.set("auth:%s" % newauthsecret, userid)
-        redis.delete("auth:%s" % oldauthsecret)
-        self.redirect("/")
-
-
-class PostHandler(RedisAuthMixin, RequestHandler): 
-    @authenticated
-    def post(self):
-        # save status
-        redis = Redis()
-        userid = self.current_user["id"]
-        postid = redis.incr("blobal:nextPostId")
-        status = self.get_argument("status").replace("\n", " ")
-        post = "%s|%d|%s" % (userid, int(time()), status)
-        redis.set("post:%d" % postid, post)
-
-        # spread status to all followers
-        followers = redis.smembers("uid:%s:followers" % userid)
-        followers.add(userid)
-        for fid in followers:
-            redis.lpush("uid:%s:posts" % fid, postid) 
-        redis.lpush("global:timeline", postid)
-        redis.ltrim("global:timeline", 0, 1000)
-        self.redirect("/")
 
 
 class HomeHandler(RedisAuthMixin, RequestHandler):
@@ -225,31 +156,10 @@ class PostFormatter(object):
             return "%d days" % int(d/3600/24)
 
     def show_post(self, id):
-        posttemplate = """
-          <div class="post">
-            <a class="username" href="/profile?u=%s">%s</a>%s<br>
-            <i>posted %s ago via web</i>
-          </div>
-        """
-        postdata = self._redis.get("post:%s" % id);
-        if not postdata:
-            return False;
-        userid, time, post = postdata.split("|", 2)
-        username = self._redis.get("uid:%s:username" % userid)
-        self._posts.append(posttemplate % (url_escape(username), username, post, self._elapsed(time)))
-        return True
+        raise NotImplemented("please implement this method")
 
     def show_user_posts(self, userid, start, count): 
-        if userid == None:
-            key = "global:timeline"
-        else:
-            key = "uid:%s:posts" % userid
-        posts = self._redis.lrange(key, start, start+count)
-        for post in posts:
-            self.show_post(post)
-            if len(self._posts) == count:
-                break
-        self._is_last = (len(self._posts) != count+1)
+        raise NotImplemented("please implement this method")
 
     def user_post_with_pagenation(self, path, username, userid, start, count):
         if username:
