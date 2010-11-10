@@ -54,3 +54,193 @@ Redisハッシュの面白い使い方としてオブジェクトエンコーデ
 .. The result is that small hashes are both memory efficient and fast, while bigger hashes are fast but not as memory efficient than small hashes.
 
 結果として小ハッシュはメモリを効率的に使い、素早くアクセスでき、一方で大きなハッシュは早いけれどメモリ効率は小ハッシュよりも悪くなっています。
+
+
+ハッシュ型のコマンド
+====================
+
+.. command:: HSET key field value 
+
+   .. versionadded:: 1.3.10
+
+   計算時間: O(1)
+
+   Set the specified hash field to the specified value.
+
+   If key does not exist, a new key holding a hash is created.
+
+   If the field already exists, and the HSET just produced an update of the value, 0 is returned, otherwise if a new field is created 1 is returned.
+
+   .. Return value
+
+   **帰り値**
+
+     Integer replyが返ります。
+
+.. command:: HGET key field
+
+   .. versionadded:: 1.3.10
+
+   計算時間: O(1)
+
+   If key holds a hash, retrieve the value associated to the specified field.
+
+   If the field is not found or the key does not exist, a special 'nil' value is returned.
+
+   .. Return value
+
+   **帰り値**
+
+     Bulk replyを返します。
+
+
+.. command:: HSETNX key field value
+
+   .. versionadded:: 1.3.10
+
+   計算時間: O(1)
+
+   Set the specified hash field to the specified value, if field does not exist yet.
+
+   If key does not exist, a new key holding a hash is created.
+
+   If the field already exists, this operation has no effect and returns 0. Otherwise, the field is set to value and the operation returns 1.
+
+   .. Return value
+
+   **帰り値**
+
+     Integer replyを返します。
+
+
+.. command:: HMSET key field1 value1 ... fieldN valueN
+
+   .. versionadded:: 1.3.10
+
+   計算時間: O(N) (with N being the number of fields)
+
+
+   Set the respective fields to the respective values. HMSET replaces old values with new values.
+
+   If key does not exist, a new key holding a hash is created.
+
+   .. Return value
+
+   **帰り値**
+
+     Status code replyが返ります。 :com:`HMSET` は絶対に失敗しないので常に ``+OK`` が返ります。
+
+
+.. command:: HMGET key field1 ... fieldN
+
+   .. versionadded:: 1.3.10
+
+   計算時間: O(N) (with N being the number of fields)
+
+   Retrieve the values associated to the specified fields.
+
+   If some of the specified fields do not exist, nil values are returned. Non existing keys are considered like empty hashes.
+
+   .. Return value
+
+   **帰り値**
+
+     Multi Bulk Reply specifically a list of all the values associated with the specified fields, in the same order of the request.
+
+
+.. command:: HINCRBY key field value
+
+   .. versionadded:: 1.3.10
+
+   計算時間: O(1)
+
+   Increment the number stored at field in the hash at key by value. If key does not exist, a new key holding a hash is created. If field does not exist or holds a string, the value is set to 0 before applying the operation.
+
+   The range of values supported by HINCRBY is limited to 64 bit signed integers.
+Examples
+
+   Since the value argument is signed you can use this command to perform both increments and decrements:
+
+   .. code-block:: none
+
+      HINCRBY key field 1 (increment by one)
+      HINCRBY key field -1 (decrement by one, just like the DECR command)
+      HINCRBY key field -10 (decrement by 10)
+
+   .. Return value
+
+   **帰り値**
+   
+     Integer replyが返ります。インクリメント後の新しい値が返ります。
+
+.. command:: HEXISTS key field
+
+   .. versionadded::  1.3.10
+
+   計算時間: O(1)
+
+   Return 1 if the hash stored at key contains the specified field.
+
+   Return 0 if the key is not found or the field is not present.
+
+   .. Return value
+
+   **帰り値**
+
+     Integer replyが返ります。
+
+.. command:: HDEL key field
+
+   .. versionadded:: 1.3.10
+
+   計算時間: O(1)
+
+   Remove the specified field from an hash stored at key.
+
+   If the field was present in the hash it is deleted and 1 is returned, otherwise 0 is returned and no operation is performed.
+
+   .. Return value
+
+   **帰り値**
+
+     Integer replyが返ります。
+
+
+.. command:: HLEN key
+
+   .. versionadded:: 1.3.10
+
+   計算時間: O(1)
+
+   Return the number of entries (fields) contained in the hash stored at key. If the specified key does not exist, 0 is returned assuming an empty hash.
+
+   .. Return value
+
+   **帰り値**
+
+     Integer replyが返ります。
+
+
+.. command:: HKEYS key
+
+   .. versionadded:: 1.3.10
+
+.. command:: HVALS key
+
+   .. versionadded:: 1.3.10
+
+.. command:: HGETALL key
+
+   .. versionadded:: 1.3.10
+
+   計算時間: O(N), where N is the total number of entries
+
+   HKEYS returns all the fields names contained into a hash, HVALS all the associated values, while HGETALL returns both the fields and values in the form of field1, value1, field2, value2, ..., fieldN, valueN.
+
+   .. Return value
+
+   **帰り値**
+
+     Multi Bulk Replyが返ります。
+
+
