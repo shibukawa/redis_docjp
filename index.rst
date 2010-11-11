@@ -51,6 +51,9 @@ redisドキュメント日本語訳
 .. toctree::
    :maxdepth: 1
 
+   hacker/hacking_strings
+   hacker/protocol_spec
+
 索引など
 ========
 
