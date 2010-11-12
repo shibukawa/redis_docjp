@@ -55,7 +55,7 @@ class WelcomeHandler(RequestHandler):
             return
         realpassword = redis.get("uid:%s:password" % userid)
         if realpassword != password:
-            self.write("template/welcome.html", register_error=None, login_error=
+            self.render("template/welcome.html", register_error=None, login_error=
                 "Wrong username or password")
             return
         authsecret = redis.get("uid:%s:auth" % userid)
@@ -116,7 +116,7 @@ class PostHandler(RedisAuthMixin, RequestHandler):
         # save status
         redis = Redis()
         userid = self.current_user["id"]
-        postid = redis.incr("blobal:nextPostId")
+        postid = redis.incr("global:nextPostId")
         status = self.get_argument("status").replace("\n", " ")
         post = "%s|%d|%s" % (userid, int(time()), status)
         redis.set("post:%d" % postid, post)
