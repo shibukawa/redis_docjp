@@ -56,7 +56,9 @@ Redisセットはハッシュ表を使って実装されていまので、メン
    
    計算時間: O(1)
 
-   Add the specified member to the set value stored at key. If member is already a member of the set no operation is performed. If key does not exist a new set with the specified member as sole member is created. If the key exists but does not hold a set value an error is returned.
+   .. Add the specified member to the set value stored at key. If member is already a member of the set no operation is performed. If key does not exist a new set with the specified member as sole member is created. If the key exists but does not hold a set value an error is returned.
+
+   指定されたメンバ ``member`` を
 
    .. Return value
 
@@ -72,12 +74,16 @@ Redisセットはハッシュ表を使って実装されていまので、メン
 
    Time complexity O(1)
 
-Remove the specified member from the set value stored at key. If member was not a member of the set no operation is performed. If key does not hold a set value an error is returned.
-Return value
-Integer reply, specifically:
+   .. Remove the specified member from the set value stored at key. If member was not a member of the set no operation is performed. If key does not hold a set value an error is returned.
 
-1 if the new element was removed
-0 if the new element was not a member of the set
+   .. Return value
+
+   **文字列型**
+
+   Integer reply, specifically::
+
+     1 if the new element was removed
+     0 if the new element was not a member of the set
 
 
 .. command:: SPOP key
