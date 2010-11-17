@@ -70,11 +70,19 @@ Redisセット型で起きていたのと同様、ハッシュ表のリサイズ
 
    .. versionadded:: 1.1
 
-   計算時間: O(log(N)) with N being the number of elements in the sorted set
+   計算時間: O(log(N)) Nはソート済みセット内の要素数
 
-Add the specified member having the specifeid score to the sorted set stored at key. If member is already a member of the sorted set the score is updated, and the element reinserted in the right position to ensure sorting. If key does not exist a new sorted set with the specified member as sole member is crated. If the key exists but does not hold a sorted set value an error is returned.
-The score value can be the string representation of a double precision floating point number.
-For an introduction to sorted sets check the Introduction to Redis data types page.
+   .. Add the specified member having the specifeid score to the sorted set stored at key. If member is already a member of the sorted set the score is updated, and the element reinserted in the right position to ensure sorting. If key does not exist a new sorted set with the specified member as sole member is crated. If the key exists but does not hold a sorted set value an error is returned.
+
+   スコア ``score`` を持つメンバー ``member`` をキー ``key`` に対応するセット内に追加します。もしメンバーがすでに指定されたソート済みセット内に存在する場合は、スコアが更新され正しい場所に再挿入されます。もしキーが存在しない場合は指定されたメンバだけを含む新しいソート済みセットが作られます。もしキーが存在して対応する値がソート済みセットでない場合はエラーが返ります。
+
+   .. The score value can be the string representation of a double precision floating point number.
+
+   スコアの値は倍精度浮動小数を表す文字列です。
+
+   .. For an introduction to sorted sets check the Introduction to Redis data types page.
+
+   ソート済みセットに関する紹介はこのページの先頭を参照してください。
 
    .. Return value
 
@@ -92,7 +100,9 @@ For an introduction to sorted sets check the Introduction to Redis data types pa
 
    計算時間: O(log(N)) with N being the number of elements in the sorted set
 
-   Remove the specified member from the sorted set value stored at key. If member was not a member of the set no operation is performed. If key does not not hold a set value an error is returned.
+   .. Remove the specified member from the sorted set value stored at key. If member was not a member of the set no operation is performed. If key does not not hold a set value an error is returned.
+
+   指定されたメンバー ``member`` をキー ``key`` に対応するソート済みセットから削除します。もしメンバーが指定されたセット内に存在しない場合は何の処理も行われません。もしキーがソート済みセットを保持していない場合、エラーが返ります。
 
    .. Return value
 
@@ -108,13 +118,19 @@ For an introduction to sorted sets check the Introduction to Redis data types pa
    
    .. versionadded:: 1.1
 
-   計算時間: O(log(N)) with N being the number of elements in the sorted set
+   計算時間: O(log(N)) Nはソート済みセットないの要素数
 
-   If member already exists in the sorted set adds the increment to its score and updates the position of the element in the sorted set accordingly. If member does not already exist in the sorted set it is added with increment as score (that is, like if the previous score was virtually zero). If key does not exist a new sorted set with the specified member as sole member is crated. If the key exists but does not hold a sorted set value an error is returned.
+   .. If member already exists in the sorted set adds the increment to its score and updates the position of the element in the sorted set accordingly. If member does not already exist in the sorted set it is added with increment as score (that is, like if the previous score was virtually zero). If key does not exist a new sorted set with the specified member as sole member is crated. If the key exists but does not hold a sorted set value an error is returned.
 
-   The score value can be the string representation of a double precision floating point number. It's possible to provide a negative value to perform a decrement.
+   メンバー ``member`` がすでにキー ``key`` に対応するソート済みセット内に存在する場合、そのスコアを ``increment`` 分だけインクリメントし、ソート済みセット内の正しい位置に更新する。もしメンバーが存在しない場合は ``increment`` のスコアを持ったメンバが追加されます。（つまり、仮想的にスコア0を持ったメンバを更新したことになります）もしキーが存在しない場合は指定したメンバーだけを持った新しいソート済みセットが作成されます。もしキーは存在するけれど、対応する値がソート済みセット出ない場合はエラーが返されます。
 
-   For an introduction to sorted sets check the Introduction to Redis data types page.
+   .. The score value can be the string representation of a double precision floating point number. It's possible to provide a negative value to perform a decrement.
+
+   スコアは倍精度浮動小数を表す文字列です。デクリメントをするために負の値指定することも可能です。
+
+   .. For an introduction to sorted sets check the Introduction to Redis data types page.
+
+   ソート済みセットの紹介はページ上部を確認して下さい。
 
    .. Return value
 
@@ -134,7 +150,9 @@ For an introduction to sorted sets check the Introduction to Redis data types pa
 
    計算時間: O(log(N))
 
-   ZRANK returns the rank of the member in the sorted set, with scores ordered from low to high. ZREVRANK returns the rank with scores ordered from high to low. When the given member does not exist in the sorted set, the special value 'nil' is returned. The returned rank (or index) of the member is 0-based for both commands.
+   .. ZRANK returns the rank of the member in the sorted set, with scores ordered from low to high. ZREVRANK returns the rank with scores ordered from high to low. When the given member does not exist in the sorted set, the special value 'nil' is returned. The returned rank (or index) of the member is 0-based for both commands.
+
+   :com:`ZRANK` はキー ``key`` に対応するソート済みセット内のメンバ ``member`` の昇順でのランクを返します。 :com:`ZREVRANK` は降順でのランクを返します。指定されたメンバがソート済みセットの中に存在しない場合は特別な値nilが返ります。どちらのコマンドにおいても返されるランク（インデックス）はゼロから始まる値です。
 
    .. Return value
 
@@ -154,14 +172,23 @@ For an introduction to sorted sets check the Introduction to Redis data types pa
 
    .. versionadded:: 1.1
 
-   計算時間: O(log(N))+O(M) (with N being the number of elements in the sorted set and M the number of elements requested)
+   計算時間: O(log(N))+O(M) （Nはソート済みセット内の要素数でMは指定された要素数）
 
-   Return the specified elements of the sorted set at the specified key. The elements are considered sorted from the lowerest to the highest score when using ZRANGE, and in the reverse order when using ZREVRANGE. Start and end are zero-based indexes. 0 is the first element of the sorted set (the one with the lowerest score when using ZRANGE), 1 the next element by score and so on.
+   .. Return the specified elements of the sorted set at the specified key. The elements are considered sorted from the lowerest to the highest score when using ZRANGE, and in the reverse order when using ZREVRANGE. Start and end are zero-based indexes. 0 is the first element of the sorted set (the one with the lowerest score when using ZRANGE), 1 the next element by score and so on.
 
-   start and end can also be negative numbers indicating offsets from the end of the sorted set. For example -1 is the last element of the sorted set, -2 the penultimate element and so on.
-Indexes out of range will not produce an error: if start is over the end of the sorted set, or start > end, an empty list is returned. If end is over the end of the sorted set Redis will threat it just like the last element of the sorted set.
+   キー ``key`` に対応するソート済みセット内での ``start`` から ``end`` で指定された要素を返します。 :com:`ZRANGE` では要素は昇順に、 :com:`ZREVRANGE` では降順に並べられます。 ``start`` と ``end`` は0から始まるインデックスです。0はソート済みセットの最初の要素で1は2番目の要素といった具合です。
 
-   It's possible to pass the WITHSCORES option to the command in order to return not only the values but also the scores of the elements. Redis will return the data as a single list composed of value1,score1,value2,score2,...,valueN,scoreN but client libraries are free to return a more appropriate data type (what we think is that the best return type for this command is a Array of two-elements Array / Tuple in order to preserve sorting).
+   .. start and end can also be negative numbers indicating offsets from the end of the sorted set. For example -1 is the last element of the sorted set, -2 the penultimate element and so on.
+
+   ``start`` と ``end`` には負の値を指定することも可能です。その場合はソート済みセットの末尾からのオフセットとなります。たとえば、-1はソート済みセットの末尾の要素、-2は最後から2番目の要素です。
+
+   .. Indexes out of range will not produce an error: if start is over the end of the sorted set, or start > end, an empty list is returned. If end is over the end of the sorted set Redis will threat it just like the last element of the sorted set.
+
+   範囲外のインデックスでもエラーは起きません。 ``start`` がソート済みセットの末尾を超えた場合、あるいは ``start`` が ``end`` よりも大きい場合は空のリストが返ります。 ``end`` が末尾のインデックスよりも大きかった場合は、末尾の要素として扱われます。
+
+   .. It's possible to pass the WITHSCORES option to the command in order to return not only the values but also the scores of the elements. Redis will return the data as a single list composed of value1,score1,value2,score2,...,valueN,scoreN but client libraries are free to return a more appropriate data type (what we think is that the best return type for this command is a Array of two-elements Array / Tuple in order to preserve sorting).
+
+   値だけではなくて要素のスコアを返せるように ``WITHSCORES`` オプションを与えることもできます。Redisはデータをvalue1,score1,value2,score2,...,valueN,scoreNというリストの形で返します。しかしクライアントライブラリはデータをより適切な形で返すことも可能です。（このコマンドで一番良い形なのは2要素のタプルの配列だと思います）
 
    .. Return value
 
@@ -246,7 +273,9 @@ Exclusive intervals and infinity
 
    計算時間: O(1)
 
-   Return the sorted set cardinality (number of elements). If the key does not exist 0 is returned, like for empty sorted sets.
+   .. Return the sorted set cardinality (number of elements). If the key does not exist 0 is returned, like for empty sorted sets.
+
+   キー ``key`` に対応するソート済みセットの濃度（要素数）を返します。もしキーが存在しない場合は空のセットと同様に0が返ります。
 
    .. Return value
 
@@ -263,7 +292,9 @@ Exclusive intervals and infinity
 
    計算時間: O(1)
 
-   Return the score of the specified element of the sorted set at key. If the specified element does not exist in the sorted set, or the key does not exist at all, a special 'nil' value is returned.
+   .. Return the score of the specified element of the sorted set at key. If the specified element does not exist in the sorted set, or the key does not exist at all, a special 'nil' value is returned.
+
+   キー ``key`` に対応するソート済みセット内で指定した要素 ``element`` のスコアを返します。もし指定した要素が存在しない、あるいはキー自体が存在しない場合は特別な値nilが返ります。
 
    .. Return value
 
