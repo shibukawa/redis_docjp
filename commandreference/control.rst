@@ -9,9 +9,13 @@
 
 .. command:: SAVE
 
-   Save the whole dataset on disk (this means that all the databases are saved, as well as keys with an EXPIRE set (the expire is preserved). The server hangs while the saving is not completed, no connection is served in the meanwhile. An OK code is returned when the DB was fully stored in disk.
+   .. Save the whole dataset on disk (this means that all the databases are saved, as well as keys with an EXPIRE set (the expire is preserved). The server hangs while the saving is not completed, no connection is served in the meanwhile. An OK code is returned when the DB was fully stored in disk.
 
-   The background variant of this command is BGSAVE that is able to perform the saving in the background while the server continues serving other clients.
+   すべてのデータセットをディスクに保存します。（つまりすべてのデータベースが保存され、 :com:`EXPIRE` がセットされたキーの有効期限も保存されます。）保存が完了するまではサーバはハングします。しばらくの間は一切接続が出来ません。データベースがすべてディスクに書き込み終わったときに ``OK`` コードが返ってきます。
+
+   .. The background variant of this command is BGSAVE that is able to perform the saving in the background while the server continues serving other clients.
+
+   このコマンドと同様だけれどもバックグラウンドで処理してくれるものが :com:`BGSAVE` です。こちらはサーバがクライアントに対して処理をしている間にもバックグラウンドで保存が出来ます。
 
    .. Return value
 
@@ -22,7 +26,9 @@
 
 .. command:: BGSAVE
 
-   Save the DB in background. The OK code is immediately returned. Redis forks, the parent continues to server the clients, the child saves the DB on disk then exit. A client my be able to check if the operation succeeded using the LASTSAVE command.
+   .. Save the DB in background. The OK code is immediately returned. Redis forks, the parent continues to server the clients, the child saves the DB on disk then exit. A client my be able to check if the operation succeeded using the LASTSAVE command.
+
+   データベースの保存をバックグラウンドで行います。 ``OK`` コードは直ちに返って来ます。Redisはフォークし、親のプロセスはクライアントに対して処理をし続け、子のプロセスはデータベースをディスクに保存したあと死にます。クライアントから保存が無事に終わったかを :com:`LASTSAVE` コマンドを使って確認することが出来ます。
 
    .. Return value
 
@@ -33,11 +39,17 @@
 
 .. command:: BGREWRITEAOF
 
-   Please for detailed information about the Redis Append Only File check the Append Only File Howto.
+   .. Please for detailed information about the Redis Append Only File check the Append Only File Howto.
 
-   BGREWRITEAOF rewrites the Append Only File in background when it gets too big. The Redis Append Only File is a Journal, so every operation modifying the dataset is logged in the Append Only File (and replayed at startup). This means that the Append Only File always grows. In order to rebuild its content the BGREWRITEAOF creates a new version of the append only file starting directly form the dataset in memory in order to guarantee the generation of the minimal number of commands needed to rebuild the database.
+   Redis Append Only File(AOF)に関するより詳細な情報についてはAppend Only File Howtoを参考にしてください。
 
-   The Append Only File Howto contains further details.
+   .. BGREWRITEAOF rewrites the Append Only File in background when it gets too big. The Redis Append Only File is a Journal, so every operation modifying the dataset is logged in the Append Only File (and replayed at startup). This means that the Append Only File always grows. In order to rebuild its content the BGREWRITEAOF creates a new version of the append only file starting directly form the dataset in memory in order to guarantee the generation of the minimal number of commands needed to rebuild the database.
+
+   :com:`BGREWRITEAOF` はAOFのサイズが大きくなりすぎたとき、バックグラウンドで再書き込みします。RedisのAOFはジャーナルなので、データセットを変更するすべての操作はAOFにログに取られます（そしてスタートアップ時に再生されます）つまりAOFは常に大きくなり続けます。AOFの中身を再構成するために、 :com:`BGREWRITEAOF` は新しいAOFを作成して、データベースを再構成するためのコマンドの数を最小限にすることを保証するために、その時点でのデータセットをメモリに直接書きこむことから始めます。
+
+   .. The Append Only File Howto contains further details.
+
+   AOF Howtoではより詳細な情報が書いてあります。
 
    .. Return value
 
@@ -47,7 +59,9 @@
 
 .. command:: LASTSAVE
 
-   Return the UNIX TIME of the last DB save executed with success. A client may check if a BGSAVE command succeeded reading the LASTSAVE value, then issuing a BGSAVE command and checking at regular intervals every N seconds if LASTSAVE changed.
+   .. Return the UNIX TIME of the last DB save executed with success. A client may check if a BGSAVE command succeeded reading the LASTSAVE value, then issuing a BGSAVE command and checking at regular intervals every N seconds if LASTSAVE changed.
+
+   最後にデータベースの保存が成功したUNIX時間を返します。クライアントは :com:`BGSAVE` が成功したかどうかを :com:`LASTSAVE` の値を見ることで確認することが出来ます。 :com:`BGSAVE` を呼び出したあと、N秒ごとに :com:`LASTSAVE` を呼び出して値が変わったかを確認するのです。
 
    .. Return value
 
@@ -58,13 +72,17 @@
 
 .. command:: SHUTDOWN
 
-   Stop all the clients, save the DB, then quit the server. This commands makes sure that the DB is switched off without the lost of any data. This is not guaranteed if the client uses simply "SAVE" and then "QUIT" because other clients may alter the DB data between the two commands.
+   .. Stop all the clients, save the DB, then quit the server. This commands makes sure that the DB is switched off without the lost of any data. This is not guaranteed if the client uses simply "SAVE" and then "QUIT" because other clients may alter the DB data between the two commands.
+
+   すべてのクライアントを止めて、データベースを保存した後にサーバを停止します。このコマンドは確実にデータベースがその後のどんなデータ変更もなしに保存され、停止したことを保証します。これはもしクライアントが単純に :com:`SAVE` と :com:`QUIT` を呼び出した場合には保証されません。なぜなら他のクライアントがその2つのコマンドの間にデータベースを修正している可能性があるからです。
 
    .. Return value
 
    **返り値**
 
-     Status code reply on error. On success nothing is returned since the server quits and the connection is closed.
+     .. Status code reply on error. On success nothing is returned since the server quits and the connection is closed.
+
+     エラー発生時にはステータスコードが返ります。成功時には何も返りませんなぜならサーバが停止してコネクションが閉じられるからです。
 
 
 リモートサーバ制御コマンド
