@@ -197,45 +197,69 @@ Redisセット型で起きていたのと同様、ハッシュ表のリサイズ
      Multi bulk replyが返ります。具体的には指定された範囲の要素のリストが返ります。
 
 
-.. command:: ZRANGEBYSCORE key min max [LIMIT offset count]
+.. command:: ZRANGEBYSCORE key min max [LIMIT offset count [WITHSCORES]]
 
-   .. versionadded 1.1
+   .. versionadded:: 1.1
 
-.. command:: ZRANGEBYSCORE key min max [LIMIT offset count] [WITHSCORES]
-
-   .. versionadded 1.3.4
+   .. versionchanged:: 1.3.4
 
 .. command:: ZCOUNT key min max
 
-   計算時間: O(log(N))+O(M) with N being the number of elements in the sorted set and M the number of elements returned by the command, so if M is constant (for instance you always ask for the first ten elements with LIMIT) you can consider it O(log(N))
+   .. 計算時間: O(log(N))+O(M) with N being the number of elements in the sorted set and M the number of elements returned by the command, so if M is constant (for instance you always ask for the first ten elements with LIMIT) you can consider it O(log(N))
 
-   Return the all the elements in the sorted set at key with a score between min and max (including elements with score equal to min or max).
+   計算時間: O(log(N))+O(M) Nはソート済みセット内の要素の数、Mはコマンドによって返される要素の数です。もしMが一定ならO(log(N))となります。（たとえば ``LIMIT`` オプションを使って常に最初の要素を取ってくる場合）
 
-   The elements having the same score are returned sorted lexicographically as ASCII strings (this follows from a property of Redis sorted sets and does not involve further computation).
-Using the optional LIMIT it's possible to get only a range of the matching elements in an SQL-alike way. Note that if offset is large the commands needs to traverse the list for offset elements and this adds up to the O(M) figure.
+   .. Return the all the elements in the sorted set at key with a score between min and max (including elements with score equal to min or max).
 
-   The ZCOUNT command is similar to ZRANGEBYSCORE but instead of returning the actual elements in the specified interval, it just returns the number of matching elements.
-Exclusive intervals and infinity
+   キー ``key`` に対応するソート済みセット内でスコアが ``min`` 以上 ``max`` 以下のすべての要素返します。
 
-   min and max can be -inf and +inf, so that you are not required to know what's the greatest or smallest element in order to take, for instance, elements "up to a given value".
+   .. The elements having the same score are returned sorted lexicographically as ASCII strings (this follows from a property of Redis sorted sets and does not involve further computation).
 
-   Also while the interval is for default closed (inclusive) it's possible to specify open intervals prefixing the score with a "(" character, so for instance::
+   同じスコアを持っている要素はASCII文字列として数値化されてソートされた結果が返ってきます。（これはRedisソート済みセット型の特徴と一致していてこれ以上の計算はしません）
+
+   .. Using the optional LIMIT it's possible to get only a range of the matching elements in an SQL-alike way. Note that if offset is large the commands needs to traverse the list for offset elements and this adds up to the O(M) figure.
+
+   ``LIMIT`` オプションを使うと条件に合う要素をSQLの様に範囲を指定して取ってこれます。オフセットが大きければ、リストをトラバースする必要があるので、O(M)の計算時間がかかることを覚えておいてください。
+
+   .. The ZCOUNT command is similar to ZRANGEBYSCORE but instead of returning the actual elements in the specified interval, it just returns the number of matching elements.
+
+   :com:`ZCOUNT` コマンドは :com:`ZRANGEBYSCORE` に似ていますが、実際の要素を返す代わりに条件に適用する要素の数を返します。
+
+   .. Exclusive intervals and infinity
+
+   **排他的な条件や無限大について**
+
+   .. min and max can be -inf and +inf, so that you are not required to know what's the greatest or smallest element in order to take, for instance, elements "up to a given value".
+
+   ``min`` や ``max`` は -inf や +inf も使えます。これによってたとえば「ある値以上の値を持つ要素」を取ってきたい時に、どの値が最大値あるいは最小値かを知っておく必要がありません。
+
+   .. Also while the interval is for default closed (inclusive) it's possible to specify open intervals prefixing the score with a "(" character, so for instance
+
+   値の範囲はデフォルトでは閉じている（内包的）なものですが、"("の文字を使うことで開いた範囲をしてすることも出来ます。たとえば::
 
      ZRANGEBYSCORE zset (1.3 5
 
-   Will return all the values with score > 1.3 and <= 5, while for instance::
+   .. Will return all the values with score > 1.3 and <= 5, while for instance
+
+   これはスコアが1.3より大きく5以下のすべての要素を返します。一方でこんな例もあります::
 
      ZRANGEBYSCORE zset (5 (10
 
-   Will return all the values with score > 5 and < 10 (5 and 10 excluded).
+   .. Will return all the values with score > 5 and < 10 (5 and 10 excluded).
+
+   これはスコアが5より大きく10より小さい要素を返します。（5と10は含まれていません）
 
    .. Return value
 
    **帰り値**
 
-     ZRANGEBYSCORE returns a Multi bulk reply specifically a list of elements in the specified score range.
+     .. ZRANGEBYSCORE returns a Multi bulk reply specifically a list of elements in the specified score range.
 
-     ZCOUNT returns a Integer reply specifically the number of elements matching the specified score range.
+     :com:`ZRANGEBYSCORE` はMulti bulk replyを返します。具体的には指定された範囲内のスコアを持つ要素のリストです。
+
+     .. ZCOUNT returns a Integer reply specifically the number of elements matching the specified score range.
+
+     :com:`ZCOUNT` はInteger replyを返します。具体的には指定された範囲内のスコアを持つ要素数です。
 
    .. Examples
 
@@ -313,15 +337,29 @@ Exclusive intervals and infinity
 
    .. versionadded:: 1.3.12
 
-   計算時間: O(N) + O(M log(M)) with N being the sum of the sizes of the input sorted sets, and M being the number of elements in the resulting sorted set
+   .. 計算時間: O(N) + O(M log(M)) with N being the sum of the sizes of the input sorted sets, and M being the number of elements in the resulting sorted set
 
-   Creates a union or intersection of N sorted sets given by keys k1 through kN, and stores it at dstkey. It is mandatory to provide the number of input keys N, before passing the input keys and the other (optional) arguments.
+   計算時間: O(N) + O(M log(M)) Nは入力のソート済みセットのサイズの合計で、Mは返すソート済みセットの要素数。
 
-   As the terms imply, the ZINTERSTORE command requires an element to be present in each of the given inputs to be inserted in the result. The ZUNIONSTORE command inserts all elements across all inputs.
+   .. Creates a union or intersection of N sorted sets given by keys k1 through kN, and stores it at dstkey. It is mandatory to provide the number of input keys N, before passing the input keys and the other (optional) arguments.
 
-   Using the WEIGHTS option, it is possible to add weight to each input sorted set. This means that the score of each element in the sorted set is first multiplied by this weight before being passed to the aggregation. When this option is not given, all weights default to 1.
+   キー ``k1`` から ``kN`` で指定されたN個のソート済みセットの結合あるいは共通部分を作り ``dstkey`` に保存します。最初の入力するソート済みセットの数 ``N`` の指定は必須です。
 
-   With the AGGREGATE option, it's possible to specify how the results of the union or intersection are aggregated. This option defaults to SUM, where the score of an element is summed across the inputs where it exists. When this option is set to be either MIN or MAX, the resulting set will contain the minimum or maximum score of an element across the inputs where it exists.
+   .. As the terms imply, the ZINTERSTORE command requires an element to be present in each of the given inputs to be inserted in the result. The ZUNIONSTORE command inserts all elements across all inputs.
+
+   言葉が示すように、 :com:`ZINTERSTORE` コマンドは一致する要素が結果のソート済みセット内に挿入されていく形になります。 :com:`ZUNIONSTORE` では指定されたソート済みセット内のすべての要素が挿入されます。
+
+   .. Using the WEIGHTS option, it is possible to add weight to each input sorted set. This means that the score of each element in the sorted set is first multiplied by this weight before being passed to the aggregation. When this option is not given, all weights default to 1.
+
+   ``WEIGHTS`` オプションを使うことで、それぞれの入力用ソート済みセットに重みをつけることができます。これはつまり、ソート済みセットのすべての要素はまず重みとして与えられた数との積とされてからアグリゲーションされます。もしオプションが与えられなければ、すべての重みはデフォルトでは1です。
+
+   .. With the AGGREGATE option, it's possible to specify how the results of the union or intersection are aggregated. This option defaults to SUM, where the score of an element is summed across the inputs where it exists. When this option is set to be either MIN or MAX, the resulting set will contain the minimum or maximum score of an element across the inputs where it exists.
+
+   ``AGGREGATED`` オプションを使うと、どのように結合あるいは共通部分がアグリゲートされるかを指定することができます。デフォルトのオプションは ``SUM`` で、これは要素のスコアが合計されます。 ``MIN`` や ``MAX`` の場合は結果のセットにはそれぞれの入力のソート済みセット内の最小値、あるいは最大値の要素が含まれます。
+
+   .. note::
+
+      ``SUM`` オプションの部分があやしい
 
    .. Return value
 
