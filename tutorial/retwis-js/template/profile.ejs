@@ -1,0 +1,6 @@
+<h2><%= username %></h2>
+<% if( !isfollowing ){ %>
+<a href="/follow?uid=<%= userid %>&f=0" class="button">Follow this user</a>
+<% }else{ %>
+<a href="/follow?uid=<%= userid %>&f=1" class="button">Stop following</a>
+<% } %>

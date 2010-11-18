@@ -1,0 +1,21 @@
+Description:
+
+    Redis tutorial program impelmented by node.js. 
+    This program is originated from retwis-py.
+
+Dependencies:
+
+    node.js (0.3.0) with following npm modules:
+    
+       - express@1.0.0rc4
+       - redis@0.3.7
+
+Usage:
+
+    node redis.js
+
+Limitations:
+
+   - need more strict error handling.
+   - We use only one client to connect redis. It works well under multi request environment,
+     but we do not confirm it is efficient or not.
