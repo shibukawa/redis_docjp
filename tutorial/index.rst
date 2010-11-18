@@ -11,13 +11,9 @@
 
    英語の本家のページは、 `PHPを使って説明 <http://code.google.com/p/redis/wiki/TwitterAlikeExample>`_ 説明していますが、このページではPythonと `Tornado <http://tornado.shibu.jp>`_ を使ったチュートリアルに変えてあります。
 
-Python Hack-a-thon 2010.11のハンズオンの資料用の補足
-====================================================
+   Bitbucketの `リポジトリ <https://bitbucket.org/shibu/redis_docjp/overview>`_ に、このチュートリアルのファイル一式が含まれています。 :file:`tutorial/retwis/` フォルダを自分の作業フォルダにおいて、 :file:`retwis_start.py` に、これから説明する内容を追加で実装していってください。なお、実力に自信のある方は、PHPやRubyの参考実装だけを見ながら、 :class:`RegisterHandler` や、 :class:`FollowHandler` クラスもPythonに移植してみてください。
 
-Python hack-a-thon 2010.11のRedisハンズオンに参加する方は、最低限Python(2.5以上)と、Windowsの方はCygwin(Redisのビルドに必要です。gccも)、Macの方はXCodeをインストールしてきてください。余裕があれば、TornadoとRedis、redis-pyも用意してきてもらえるとスムーズです。
-   
-Bitbucketの `リポジトリ <https://bitbucket.org/shibu/redis_docjp/overview>`_ に、このチュートリアルのファイル一式が含まれています。 :file:`tutorial/retwis/` フォルダを自分の作業フォルダにおいて、 :file:`retwis_start.py` に、これから説明する内容を追加で実装していってください。なお、実力に自信のある方は、PHPやRubyの参考実装だけを見ながら、 :class:`RegisterHandler` や、 :class:`FollowHandler` クラスもPythonに移植してみてください。
-
+   また、 @yssk22 氏がnode.js版を実装してくれました。これもリポジトリの中に入っていますので、興味のある方はこちらのファイルの内容に読み替えてください。
 
 RedisとPythonを使ったシンプルなTwitterクローンの設計と実装
 ==========================================================
