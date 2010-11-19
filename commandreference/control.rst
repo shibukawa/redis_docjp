@@ -90,7 +90,9 @@
 
 .. command:: INFO
 
-   The info command returns different information and statistics about the server in an format that's simple to parse by computers and easy to red by huamns.
+   .. The info command returns different information and statistics about the server in an format that's simple to parse by computers and easy to red by huamns.
+
+   :com:`INFO` コマンドはサーバに関する情報と統計を表示します。パースもしやすく、可読性の高い形で表示します。
 
    .. Return value
 
@@ -109,20 +111,30 @@
        uptime_in_seconds:25
        uptime_in_days:0
 
-     All the fields are in the form field:value
+     .. All the fields are in the form field:value
+
+     すべてのフィールドは フィールド:値 の形で表示されます。
 
    **ノート**
 
-   * used_memory is returned in bytes, and is the total number of bytes allocated by the program using malloc.
+   .. * used_memory is returned in bytes, and is the total number of bytes allocated by the program using malloc.
 
-   * uptime_in_days is redundant since the uptime in seconds contains already the full uptime information, this field is only mainly present for humans.
+   * ``used_memory`` はバイト単位で表示されます。これはプログラムがmallocを使ってアロケートしたバイト数の合計を表示しています。
 
-   * changes_since_last_save does not refer to the number of key changes, but to the number of operations that produced some kind of change in the dataset.
+   .. * uptime_in_days is redundant since the uptime in seconds contains already the full uptime information, this field is only mainly present for humans.
+
+   * ``uptime_in_days`` は主に人間が読むためだけに用意された項目です。なぜなら ``uptime`` にすでに起動時間の情報が秒で表示されているからです。
+
+   .. * changes_since_last_save does not refer to the number of key changes, but to the number of operations that produced some kind of change in the dataset.
+
+   * ``changes_since_last_save`` はキーの変更回数は参照しておらず、データセットに対する変更回数を参照しています。
 
 
 .. command:: MONITOR
 
-   MONITOR is a debugging command that outputs the whole sequence of commands received by the Redis server. is very handy in order to understand what is happening into the database. This command is used directly via telnet.
+   .. MONITOR is a debugging command that outputs the whole sequence of commands received by the Redis server. is very handy in order to understand what is happening into the database. This command is used directly via telnet.
+
+   :com:`MONITOR` はデバッグ用のコマンドで、Redisサーバが受け取ったすべてのコマンド一覧を表示します。データベース内で何が起きているかを理解するには非常に手軽な方法です。このコマンドはtelnet越しに直接使えます。
 
    .. code-block:: none
 
@@ -149,25 +161,38 @@
       set foo_a 5
       hello
 
-   The ability to see all the requests processed by the server is useful in order to spot bugs in the application both when using Redis as a database and as a distributed caching system.
-In order to end a monitoring session just issue a QUIT command by hand.
+   .. The ability to see all the requests processed by the server is useful in order to spot bugs in the application both when using Redis as a database and as a distributed caching system.
+
+   サーバ内で処理されているすべてのリクエストを見ることが出来ることでRedisをデータセットとして使うときも分散キャッシュとして使うときも、アプリケーション内のバグを探しやすくなります。
+
+   .. In order to end a monitoring session just issue a QUIT command by hand.
+
+   監視を辞めるには :com:`QUIT` コマンドを手で入力するだけでできます。
 
    .. Return value
 
    **返り値**
 
-     Non standard return value, just dumps the received commands in an infinite flow.
+     .. Non standard return value, just dumps the received commands in an infinite flow.
+
+     普通の返り値ではなく、受け取ったコマンドを無限にダンプするだけです。
 
 
 .. command:: SLAVEOF host port
 
 .. command:: SLAVEOF no one
 
-   The SLAVEOF command can change the replication settings of a slave on the fly. If a Redis server is arleady acting as slave, the command SLAVEOF NO ONE will turn off the replicaiton turning the Redis server into a MASTER. In the proper form SLAVEOF hostname port will make the server a slave of the specific server listening at the specified hostname and port.
+   .. The SLAVEOF command can change the replication settings of a slave on the fly. If a Redis server is arleady acting as slave, the command SLAVEOF NO ONE will turn off the replicaiton turning the Redis server into a MASTER. In the proper form SLAVEOF hostname port will make the server a slave of the specific server listening at the specified hostname and port.
 
-   If a server is already a slave of some master, SLAVEOF hostname port will stop the replication against the old server and start the synchrnonization against the new one discarding the old dataset.
+   :com:`SLAVEOF` コマンドはスレーブのレプリケーション設定をすぐさま変更することが出来ます。もしRedisサーバがすでにスレーブとして動いている場合は、 :com:`SLAVEOF` ``NO ONE`` によってレプリケーションをマスターに切り替えることが出来ます。 ``SLAVEOF hostname port`` という形で使えば、サーバを指定したホスト名とポートでリスニングしている特定のサーバのスレーブにすることが出来ます。
 
-   The form SLAVEOF no one will stop replication turning the server into a MASTER but will not discard the replication. So if the old master stop working it is possible to turn the slave into a master and set the application to use the new master in read/write. Later when the other Redis server will be fixed it can be configured in order to work as slave.
+   .. If a server is already a slave of some master, SLAVEOF hostname port will stop the replication against the old server and start the synchrnonization against the new one discarding the old dataset.
+
+   もしサーバがすでにあるマスターのスレーブだった場合には、 ``SLAVEOF hostname port`` のコマンドによって古いサーバのレプリケーションを止め、古いデータセットを捨てて、新しいサーバに対して動機を始めます。
+
+   .. The form SLAVEOF no one will stop replication turning the server into a MASTER but will not discard the replication. So if the old master stop working it is possible to turn the slave into a master and set the application to use the new master in read/write. Later when the other Redis server will be fixed it can be configured in order to work as slave.
+
+   もし ``SLAVEOF no one`` がレプリケーションを停止して、サーバをマスターに変更してくれますが、レプリケーションしたデータを捨てるわけではありません。もし古いマスターが停止した場合に、スレーブをマスターにして、アプリケーションが新しいマスターに対して読み書きを行うように変更することが可能です。後に他のRedisサーバが直された時にはスレーブとして設定することができます。
 
    .. Return value
 
@@ -176,13 +201,21 @@ In order to end a monitoring session just issue a QUIT command by hand.
      Status code replyが返ります。
 
 
-.. command:: CONFIG GET pattern (Redis >= 2.0)
+.. command:: CONFIG GET pattern 
+   
+   .. versionadded:: 2.0
 
-.. command:: CONFIG SET parameter value (Redis >= 2.0)
+.. command:: CONFIG SET parameter value 
 
-   The CONFIG command is able to retrieve or alter the configuration of a running Redis server. Not all the configuration parameters are supported.
+   .. versionadded:: 2.0
 
-   CONFIG has two sub commands, GET and SET. The GET command is used to read the configuration, while the SET command is used to alter the configuration.
+   .. The CONFIG command is able to retrieve or alter the configuration of a running Redis server. Not all the configuration parameters are supported.
+
+   :com:`CONFIG` コマンドは起動しているRedisサーバの設定を変更したり、取得したりすることが出来ます。すべての設定パラメータが利用出来るわけではありません。
+
+   .. CONFIG has two sub commands, GET and SET. The GET command is used to read the configuration, while the SET command is used to alter the configuration.
+
+   :com:`CONFIG` は2つのサブコマンドを持っています。 ``GET`` と ``SET`` です。 ``GET`` コマンドは読み込みの設定に使われます。 ``SET`` コマンドは設定を変更するために
 
    **CONFIG GET パターン**
 
