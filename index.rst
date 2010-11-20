@@ -31,6 +31,8 @@ redisドキュメント日本語訳
 
    commandreference/connection
    commandreference/alldata
+   commandreference/control
+   commandreference/pubsub
 
 .. toctree::
    :maxdepth: 1

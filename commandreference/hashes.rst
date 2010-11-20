@@ -284,7 +284,7 @@ Redisハッシュの面白い使い方としてオブジェクトエンコーデ
 
    .. HKEYS returns all the fields names contained into a hash, HVALS all the associated values, while HGETALL returns both the fields and values in the form of field1, value1, field2, value2, ..., fieldN, valueN.
 
-   :com:`HKEYS` はキー ``key`` に対応するハッシュ内のすべてのフィールド名を返します。 :com:`HVALS` はキー ``key``に対応するハッシュ内の全ての値、 :com:`HGETALL` はフィールドと値の組み合わせを field1, value1, field2, value2, ..., fieldN, valueNの形で返します。
+   :com:`HKEYS` はキー ``key`` に対応するハッシュ内のすべてのフィールド名を返します。 :com:`HVALS` はキー ``key`` に対応するハッシュ内の全ての値、 :com:`HGETALL` はフィールドと値の組み合わせを field1, value1, field2, value2, ..., fieldN, valueNの形で返します。
 
    .. Return value
 

@@ -538,88 +538,139 @@
 
 .. command:: SORT key [BY pattern] [LIMIT start count] [GET pattern] [ASC|DESC] [ALPHA] [STORE dstkey]
 
-   Sort the elements contained in the List, Set, or Sorted Set value at key. By default sorting is numeric with elements being compared as double precision floating point numbers. This is the simplest form of SORT
+   .. Sort the elements contained in the List, Set, or Sorted Set value at key. By default sorting is numeric with elements being compared as double precision floating point numbers. This is the simplest form of SORT
+
+   リスト、セット、ソート済みセット内の要素をキーに対応する値でソートします。デフォルトではソートは倍精度浮動小数の値で比較されます。次はは最も単純な形のソートです。
 
    .. code-block:: none
 
       SORT mylist
 
-   Assuming mylist contains a list of numbers, the return value will be the list of numbers ordered from the smallest to the biggest number. In order to get the sorting in reverse order use DESC:
+   .. Assuming mylist contains a list of numbers, the return value will be the list of numbers ordered from the smallest to the biggest number. In order to get the sorting in reverse order use DESC:
+
+   ``mylist`` は数字のリストを保持しています。返り値は昇順に並び替えられたリストとなります。もし降順にしたい場合は ``DESC`` を使います。
 
    .. code-block:: none
 
       SORT mylist DESC
 
-   The ASC option is also supported but it's the default so you don't really need it. If you want to sort lexicographically use ALPHA. Note that Redis is utf-8 aware assuming you set the right value for the LC_COLLATE environment variable.
+   .. The ASC option is also supported but it's the default so you don't really need it. If you want to sort lexicographically use ALPHA. Note that Redis is utf-8 aware assuming you set the right value for the LC_COLLATE environment variable.
 
-   Sort is able to limit the number of returned elements using the LIMIT option:
+   ``ASC`` も使えますが、デフォルトで指定されているので使う必要はありません。もし辞書順で並び替えたいときは ``ALPHA`` を使います。 RedisはUTF-8を前提にしているので、他の文字コードを使う場合は正しく ``LC_COLLATE`` を設定してください。
+
+   .. Sort is able to limit the number of returned elements using the LIMIT option:
+
+   ``LIMIT`` オプションを使うことで返す要素数を制限することも出来ます。
 
    .. code-block:: none
 
       SORT mylist LIMIT 0 10
 
-   In the above example SORT will return only 10 elements, starting from the first one (start is zero-based). Almost all the sort options can be mixed together. For example the command:
+   .. In the above example SORT will return only 10 elements, starting from the first one (start is zero-based). Almost all the sort options can be mixed together. For example the command:
+
+   上の例では :com:`SORT` は最初の要素（0番目）から始めて10要素を返します。ほぼすべてのソートのオプションは一緒に使えます。たとえばこんな感じです。
 
    .. code-block:: none
 
       SORT mylist LIMIT 0 10 ALPHA DESC
 
-   Will sort mylist lexicographically, in descending order, returning only the first 10 elements.
+   .. Will sort mylist lexicographically, in descending order, returning only the first 10 elements.
 
-   Sometimes you want to sort elements using external keys as weights to compare instead to compare the actual List Sets or Sorted Set elements. For example the list mylist may contain the elements 1, 2, 3, 4, that are just unique IDs of objects stored at object_1, object_2, object_3 and object_4, while the keys weight_1, weight_2, weight_3 and weight_4 can contain weights we want to use to sort our list of objects identifiers. We can use the following command:
+   この例では ``mylist`` は辞書順で降順にソートされ、最初の10要素を返します。
 
-   **Sorting by external keys**
+   .. Sometimes you want to sort elements using external keys as weights to compare instead to compare the actual List Sets or Sorted Set elements. For example the list mylist may contain the elements 1, 2, 3, 4, that are just unique IDs of objects stored at object_1, object_2, object_3 and object_4, while the keys weight_1, weight_2, weight_3 and weight_4 can contain weights we want to use to sort our list of objects identifiers. We can use the following command:
+
+   時にリスト、セット、ソート済みセット内の要素を直接比較するのではなく、外部キーを重みとしてソートしたい時があります。たとえばリスト ``mylist`` が要素 1,2,3,4 を持っていて、object_1, object_2, object_3, object_4 に保存されているオブジェクトのユニークIDになっています。一方でweight_1, weight_2, weight_3, weight_4は重みを保存していて、その重みを使ってIDをソートしたいとします。この場合は次のコマンドを使います。
+
+   .. **Sorting by external keys**
+
+   **外部キーでソートする**
 
    .. code-block:: none
 
       SORT mylist BY weight_*
 
-   the **BY** option takes a pattern (weight_* in our example) that is used in order to generate the key names of the weights used for sorting. Weight key names are obtained substituting the first occurrence of * with the actual value of the elements on the list (1,2,3,4 in our example).
+   .. the BY option takes a pattern (weight_* in our example) that is used in order to generate the key names of the weights used for sorting. Weight key names are obtained substituting the first occurrence of * with the actual value of the elements on the list (1,2,3,4 in our example).
 
-   Our previous example will return just the sorted IDs. Often it is needed to get the actual objects sorted (object_1, ..., object_4 in the example). We can do it with the following command:
+   ``BY`` オプションは重みを保存しているキー名を生成するためにパターンを受け付けることができます（今回はweight_*です）重みのキー名は最初に現れるアスタリスクをリスト内の実際に値に置き換えることで得られます。（この例では1,2,3,4です）
 
-   **Not Sorting at all**
+   .. Our previous example will return just the sorted IDs. Often it is needed to get the actual objects sorted (object_1, ..., object_4 in the example). We can do it with the following command:
 
-   .. code-block:: none
-
-      SORT mylist BY nosort
-
-   also the BY option can take a "nosort" specifier. This is useful if you want to retrieve a external key (using GET, read below) but you don't want the sorting overhead.
-
-   **Retrieving external keys**
+   前の例ではソートされたIDを返すだけでした。よく実際のオブジェクト（たとえばobject_1, ..., object4）をソートする必要があります。この場合は次のコマンドで出来ます。
 
    .. code-block:: none
 
       SORT mylist BY weight_* GET object_*
 
-   Note that GET can be used multiple times in order to get more keys for every element of the original List, Set or Sorted Set sorted.
+   .. **Retrieving external keys**
 
-   Since Redis >= 1.1 it's possible to also GET the list elements itself using the special # pattern:
+   **外部キーを取得する**
+
+   .. Note that GET can be used multiple times in order to get more keys for every element of the original List, Set or Sorted Set sorted.
+
+   元々のリスト、セット、ソート済みセットからさらにキーを取得するために ``GET`` オプションを複数回使うことが出来ます。
+
+   .. Since Redis >= 1.1 it's possible to also GET the list elements itself using the special # pattern:
+
+   Redis 1.1からリスト要素自身を ``#`` を使うことで取得できるようになりました。
 
    .. code-block:: none
 
       SORT mylist BY weight_* GET object_* GET #
 
-   **Storing the result of a SORT operation**
+   .. **Storing the result of a SORT operation**
 
-   By default SORT returns the sorted elements as its return value. Using the STORE option instead to return the elements SORT will store this elements as a Redis List in the specified key. An example:
+   **SORTの結果を保存する**
+
+   .. By default SORT returns the sorted elements as its return value. Using the STORE option instead to return the elements SORT will store this elements as a Redis List in the specified key. An example:
+
+   デフォルトでは :com:`SORT` は返り値としてソートされた要素を返します。 :com:`STORE` オプションを使うことで要素を返す代わりに、 :com:`SORT` はこの要素をRedisリスト型として指定したキーの保存します。このような形です:
 
    .. code-block:: none
 
       SORT mylist BY weight_* STORE resultkey
 
-   An interesting pattern using SORT ... STORE consists in associating an EXPIRE timeout to the resulting key so that in applications where the result of a sort operation can be cached for some time other clients will use the cached list instead to call SORT for every request. When the key will timeout an updated version of the cache can be created using SORT ... STORE again.
+   .. An interesting pattern using SORT ... STORE consists in associating an EXPIRE timeout to the resulting key so that in applications where the result of a sort operation can be cached for some time other clients will use the cached list instead to call SORT for every request. When the key will timeout an updated version of the cache can be created using SORT ... STORE again.
 
-   Note that implementing this pattern it is important to avoid that multiple clients will try to rebuild the cached version of the cache at the same time, so some form of locking should be implemented (for instance using SETNX).
+   ``SORT ... STORE`` を用いた興味深いパターンとして、 :com:`EXPIRE` のタイムアウトを結果のキーに関連付けて使う方法があります。こうすることでしばらくの間ソートの結果がキャッシュされたアプリケーション内でクライアントはリクエストごとに ``SORT`` を発行する代わりにキャッシュされたリストを参照することができます。キーがタイムアウトした場合は再度 ``SORT ... STORE`` を用いることで更新されたソート結果を使うことが出来ます。
 
-   **SORT and Hashes: BY and GET by hash field**
+   .. Note that implementing this pattern it is important to avoid that multiple clients will try to rebuild the cached version of the cache at the same time, so some form of locking should be implemented (for instance using SETNX).
 
-   It's possible to use BY and GET options against Hash fields using the following syntax::
+   このパターンを実装するときには複数のクライアントがソート結果のキャッシュを同時に作成しないように気をつけなければいけません。したがって何らかのロックを使わなければいけないでしょう。（たとえば :com:`SETNX` を使うなど）
 
-     SORT mylist BY weight_*->fieldname
-     SORT mylist GET object_*->fieldname
+   .. **Not Sorting at all**
 
-   The two chars string -> is used in order to signal the name of the Hash field. The key is substituted as documented above with sort BY and GET against normal keys, and the Hash stored at the resulting key is accessed in order to retrieve the specified field.
+   **全くソートしない**
+
+   .. code-block::
+
+      SORT mylist BY nosort
+
+   .. also the BY option can take a "nosort" specifier. This is useful if you want to retrieve a external key (using GET, read below) but you don't want the sorting overhead.
+
+   ``BY`` オプションは "nosort" 識別子を取ることもできます。これは外部キーを取得したいけれど、ソートのオーバーヘッドは避けたい時に便利です。
+
+   .. **SORT and Hashes: BY and GET by hash field**
+
+   **ソートとハッシュ：ハッシュフィールドによるBYとGET**
+
+   .. It's possible to use BY and GET options against Hash fields using the following syntax
+
+   ``BY`` と ``GET`` オプションをハッシュフィールドに対して使うことも可能です。以下はその例です:
+   
+   .. code-block:: none
+      
+      SORT mylist BY weight_*->fieldname
+      SORT mylist GET object_*->fieldname
+
+
+   .. The two chars string -> is used in order to signal the name of the Hash field. The key is substituted as documented above with sort BY and GET against normal keys, and the Hash stored at the resulting key is accessed in order to retrieve the specified field.
+
+   2文字の文字列 ``->`` はハッシュフィールドを指し示すのに使います。キーが ``BY`` と ``GET`` によって前述のとおりに通常のキーに置き換えられて、特定のフィールドを取得するためにキーが指定されているハッシュがアクセスされます。
+
+   .. note::
+
+      いい翻訳が難しい
 
    .. Return value
 
