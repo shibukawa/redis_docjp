@@ -219,7 +219,9 @@
 
    **CONFIG GET パターン**
 
-     CONFIG GET returns the current configuration parameters. This sub command only accepts a single argument, that is glob style pattern. All the configuration parameters matching this parameter are reported as a list of key-value pairs. Example:
+     .. CONFIG GET returns the current configuration parameters. This sub command only accepts a single argument, that is glob style pattern. All the configuration parameters matching this parameter are reported as a list of key-value pairs. Example:
+
+     ``CONFIG GET`` は現在の設定パラメータを返します。このサブコマンドは引数を1つだけ録ります。引数はglob形式のパターンです。すべての設定パラメータはキーと値のリストの形で表示ｓれます。例えば以下のような感じです。
 
      .. code-block:: none
 
@@ -243,15 +245,23 @@
         3. "maxmemory"
         4. "0\n"
 
-     The return type of the command is a bulk reply.
+     .. The return type of the command is a bulk reply.
+
+     返り値の方はBulk replyです。
 
    **CONFIG SET parameter value**
 
-     CONFIG SET is used in order to reconfigure the server, setting a specific configuration parameter to a new value.
+     .. CONFIG SET is used in order to reconfigure the server, setting a specific configuration parameter to a new value.
 
-     The list of configuration parameters supported by CONFIG SET can be obtained issuing a CONFIG GET * command.
+     ``CONFIG SET`` はサーバを設定しなおすために使います。特定の設定パラメータの値を更新するのです。
 
-     The configuration set using CONFIG SET is immediately loaded by the Redis server that will start acting as specified starting from the next command.
+     .. The list of configuration parameters supported by CONFIG SET can be obtained issuing a CONFIG GET * command.
+
+     ``CONFIG SET`` でサポートされる設定パラメータのリストは ``CONFIG GET *`` コマンドを発行することで得られます。
+
+     .. The configuration set using CONFIG SET is immediately loaded by the Redis server that will start acting as specified starting from the next command.
+
+     ``CONFIG SET`` によって設定された設定は直ちにRedisサーバにロードされて、次に実行するコマンドからそのようにふるまいます。
 
      例::
 
@@ -267,14 +277,26 @@
        redis> set y 20
        OK
 
-   **Parameters value format**
+   .. Parameters value format
 
-     The value of the configuration parameter is the same as the one of the same parameter in the Redis configuration file, with the following exceptions:
+   **パラメータ値のフォーマット**
 
-     * The save paramter is a list of space-separated integers. Every pair of integers specify the time and number of changes limit to trigger a save. For instance the command CONFIG SET save "3600 10 60 10000" will configure the server to issue a background saving of the RDB file every 3600 seconds if there are at least 10 changes in the dataset, and every 60 seconds if there are at least 10000 changes. To completely disable automatic snapshots just set the parameter as an empty string.
+     .. The value of the configuration parameter is the same as the one of the same parameter in the Redis configuration file, with the following exceptions:
 
-     * All the integer parameters representing memory are returned and accepted only using bytes as unit.
+     設定パラメータの値はRedis設定ファイル内のパラメータと一緒です。ただし下記のような例外があります。
 
-   **See Also**
+     .. * The save paramter is a list of space-separated integers. Every pair of integers specify the time and number of changes limit to trigger a save. For instance the command CONFIG SET save "3600 10 60 10000" will configure the server to issue a background saving of the RDB file every 3600 seconds if there are at least 10 changes in the dataset, and every 60 seconds if there are at least 10000 changes. To completely disable automatic snapshots just set the parameter as an empty string.
+     
+     * 保存パラメータは空白区切りの整数のリストです。2つの整数の組で時間と保存のトリガーとなる変更回数の上限を指定します。例えば ``CONFIG SET save 3600 10 60 10000`` はサーバにもし少なくともデータセットに10回の変更があった場合、3600秒ごとにRDBファイルのバックグラウンドでの保存を、もし少なくとも10000回の変更があった場合には60秒ごとの保存を行うように設定します。
 
-     The INFO command can be used in order to read configuriaton parameters that are not available in the CONFIG command.
+     .. * All the integer parameters representing memory are returned and accepted only using bytes as unit.
+
+     * すべての整数のパラメータはバイト単位が使われたときのみ返されたメモリと受け付けられたメモリを表しています。
+
+     .. note:: 完全に翻訳が謎。
+
+   **あわせて参照**
+
+     .. The INFO command can be used in order to read configuriaton parameters that are not available in the CONFIG command.
+
+     :com:`INFO` コマンドは :com:`CONFIG` コマンドでは確認できない設定パラメータの読み込みに使うこともできます。
