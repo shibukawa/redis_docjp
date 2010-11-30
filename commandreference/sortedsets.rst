@@ -291,6 +291,48 @@ Redisセット型で起きていたのと同様、ハッシュ表のリサイズ
       (empty list or set)
 
 
+.. command:: ZREMRANGEBYRANK key start end 
+
+   .. versionadded:: 1.3.4
+
+   .. Time complexity: O(log(N))+O(M) with N being the number of elements in the sorted set and M the number of elements removed by the operation
+
+   計算時間: O(log(N))+O(M) Nはソート済みセット内の要素数、Mは操作によって削除される要素数
+
+   .. Remove all elements in the sorted set at key with rank between start and end. Start and end are 0-based with rank 0 being the element with the lowest score. Both start and end can be negative numbers, where they indicate offsets starting at the element with the highest rank. For example: -1 is the element with the highest score, -2 the element with the second highest score and so forth.
+
+   ソート済みセット内の ``start`` から ``end`` 内のランクのすべての要素を削除します。 ``start`` と ``end`` は0から始まるランクで0は最小のスコアを持つ要素です。 ``start``, ``end`` ともに負の値をとることもできます。その場合は高いランクからの要素からのオフセットとなります。たとえば-1は最もスコアが高い要素、-2はスコアが2番目に高いものというようになります。
+
+   .. Return value
+
+   **返り値**
+
+     .. Integer reply, specifically the number of elements removed.
+
+     Integer replyが返ります。具体的には削除された要素数です。
+
+
+.. command:: ZREMRANGEBYSCORE key min max 
+
+   .. versionadded:: 1.1
+
+   .. Time complexity: O(log(N))+O(M) with N being the number of elements in the sorted set and M the number of elements removed by the operation
+
+   計算時間: O(log(N))+O(M) Nはソート済みセット内の要素数、Mは操作によって取り除かれた要素数です。
+
+   .. Remove all the elements in the sorted set at key with a score between min and max (including elements with score equal to min or max).
+
+   ソート済みセット内の ``min`` と ``max`` の間のスコアを持つ要素を削除します。（ ``min`` と ``max`` の値は含まれます）
+
+   .. Return value
+
+   **返り値**
+
+     .. Integer reply, specifically the number of elements removed.
+
+     Integer replyが過ります。具体的には削除された要素数です。
+
+
 .. command:: ZCARD key 
 
    .. versionadded:: 1.1

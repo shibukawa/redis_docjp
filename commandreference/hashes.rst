@@ -65,11 +65,17 @@ Redisハッシュの面白い使い方としてオブジェクトエンコーデ
 
    計算時間: O(1)
 
-   Set the specified hash field to the specified value.
+   .. Set the specified hash field to the specified value.
 
-   If key does not exist, a new key holding a hash is created.
+   キー ``key`` に対応するハッシュの指定されたフィールド ``field`` に値 ``value`` をセットする。
 
-   If the field already exists, and the HSET just produced an update of the value, 0 is returned, otherwise if a new field is created 1 is returned.
+   .. If key does not exist, a new key holding a hash is created.
+
+   キーが存在しない場合は、 ``field`` と ``value`` のハッシュを持つ新しいキーが生成される。
+
+   .. If the field already exists, and the HSET just produced an update of the value, 0 is returned, otherwise if a new field is created 1 is returned.
+
+   フィールドがすでに存在する場合して、 :com:`HSET` が値を更新しただけの場合は0が返ります。新しいフィールドが作成された場合は1が返ります。
 
    .. Return value
 
@@ -83,9 +89,13 @@ Redisハッシュの面白い使い方としてオブジェクトエンコーデ
 
    計算時間: O(1)
 
-   If key holds a hash, retrieve the value associated to the specified field.
+   .. If key holds a hash, retrieve the value associated to the specified field.
 
-   If the field is not found or the key does not exist, a special 'nil' value is returned.
+   もしキー ``key`` がハッシュを持っていた場合、指定したフィールド ``field`` に対応する値を取得します。
+
+   .. If the field is not found or the key does not exist, a special 'nil' value is returned.
+
+   もしフィールドが見つからない場合、あるはキーが見つからない場合は、nilが返ります。
 
    .. Return value
 
@@ -100,11 +110,17 @@ Redisハッシュの面白い使い方としてオブジェクトエンコーデ
 
    計算時間: O(1)
 
-   Set the specified hash field to the specified value, if field does not exist yet.
+   .. Set the specified hash field to the specified value, if field does not exist yet.
 
-   If key does not exist, a new key holding a hash is created.
+   キー ``key`` に対応するハッシュ内にフィールド ``field`` が存在しない場合、値 ``value`` をセットします。
 
-   If the field already exists, this operation has no effect and returns 0. Otherwise, the field is set to value and the operation returns 1.
+   .. If key does not exist, a new key holding a hash is created.
+
+   キーが存在しない場合は、キーに対して ``field`` と ``value`` の組を持った新しいハッシュが作成されます
+
+   .. If the field already exists, this operation has no effect and returns 0. Otherwise, the field is set to value and the operation returns 1.
+
+   もしフィールドがすでに存在する場合、この操作はなんの処理もせず0を返します。それ以外の場合はフィールド ``field`` に値 ``value`` をセットして1を返します。
 
    .. Return value
 
@@ -117,12 +133,16 @@ Redisハッシュの面白い使い方としてオブジェクトエンコーデ
 
    .. versionadded:: 1.3.10
 
-   計算時間: O(N) (with N being the number of fields)
+   計算時間: O(N) （Nはフィールドの数）
 
 
-   Set the respective fields to the respective values. HMSET replaces old values with new values.
+   .. Set the respective fields to the respective values. HMSET replaces old values with new values.
 
-   If key does not exist, a new key holding a hash is created.
+   それぞれのフィールドにそれぞれの値をセットします。 :com:`HMSET` では古い値を新しい値で置き換えます。
+
+   .. If key does not exist, a new key holding a hash is created.
+
+   キーが存在しない場合は、指定したハッシュを持った新しいキーが作成されます。
 
    .. Return value
 
@@ -135,17 +155,23 @@ Redisハッシュの面白い使い方としてオブジェクトエンコーデ
 
    .. versionadded:: 1.3.10
 
-   計算時間: O(N) (with N being the number of fields)
+   計算時間: O(N) （Nはフィールドの数）
 
-   Retrieve the values associated to the specified fields.
+   .. Retrieve the values associated to the specified fields.
 
-   If some of the specified fields do not exist, nil values are returned. Non existing keys are considered like empty hashes.
+   指定した複数のキー ``keyN`` に対応するハッシュ内のフィールド ``field`` に保持された値を取得します。
+
+   .. If some of the specified fields do not exist, nil values are returned. Non existing keys are considered like empty hashes.
+
+   もし指定したキーの内いくつかが存在しない場合、nilが返ります。存在しないキーに関しては空のハッシュと同等に扱われます。
 
    .. Return value
 
    **帰り値**
 
-     Multi Bulk Reply specifically a list of all the values associated with the specified fields, in the same order of the request.
+     .. Multi Bulk Reply specifically a list of all the values associated with the specified fields, in the same order of the request.
+
+     Multi Bulk Replyが返ります。具体的には指定したそれぞれのフィールド ``fieldN`` に対する複数の値を持ったリストが返ります。値は指定したフィールドの順です。
 
 
 .. command:: HINCRBY key field value
@@ -154,18 +180,27 @@ Redisハッシュの面白い使い方としてオブジェクトエンコーデ
 
    計算時間: O(1)
 
-   Increment the number stored at field in the hash at key by value. If key does not exist, a new key holding a hash is created. If field does not exist or holds a string, the value is set to 0 before applying the operation.
+   .. Increment the number stored at field in the hash at key by value. If key does not exist, a new key holding a hash is created. If field does not exist or holds a string, the value is set to 0 before applying the operation.
 
-   The range of values supported by HINCRBY is limited to 64 bit signed integers.
-Examples
+   キー ``key`` に対応するハッシュ内のフィールド ``field`` に保持されている値を ``value`` だけインクリメントします。キーが存在しない場合は ``filed`` と ``value`` の組を持った新しいハッシュが作成されます。もしフィールドが存在しない、あるいは文字列を持っている場合は値は0となります。
 
-   Since the value argument is signed you can use this command to perform both increments and decrements:
+   .. The range of values supported by HINCRBY is limited to 64 bit signed integers.
 
-   .. code-block:: none
+   :com:`HINCRBY` で指定できる値の範囲は64bit符号付き整数の範囲内です。
 
-      HINCRBY key field 1 (increment by one)
-      HINCRBY key field -1 (decrement by one, just like the DECR command)
-      HINCRBY key field -10 (decrement by 10)
+   .. Examples
+
+   **例**
+
+     .. Since the value argument is signed you can use this command to perform both increments and decrements:
+
+     値は符号付きなので、インクリメントにもデクリメントにも使えます。
+
+     .. code-block:: none
+
+        HINCRBY key field 1 (increment by one)
+        HINCRBY key field -1 (decrement by one, just like the DECR command)
+        HINCRBY key field -10 (decrement by 10)
 
    .. Return value
 
@@ -173,15 +208,20 @@ Examples
    
      Integer replyが返ります。インクリメント後の新しい値が返ります。
 
+
 .. command:: HEXISTS key field
 
    .. versionadded::  1.3.10
 
    計算時間: O(1)
 
-   Return 1 if the hash stored at key contains the specified field.
+   .. Return 1 if the hash stored at key contains the specified field.
 
-   Return 0 if the key is not found or the field is not present.
+   キー ``key`` に対応するハッシュ内に指定したフィールド ``field`` があれば1を返します。
+
+   .. Return 0 if the key is not found or the field is not present.
+
+   もしキーあるいはフィールドが存在しない場合は0が返ります。
 
    .. Return value
 
@@ -189,15 +229,20 @@ Examples
 
      Integer replyが返ります。
 
+
 .. command:: HDEL key field
 
    .. versionadded:: 1.3.10
 
    計算時間: O(1)
 
-   Remove the specified field from an hash stored at key.
+   .. Remove the specified field from an hash stored at key.
 
-   If the field was present in the hash it is deleted and 1 is returned, otherwise 0 is returned and no operation is performed.
+   キー ``key`` に対応するハッシュ内のフィールド ``field`` を削除します。
+
+   .. If the field was present in the hash it is deleted and 1 is returned, otherwise 0 is returned and no operation is performed.
+
+   もしフィールドがハッシュ内に存在する場合は、そのフィールドは削除され1が返ります。それ以外の場合は0が返り、なんの操作も行われません。
 
    .. Return value
 
@@ -212,7 +257,9 @@ Examples
 
    計算時間: O(1)
 
-   Return the number of entries (fields) contained in the hash stored at key. If the specified key does not exist, 0 is returned assuming an empty hash.
+   .. Return the number of entries (fields) contained in the hash stored at key. If the specified key does not exist, 0 is returned assuming an empty hash.
+
+   キー ``key`` に対応するハッシュに存在するエントリ（フィールド）数を返します。もし指定したキーが存在しない場合は、空のハッシュと同様に0が返ります。
 
    .. Return value
 
@@ -233,9 +280,11 @@ Examples
 
    .. versionadded:: 1.3.10
 
-   計算時間: O(N), where N is the total number of entries
+   計算時間: O(N), Nは要素数
 
-   HKEYS returns all the fields names contained into a hash, HVALS all the associated values, while HGETALL returns both the fields and values in the form of field1, value1, field2, value2, ..., fieldN, valueN.
+   .. HKEYS returns all the fields names contained into a hash, HVALS all the associated values, while HGETALL returns both the fields and values in the form of field1, value1, field2, value2, ..., fieldN, valueN.
+
+   :com:`HKEYS` はキー ``key`` に対応するハッシュ内のすべてのフィールド名を返します。 :com:`HVALS` はキー ``key`` に対応するハッシュ内の全ての値、 :com:`HGETALL` はフィールドと値の組み合わせを field1, value1, field2, value2, ..., fieldN, valueNの形で返します。
 
    .. Return value
 
