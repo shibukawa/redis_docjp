@@ -21,6 +21,7 @@ redisドキュメント日本語訳
    admin/server
    admin/append_only_file
    admin/replication
+   admin/cluster/index
    admin/config
 
 デベロッパーズガイド
