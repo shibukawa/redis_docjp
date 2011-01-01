@@ -380,7 +380,7 @@
 
      .. When a Redis connection is in the context of a MULTI request, all the commands will reply with a simple string "QUEUED" if they are correct from the point of view of the syntax and arity (number of arguments) of the commaand. Some commands are still allowed to fail during execution time.
 
-     Redisへ接続している間に :com:`MULTI` が呼びだされたとき、すべてのコマンドが文法上も引数も正しく呼びだされたときは文字列 ~QUEUED" を返します。実行時にうまく動作しなくてもかまいません。
+     Redisへ接続している間に :com:`MULTI` が呼びだされたとき、すべてのコマンドが文法上も引数も正しく呼びだされたときは文字列 "QUEUED" を返します。実行時にうまく動作しなくてもかまいません。
 
      .. This is more clear on the protocol level; In the following example one command will fail when executed even if the syntax is right
 
@@ -408,8 +408,9 @@
      .. even when a command will raise an error, all the other commands in the queue will be processed. Redis will NOT stop the processing of commands once an error is found.
      .. Another example, again using the write protocol with telnet, shows how syntax errors are reported ASAP instead
 
-     ..warning:: コマンドがエラーをあげたときですら、キューに入っているそれ以外のコマンドは処理されます。Redisはエラーが得られたとしてもプロセスを **止めません** 。
-     他の例では再度telnetを用いて書き込みプロトコルを使っていますが、文法エラーができるだけ早く報告されるように設定しています::
+     .. warning:: 
+        コマンドがエラーをあげたときですら、キューに入っているそれ以外のコマンドは処理されます。Redisはエラーが得られたとしてもプロセスを **止めません** 。
+        他の例では再度telnetを用いて書き込みプロトコルを使っていますが、文法エラーができるだけ早く報告されるように設定しています::
 
        MULTI
        +OK
