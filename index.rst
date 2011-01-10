@@ -56,6 +56,7 @@ redisドキュメント日本語訳
 
    hacker/hacking_strings
    hacker/protocol_spec
+   hacker/virtualmemory
 
 索引など
 ========
