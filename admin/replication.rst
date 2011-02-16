@@ -27,7 +27,7 @@ Redisのマスタースレーブのレプリケーションの利用と設定は
 
 .. Redis replication is non-blocking on the master side, this means that the master will continue to serve queries while one or more slaves are performing the first synchronization. Instead replication is blocking on the slave side: while the slave is performing the first synchronization it can't reply to queries.
 
-* Redisレプリケーションは、マスター側では非同期で動作します。これにより、複数のスレーブからのリクエストがあった場合にも、マスターの動作は継続的に行われます。代わりに、最初の同期を実行している間にレプリケーションは、スレーブ側でブロックされているいます。スレーブがクエリに返信することはできません
+* Redisレプリケーションは、マスター側では非同期で動作します。これにより、複数のスレーブからのリクエストがあった場合にも、マスターの動作は継続的に行われます。代わりに、最初の同期を実行している間にレプリケーションは、スレーブ側でブロックされています。スレーブがクエリに返信することはできません
 
 .. * Replications can be used both for scalability, in order to have multiple slaves for read-only queries (for example heavy SORT operations can be launched against slaves), or simply for data redundancy.
 
