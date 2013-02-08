@@ -5,15 +5,15 @@
 ======================
 
 .. command:: EXISTS key
-   
+
    計算時間: O(1)
 
    .. Test if the specified key exists. The command returns "0" if the key exists, otherwise "1" is returned. Note that even keys set with an empty string as value will return "1".
-   
-   指定されたキー ``key`` が存在するか確認します。存在する場合は"0"が返ります。存在しない場合は"1"が返ります。キーに対応する値が空文字列でも"1"が返ることに注意してください。
-   
+
+   指定されたキー ``key`` が存在するか確認します。存在する場合は"1"が返ります。存在しない場合は"0"が返ります。キーに対応する値が空文字列でも"1"が返ることに注意してください。
+
    .. Return value
-   
+
    **返り値**
 
      .. Integer reply, specifically:
@@ -30,9 +30,9 @@
    計算時間: O(1)
 
    .. Remove the specified keys. If a given key does not exist no operation is performed for this key. The command returns the number of keys removed.
-   
+
    指定された複数のキー ``keyN`` を削除します。キーが存在しない場合は何の操作も行われません。返り値は削除されたキーの数となります。
-   
+
    .. Return value
 
    **返り値**
@@ -40,7 +40,7 @@
      .. Integer reply, specifically:
 
      Integer reply（整数値）。具体的には下記::
-   
+
        an integer greater than 0 if one or more keys were removed
        0 if none of the specified key existed
 
@@ -50,13 +50,13 @@
    計算時間: O(1)
 
    .. Return the type of the value stored at key in form of a string. The type can be one of "none", "string", "list", "set". "none" is returned if the key does not exist.
-   
+
    キー ``key`` で格納されている値の型を文字列型で返します。型は "none", "string", "list", "set"のいずれかです。 "none"はキーが存在しない場合に返ります。
 
    .. note:: "sortedset"はないのか？要確認。
 
    .. Return value
-   
+
    **返り値**
 
      .. Status code reply, specifically:
@@ -69,13 +69,13 @@
       "set" if the key contains a Set value
       "zset" if the key contains a Sorted Set value
       "hash" if the key contains a Hash value
-   
+
    .. See also
 
    **参照**
-   
+
      .. Redis Data Types
-     
+
      Redisデータ型
 
      .. note:: あとで各データ型へのリンクを貼る
@@ -107,11 +107,11 @@
       h*llo will match hllo heeeello
       h[ae]llo will match hello and hallo, but not hillo
       Use \ to escape special chars if you want to match them verbatim.
-   
+
    .. Return value
-   
+
    **返り値**
-   
+
       .. Multi bulk reply
 
       Multi bulk replyが返る
@@ -126,11 +126,11 @@
    現在選択してされているデータベースからランダムでキーをひとつ選択して返します。
 
    .. Return value
-   
+
    **返り値**
 
      .. Singe line reply, specifically the randomly selected key or an empty string is the database is empty.
-   
+
      Single line reply（単一行）が返ります。具体的にはランダムに選択されたキーまたはデータベースが空のときは空文字列が返ります。
 
 
@@ -158,7 +158,7 @@
    .. Rename oldkey into newkey but fails if the destination key newkey already exists.
 
    .. Return value
-   
+
    **返り値**
 
      .. Integer reply, specifically:
@@ -173,9 +173,9 @@
    .. Return the number of keys in the currently selected database.
 
    現在選択されているデータベースのキーの数を返します。
-   
+
    .. Return value
-   
+
    **返り値**
 
      .. Integer reply
@@ -242,7 +242,7 @@
        OK
        % ./redis-cli lrange mylist 0 -1  /Users/antirez/hack/redis
        1. newelement
-       
+
 
 .. command:: TTL key
 
@@ -262,7 +262,7 @@
    .. Select the DB with having the specified zero-based numeric index. For default every new client connection is automatically selected to DB 0.
 
    ゼロから始まる数値 ``index`` インデックス付けされたデータベースを選択します。デフォルトの設定では新しいクライアント自動的にDB 0に接続されます。
-   
+
    .. Return value
 
    **返り値**
@@ -277,7 +277,7 @@
    指定したキー ``key`` を現在選択されているデータベースから指定したインデックス ``index`` のデータベースに移します。無事移動できた場合のみ"1"を返し、対象のキーがすでに指定したデータベースに存在する、または対象のキーが見つからない場合は"0"を返します。この性質から :com:`MOVE` をロックのために使うこともできます。
 
    .. Return value
-   
+
    **返り値**
 
      Integer reply（整数値）が返ります。具体的には下記::
@@ -306,7 +306,7 @@
    現在選択されているものだけでなく、存在するすべてのデータベースからすべてのキーを削除します。このコマンドは決して失敗しません。
 
    .. Return value
-   
+
    **返り値**
 
      Status code reply（ステータスコード）が返ります。
@@ -353,7 +353,7 @@
      .. A Redis transaction is entered using the MULTI command. The command always replies with OK. At this point the user can issue multiple commands. Instead of executing these commands, Redis will "queue" them. All the commands are executed once EXEC is called.
 
      Redisのトランザクションは :com:`MULTI` コマンドを使って登録します。コマンドはつねにOKを返します。このときユーザは複数のコマンドを発行できます。これらのコマンドを実行する代わりに、Redisではキューにためます。キュー内のコマンドは :com:`EXEC` が呼ばれたタイミングで実行されます。
-     
+
 
      .. Calling DISCARD instead will flush the transaction queue and will exit the transaction.
 
@@ -373,7 +373,7 @@
        => "QUEUED"
        >> r.exec
        => [1, 1, 2]
-       
+
      .. As it is possible to see from the session above, MULTI returns an "array" of replies, where every element is the reply of a single command in the transaction, in the same order the commands were queued.
 
      この例でわかるように、 :com:`MULTI` はトランザクション中の各コマンドの返り値を要素に持った配列を返します。要素の並び順はコマンドの並び順に一致します。
@@ -391,7 +391,7 @@
        Escape character is '^]'.
        MULTI
        +OK
-       SET a 3 
+       SET a 3
        abc
        +QUEUED
        LPOP a
@@ -408,7 +408,7 @@
      .. even when a command will raise an error, all the other commands in the queue will be processed. Redis will NOT stop the processing of commands once an error is found.
      .. Another example, again using the write protocol with telnet, shows how syntax errors are reported ASAP instead
 
-     .. warning:: 
+     .. warning::
         コマンドがエラーをあげたときですら、キューに入っているそれ以外のコマンドは処理されます。Redisはエラーが得られたとしてもプロセスを **止めません** 。
         他の例では再度telnetを用いて書き込みプロトコルを使っていますが、文法エラーができるだけ早く報告されるように設定しています::
 
@@ -416,7 +416,7 @@
        +OK
        INCR a b c
        -ERR wrong number of arguments for 'incr' command
-       
+
      .. This time due to the syntax error the "bad" INCR command is not queued at all.
 
      この場合は、文法エラーによって"bad"な :com:`INCR` コマンドはキューに入りませんでした。
@@ -464,13 +464,13 @@
        val = GET mykey
        val = val + 1
        SET mykey $val
-       
+
      .. This will work reliably only if we have a single client performing the operation in a given time. If multiple clients will try to increment the key about at the same time there will be a race condition. For instance client A and B will read the old value, for instance, 10. The value will be incremented to 11 by both the clients, and finally SET as the value of the key. So the final value will be "11" instead of "12".
 
      このサンプルは1つのクライアントが限られた時間で動作する場合であれば上手く動くと思います。もし複数のクライアントが同時にキーをインクリメントしようとしたら、競合状態に陥ります。例えば、クライアントAとクライアントBが古い値、ここでは10としますが、を読んだとします。この値は両方のクライアントによってインクリメントされ11となります。そして最終的にそのキーの値として12ではなく11がセットされてしまうのです。
 
      .. Thanks to WATCH we are able to model the problem very well
-     
+
      :com:`WATCH` コマンドのおかげでこの問題をうまく解決できます::
 
        WATCH mykey
@@ -479,7 +479,7 @@
        MULTI
        SET mykey $val
        EXEC
-       
+
      .. Using the above code, if there are race conditions and another client modified the result of val in the time between our call to WATCH and our call to EXEC, the transaction will fail.
 
      上記のコードを使うことで、もし競合状態になって他のクライアントが :com:`WATCH` と :com:`EXEC` の間に ``val`` の値を修正した場合はトランザクションは失敗します。
@@ -519,7 +519,7 @@
        MULTI
        ZREM zset ele
        EXEC
-       
+
     .. If EXEC fails (returns a nil value) we just re-iterate the operation.
 
     もし :com:`EXEC` が失敗したら（nil値を返したら）、単純に操作を再実行するだけです。
@@ -658,9 +658,9 @@
    .. It's possible to use BY and GET options against Hash fields using the following syntax
 
    ``BY`` と ``GET`` オプションをハッシュフィールドに対して使うことも可能です。以下はその例です:
-   
+
    .. code-block:: none
-      
+
       SORT mylist BY weight_*->fieldname
       SORT mylist GET object_*->fieldname
 
